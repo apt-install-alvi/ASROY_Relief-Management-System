@@ -75,6 +75,42 @@ CREATE TABLE Volunteer (
     Volunteer_age NUMERIC not null check (Volunteer_age >15)
 );
 
+create table Volunteer_Assigned_Distribution(
+Volunteer_distribution_id varchar(5) primary key,
+volunteer_id  varchar(4) ,
+distribution_id varchar(5) ,
+CONSTRAINT v_id_f_k
+FOREIGN KEY(volunteer_id)
+REFERENCES Volunteer(Volunteer_id) on delete cascade on update cascade ,
+CONSTRAINT di_id_f_k
+FOREIGN KEY(distribution_id)
+REFERENCES Donation_Distribution(Distribution_id) on delete cascade on update cascade
+);
+
+create table Rescue_Location(
+Rescue_location_id varchar(5) primary key,
+Rescue_area_id varchar(4),
+Rescue_mission_id varchar(4),
+CONSTRAINT r_a_f_k
+FOREIGN KEY(Rescue_area_id)
+REFERENCES Area(Area_id) on delete cascade on update cascade ,
+CONSTRAINT r_m_f_k
+FOREIGN KEY(Rescue_mission_id)
+REFERENCES Rescue_Team(Mission_id) on delete cascade on update cascade
+);
+
+create table Reconstruction_Location(
+Reconstruction_location_id varchar(5) primary key,
+Reconstruction_area_id varchar(4),
+Reconstruction_project_id varchar(4),
+CONSTRAINT re_a_f_k
+FOREIGN KEY(Reconstruction_area_id)
+REFERENCES Area(Area_id) on delete cascade on update cascade ,
+CONSTRAINT re_p_f_k
+FOREIGN KEY(Reconstruction_project_id)
+REFERENCES Reconstruction_Team(Project_id) on delete cascade on update cascade
+);
+
 create table Rescue_Team (
 Mission_id varchar(4) primary key,
 Volunteer_rescue_id  varchar(4) ,
@@ -258,3 +294,22 @@ values
 ('DI003' , 'DO003' , 'E003' , 'L002' , 'G003');
 
 
+insert into Volunteer_Assigned_Distribution
+values
+('VO001' , 'V001',  'DI001'),
+('VO002' , 'V002',  'DI002'),
+('VO003' , 'V001',  'DI003');
+
+
+insert into Rescue_Location
+values
+('RE001' , 'A001',  'M001'),
+('RE002' , 'A002',  'M002'),
+('RE003' , 'A001',  'M003');
+
+
+insert into Reconstruction_Location
+values
+('RC001' , 'A001',  'P001'),
+('RC002' , 'A002',  'P002'),
+('RC003' , 'A001',  'P003');
