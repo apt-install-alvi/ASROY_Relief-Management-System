@@ -1,22 +1,12 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+// frontend/src/App.jsx
+import React from 'react';
+import './App.css';
+import Homepage from './pages/homepage';
 
 function App() {
-  const [ff, setff] = useState("Are You Ready ?");
-
-  const abc = () => {
-    setff("LETS GOO!!");
-  };
-
   return (
     <div className="app-container">
-      <h1 className="heading">{ff}</h1>
-      <button className="start-button" onClick={abc}>
-        YES
-      </button>
-      <p className="description">Hi guys, let's start the project!</p>
+      <Homepage />
     </div>
   );
 }
