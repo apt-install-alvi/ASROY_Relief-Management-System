@@ -1,7 +1,11 @@
-// homepage.jsx
-const { useState, useEffect } = React;
-import "./homepage.css";
-function Homepage() {
+// frontend/src/pages/homepage.jsx
+import React, { useState, useEffect } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import axios from 'axios';
+import './homepage.css';
+
+export default function Homepage() {
   const [state, setState] = useState({
     currentEventType: 'flood',
     events: [],
@@ -11,11 +15,11 @@ function Homepage() {
   });
 
   const BD_BOUNDS = [
-   [20.375, 88.0],  // southwest
-  [26.635, 92.69]
+    [20.375, 88.0],   // southwest
+    [26.635, 92.69],  // northeast
   ];
 
-  // Database stub
+  // Stub database methods
   const DatabaseService = {
     connect: () =>
       new Promise(res =>
@@ -32,34 +36,33 @@ function Homepage() {
     loadEvents: () => {
       if (!state.dbConnected) return [];
       return JSON.parse(localStorage.getItem('relief_events') || '[]');
-    }
+    },
   };
 
-  // Initialize map + load DB once
+  // Initialize Leaflet map and load events
   useEffect(() => {
     const map = L.map('map', {
       minZoom: 7.4,
-      maxBounds: BD_BOUNDS,
-      maxBoundsViscosity: 10.0,
-      inertia: false
-    }).setView([23.6850, 90.3563], 7.2);
+      inertia: false,
+    })
+      .setView([23.6850, 90.3563], 7.2)
+      .setMaxBounds(BD_BOUNDS);
+    map.options.maxBoundsViscosity = 1.0;
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
+      attribution: '&copy; OpenStreetMap contributors',
     }).addTo(map);
 
-    L.rectangle(BD_BOUNDS, {
-      color: '#006a4e',
-      weight: 2,
-      fillOpacity: 0.05
-    }).addTo(map);
-
-    map.on('zoomend', () => {
-      if (map.getZoom() < 7) map.setZoom(7);
+    // delay invalidateSize until after initial render/layout
+    map.whenReady(() => {
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 0);
     });
 
     setState(s => ({ ...s, map }));
 
+    // connect and load saved events
     DatabaseService.connect().then(() => {
       const loaded = DatabaseService.loadEvents();
       if (loaded.length) {
@@ -67,22 +70,32 @@ function Homepage() {
         setState(s => ({ ...s, events: loaded }));
       }
     });
+
+    // cleanup on unmount
+    return () => {
+      map.remove();
+    };
   }, []);
 
-  // Sync sidebar list
+  // Sync sidebar list whenever events change
   useEffect(() => {
     const list = document.getElementById('event-list');
     list.innerHTML = '';
     if (!state.events.length) {
-      list.innerHTML = '<div class="event-item">No events found. Add some events!</div>';
+      list.innerHTML =
+        '<div class="event-item">No events found. Add some events!</div>';
       return;
     }
     state.events.forEach(event => {
       const item = document.createElement('div');
       item.className = `event-item ${event.type}`;
       item.innerHTML = `
-        <span class="type">${event.type === 'flood' ? 'Flood' : 'Cyclone'}</span>
-        ${event.location.name.substring(0, 30)}${event.location.name.length > 30 ? '...' : ''}
+        <span class="type">${
+          event.type === 'flood' ? 'Flood' : 'Cyclone'
+        }</span>
+        ${event.location.name.substring(0, 30)}${
+        event.location.name.length > 30 ? '...' : ''
+      }
       `;
       item.onclick = () => {
         state.map.flyTo(event.location.coordinates, 12);
@@ -92,27 +105,35 @@ function Homepage() {
     });
   }, [state.events]);
 
+  // helper to add a new event
   const addEvent = e => {
     e.id = Date.now();
     setState(s => ({ ...s, events: [...s.events, e] }));
     createMarker(e, state.map);
   };
 
-  const createMarker = (event, map) => {
-    const icon = L.divIcon({
-      className: `custom-marker ${event.type}`,
-      html:
-        event.type === 'flood'
-          ? '<i class="fas fa-water"></i>'
-          : '<i class="fas fa-wind"></i>',
-      iconSize: [30, 30]
-    });
-    const marker = L.marker(event.location.coordinates, { icon })
-      .addTo(map)
-      .on('click', () => showDetails(event));
-    state.markers[event.id] = marker;
-  };
+// Modify the createMarker function
+const createMarker = (event, map) => {
+  const icon = L.divIcon({
+    className: `custom-marker ${event.type}`,
+    html: `
+      <div class="marker-circle">
+        <i class="fas ${event.type === 'flood' ? 'fa-water' : 'fa-wind'}"></i>
+      </div>
+    `,
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
+    popupAnchor: [0, -15]
+  });
+  
+  const marker = L.marker(event.location.coordinates, { icon })
+    .addTo(map)
+    .on('click', () => showDetails(event));
+  
+  state.markers[event.id] = marker;
+};
 
+  // search by location and add event
   const searchLocation = () => {
     const q = document.getElementById('location-search').value;
     if (!q) return;
@@ -126,20 +147,23 @@ function Homepage() {
           const coords = [+loc.lat, +loc.lon];
           addEvent({
             type: state.currentEventType,
-            location: { name: loc.display_name, coordinates: coords }
+            location: { name: loc.display_name, coordinates: coords },
           });
           state.map.flyTo(coords, 12);
         }
       });
   };
 
+  // show event details popup
   const showDetails = event => {
     document.querySelector('.event-details-card')?.remove();
     const card = document.createElement('div');
     card.className = 'event-details-card';
     card.innerHTML = `
       <div class="event-header ${event.type}">
-        <h3>${event.type === 'flood' ? 'Flood Event' : 'Cyclone Event'}</h3>
+        <h3>${
+          event.type === 'flood' ? 'Flood Event' : 'Cyclone Event'
+        }</h3>
         <button class="close-btn"><i class="fas fa-times"></i></button>
       </div>
       <div class="event-body">
@@ -153,7 +177,9 @@ function Homepage() {
         </div>
       </div>
       <div class="event-footer">
-        <button class="action-btn" id="save-event-btn"><i class="fas fa-save"></i> Save to Database</button>
+        <button class="action-btn" id="save-event-btn">
+          <i class="fas fa-save"></i> Save to Database
+        </button>
       </div>
     `;
     document.body.appendChild(card);
@@ -167,6 +193,7 @@ function Homepage() {
     };
   };
 
+  // toggle between flood/cyclone
   const switchType = t => setState(s => ({ ...s, currentEventType: t }));
 
   return (
@@ -179,21 +206,25 @@ function Homepage() {
       <div className="map-controls">
         <div className="event-type-selector">
           <button
-            className={`event-type-btn ${state.currentEventType === 'flood' ? 'active' : ''}`}
+            className={`event-type-btn ${
+              state.currentEventType === 'flood' ? 'active' : ''
+            }`}
             onClick={() => switchType('flood')}
           >
             <i className="fas fa-water"></i> Flood
           </button>
           <button
-            className={`event-type-btn ${state.currentEventType === 'cyclone' ? 'active' : ''}`}
+            className={`event-type-btn ${
+              state.currentEventType === 'cyclone' ? 'active' : ''
+            }`}
             onClick={() => switchType('cyclone')}
           >
             <i className="fas fa-wind"></i> Cyclone
           </button>
         </div>
         <div className="search-container">
-          <input id="location-search" placeholder="Search location in Bangladesh..." />
-          <button id="search-btn" onClick={searchLocation}>
+          <input id="location-search" placeholder="Search location in Bangladesh…" />
+          <button onClick={searchLocation}>
             <i className="fas fa-search"></i>
           </button>
         </div>
@@ -202,24 +233,18 @@ function Homepage() {
       <div className="map-db-container">
         <div className="database-panel">
           <div className="database-header">
-            <h3>
-              <i className="fas fa-database"></i> Event Database
-            </h3>
-            <button id="refresh-db" onClick={() => setState(s => ({ ...s }))}>
+            <h3><i className="fas fa-database"></i> Event Database</h3>
+            <button onClick={() => setState(s => ({ ...s }))}>
               <i className="fas fa-sync-alt"></i>
             </button>
           </div>
-
           <div className="event-list" id="event-list"></div>
-
           <div className="database-actions">
             <button
               className="db-btn"
               onClick={() => {
                 if (DatabaseService.saveEvents(state.events)) {
-                  alert('Events saved to database successfully!');
-                } else {
-                  alert('Failed to save events. Database not connected.');
+                  alert('Events saved!');
                 }
               }}
             >
@@ -233,9 +258,6 @@ function Homepage() {
                   state.events.forEach(m => state.markers[m.id]?.remove());
                   setState(s => ({ ...s, events: loaded }));
                   loaded.forEach(e => createMarker(e, state.map));
-                  alert('Events loaded from database!');
-                } else {
-                  alert('No events found in database.');
                 }
               }}
             >
@@ -244,11 +266,9 @@ function Homepage() {
           </div>
         </div>
 
-        <div id="map"></div>
+        {/* full-height map container */}
+        <div id="map" style={{ height: '100%' }}></div>
       </div>
     </div>
   );
 }
-
-ReactDOM.createRoot(document.getElementById('root')).render(<Homepage />);
-
