@@ -1,0 +1,399 @@
+/* homepage.css */
+/* ensure full-height containers */
+html, body, #root, #app {
+  height: 100%;
+}
+
+/* =====================
+   BASE STYLES 
+   ===================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f0f5ff;
+  color: #333;
+  overflow-x: hidden;
+}
+
+/* =====================
+   HEADER STYLES 
+   ===================== */
+.title-header {
+  background: linear-gradient(135deg, #006a4e 0%, #006a4e 50%, #f42a41 50%, #f42a41 100%);
+  color: white;
+  padding: 1.2rem 2rem;
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.title-header i {
+  font-size: 2rem;
+}
+
+/* =====================
+   MAIN APP LAYOUT 
+   ===================== */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 15px;
+  gap: 15px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.map-controls {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.event-type-selector {
+  display: flex;
+  gap: 10px;
+}
+
+.event-type-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background: #e9ecef;
+  color: #495057;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.event-type-btn.active,
+.event-type-btn:hover {
+  background: #006a4e;
+  color: white;
+}
+
+.search-container {
+  display: flex;
+  flex-grow: 1;
+  max-width: 400px;
+}
+
+.search-container input {
+  padding: 10px 15px;
+  border: 1px solid #ced4da;
+  border-radius: 6px 0 0 6px;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.search-container button {
+  padding: 10px 20px;
+  background: #006a4e;
+  color: white;
+  border: none;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.search-container button:hover {
+  background: #00563f;
+}
+
+/* =====================
+   MAP & DATABASE PANELS 
+   ===================== */
+.map-db-container {
+  display: flex;
+  gap: 15px;
+  flex: 1;
+  min-height: 0;
+}
+
+.database-panel {
+  width: 320px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.database-header {
+  background: #006a4e;
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.database-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#refresh-db {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.event-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.event-item {
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background: #f8f9fa;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 4px solid #006a4e;
+}
+
+.event-item:hover {
+  background: #e9ecef;
+  transform: translateX(3px);
+}
+
+.event-item.flood {
+  border-left-color: #1e88e5;
+}
+
+.event-item.cyclone {
+  border-left-color: #f42a41;
+}
+
+.event-item .type {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.event-item.flood .type {
+  background: #bbdefb;
+  color: #0d47a1;
+}
+
+.event-item.cyclone .type {
+  background: #ffcdd2;
+  color: #b71c1c;
+}
+
+.database-actions {
+  display: flex;
+  padding: 15px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  gap: 10px;
+}
+
+.db-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #006a4e;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.3s;
+}
+
+.db-btn:hover {
+  background: #00563f;
+}
+
+#map {
+  flex: 1;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  z-index: 1;
+}
+
+/* =====================
+   EVENT DETAILS CARD 
+   ===================== */
+.event-details-card {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 320px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.event-header {
+  padding: 15px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-header.flood {
+  background: #1e88e5;
+}
+
+.event-header.cyclone {
+  background: #f42a41;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.event-body {
+  padding: 20px;
+}
+
+.event-body p {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.event-body i {
+  margin-top: 3px;
+}
+
+.status-active {
+  background: #4caf50;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.event-stats {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.stat {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #006a4e;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.event-footer {
+  padding: 15px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background: #006a4e;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.3s;
+}
+
+.action-btn:hover {
+  background: #00563f;
+}
+
+/* =====================
+   MAP MARKERS 
+   ===================== */
+.custom-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transform: translate(-50%, -50%);
+}
+
+.custom-marker i {
+  font-size: 16px;
+}
+
+.custom-marker.flood {
+  color: #1e88e5;
+  border: 2px solid #1e88e5;
+}
+
+.custom-marker.cyclone {
+  color: #f42a41;
+  border: 2px solid #f42a41;
+}
+
+/* =====================
+   RESPONSIVE ADJUSTMENTS 
+   ===================== */
+@media (max-width: 768px) {
+  .map-db-container {
+    flex-direction: column;
+  }
+  
+  .database-panel {
+    width: 100%;
+    height: 300px;
+  }
+  
+  .event-details-card {
+    width: calc(100% - 40px);
+  }
+}
