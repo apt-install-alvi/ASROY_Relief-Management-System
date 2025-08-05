@@ -1,17 +1,34 @@
-/* homepage.css */
-/* ensure full-height containers */
-html, body, #root, #app {
+/* frontend/src/pages/homepage.css */
+
+/* 1) Ensure html/body/root stack to full height */
+html, body, #root {
+  margin: 0;
+  padding: 0;
   height: 100%;
+}
+
+/* 2) The #app container now flex‐grows inside #root */
+#app {
+  display: flex;
+  flex-direction: column;
+  flex: 1;        /* fill its parent (#root) */
+  min-height: 0;  /* allow children to shrink */
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 15px;
+  gap: 15px;
+  height: 100%;
+width: 100%;
 }
 
 /* =====================
    BASE STYLES 
    ===================== */
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -42,22 +59,12 @@ body {
 }
 
 /* =====================
-   MAIN APP LAYOUT 
+   CONTROLS BAR 
    ===================== */
-#app {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 15px;
-  gap: 15px;
-  max-width: 1600px;
-  margin: 0 auto;
-}
-
 .map-controls {
   display: flex;
-  gap: 15px;
   flex-wrap: wrap;
+  gap: 15px;
   background: white;
   padding: 15px;
   border-radius: 10px;
@@ -100,7 +107,6 @@ body {
   border: 1px solid #ced4da;
   border-radius: 6px 0 0 6px;
   width: 100%;
-  font-size: 1rem;
 }
 
 .search-container button {
@@ -111,6 +117,11 @@ body {
   border-radius: 0 6px 6px 0;
   cursor: pointer;
   transition: background 0.3s;
+  min-width: 50px;
+}
+
+.search-container button i {
+  font-size: 16px;
 }
 
 .search-container button:hover {
@@ -118,13 +129,14 @@ body {
 }
 
 /* =====================
-   MAP & DATABASE PANELS 
+   MAP + DATABASE PANEL 
    ===================== */
 .map-db-container {
   display: flex;
+  flex: 1;          /* fill remaining space in #app */
+  min-height: 0;    /* allow flex children to shrink */
   gap: 15px;
-  flex: 1;
-  min-height: 0;
+   flex: 1 1 auto !important;
 }
 
 .database-panel {
@@ -152,14 +164,6 @@ body {
   gap: 10px;
 }
 
-#refresh-db {
-  background: transparent;
-  border: none;
-  color: white;
-  cursor: pointer;
-  font-size: 1.2rem;
-}
-
 .event-list {
   flex: 1;
   overflow-y: auto;
@@ -181,13 +185,8 @@ body {
   transform: translateX(3px);
 }
 
-.event-item.flood {
-  border-left-color: #1e88e5;
-}
-
-.event-item.cyclone {
-  border-left-color: #f42a41;
-}
+.event-item.flood { border-left-color: #1e88e5; }
+.event-item.cyclone { border-left-color: #f42a41; }
 
 .event-item .type {
   display: inline-block;
@@ -198,15 +197,8 @@ body {
   margin-right: 8px;
 }
 
-.event-item.flood .type {
-  background: #bbdefb;
-  color: #0d47a1;
-}
-
-.event-item.cyclone .type {
-  background: #ffcdd2;
-  color: #b71c1c;
-}
+.event-item.flood .type { background: #bbdefb; color: #0d47a1; }
+.event-item.cyclone .type { background: #ffcdd2; color: #b71c1c; }
 
 .database-actions {
   display: flex;
@@ -235,126 +227,38 @@ body {
   background: #00563f;
 }
 
+/* =====================
+   LEAFLET MAP CONTAINER 
+   ===================== */
 #map {
-  flex: 1;
+  flex: 1;          /* fill all available space */
+  min-height: 0;    /* allow shrinking */
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  z-index: 1;
+  position: relative;
 }
 
-/* =====================
-   EVENT DETAILS CARD 
-   ===================== */
+/* Update event details card */
+
 .event-details-card {
-  position: absolute;
-  top: 20px;
+  position: fixed; /* Changed from absolute */
+  top: 100px; /* Adjust as needed */
   right: 20px;
   width: 320px;
   background: white;
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  overflow: hidden;
+  z-index: 10000; /* Increased z-index */
 }
 
-.event-header {
-  padding: 15px;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+@media (max-width: 768px) {
+  .map-db-container { flex-direction: column; }
+  .database-panel { width: 100%; height: 300px; }
+  .event-details-card { width: calc(100% - 40px); }
 }
 
-.event-header.flood {
-  background: #1e88e5;
-}
-
-.event-header.cyclone {
-  background: #f42a41;
-}
-
-.close-btn {
-  background: transparent;
-  border: none;
-  color: white;
-  cursor: pointer;
-  font-size: 1.2rem;
-}
-
-.event-body {
-  padding: 20px;
-}
-
-.event-body p {
-  margin-bottom: 15px;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.event-body i {
-  margin-top: 3px;
-}
-
-.status-active {
-  background: #4caf50;
-  color: white;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.9rem;
-}
-
-.event-stats {
-  display: flex;
-  justify-content: space-between;
-  margin: 20px 0;
-}
-
-.stat {
-  text-align: center;
-  flex: 1;
-}
-
-.stat-value {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #006a4e;
-}
-
-.stat-label {
-  font-size: 0.9rem;
-  color: #6c757d;
-}
-
-.event-footer {
-  padding: 15px;
-  background: #f8f9fa;
-  border-top: 1px solid #e9ecef;
-}
-
-.action-btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  background: #006a4e;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: background 0.3s;
-}
-
-.action-btn:hover {
-  background: #00563f;
-}
-
-/* =====================
-   MAP MARKERS 
-   ===================== */
-.custom-marker {
+/* Add to the MAP MARKERS section */
+.marker-circle {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -363,37 +267,24 @@ body {
   border-radius: 50%;
   background: white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  transform: translate(-50%, -50%);
+}
+
+.custom-marker.flood .marker-circle {
+  border: 2px solid #1e88e5;
+}
+
+.custom-marker.cyclone .marker-circle {
+  border: 2px solid #f42a41;
 }
 
 .custom-marker i {
   font-size: 16px;
 }
 
-.custom-marker.flood {
+.custom-marker.flood i {
   color: #1e88e5;
-  border: 2px solid #1e88e5;
 }
 
-.custom-marker.cyclone {
+.custom-marker.cyclone i {
   color: #f42a41;
-  border: 2px solid #f42a41;
-}
-
-/* =====================
-   RESPONSIVE ADJUSTMENTS 
-   ===================== */
-@media (max-width: 768px) {
-  .map-db-container {
-    flex-direction: column;
-  }
-  
-  .database-panel {
-    width: 100%;
-    height: 300px;
-  }
-  
-  .event-details-card {
-    width: calc(100% - 40px);
-  }
 }
