@@ -1,6 +1,6 @@
 // homepage.jsx
 const { useState, useEffect } = React;
-
+import "./homepage.css";
 function Homepage() {
   const [state, setState] = useState({
     currentEventType: 'flood',
@@ -251,3 +251,4 @@ function Homepage() {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<Homepage />);
+
