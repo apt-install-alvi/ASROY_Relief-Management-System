@@ -1,274 +1,282 @@
-// frontend/src/pages/homepage.jsx
-import React, { useState, useEffect } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import axios from 'axios';
-import './homepage.css';
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import "./homepage.css";
 
 export default function Homepage() {
-  const [state, setState] = useState({
-    currentEventType: 'flood',
-    events: [],
-    markers: {},
-    dbConnected: false,
-    map: null,
-  });
+  const mapRef = useRef(null); // Leaflet map instance
+  const mapDivRef = useRef(null); // DOM div for map
+  const markersLayerRef = useRef(null); // layer group for markers
 
+  // ---- Demo events (add yours or replace with API later)
+  // date format: YYYY-MM-DD
+  const ALL_EVENTS = useMemo(
+    () => [
+      {
+        id: 1,
+        type: "flood",
+        title: "Flood – Pabna Upazila",
+        lat: 24.0123,
+        lon: 89.241,
+        date: "2025-07-01",
+      },
+      {
+        id: 2,
+        type: "cyclone",
+        title: "Cyclone – Cox’s Bazar",
+        lat: 21.4272,
+        lon: 92.0058,
+        date: "2025-07-10",
+      },
+      {
+        id: 3,
+        type: "flood",
+        title: "Flood – Dhaka",
+        lat: 23.8103,
+        lon: 90.4125,
+        date: "2025-08-03",
+      },
+      {
+        id: 4,
+        type: "flood",
+        title: "Flood – Barishal",
+        lat: 22.701,
+        lon: 90.3535,
+        date: "2025-06-20",
+      },
+    ],
+    []
+  );
+
+  // ---- UI State
+  const [showFilter, setShowFilter] = useState(false);
+  const [fromDate, setFromDate] = useState(""); // e.g., "2025-07-01"
+  const [toDate, setToDate] = useState("");
+  const [filtered, setFiltered] = useState(ALL_EVENTS);
+
+  // ---- Map setup
   const BD_BOUNDS = [
-    [20.375, 88.0],   // southwest
-    [26.635, 92.69],  // northeast
+    [20.375, 88.0],
+    [26.635, 92.69],
   ];
 
-  // Stub database methods
-  const DatabaseService = {
-    connect: () =>
-      new Promise(res =>
-        setTimeout(() => {
-          setState(s => ({ ...s, dbConnected: true }));
-          res();
-        }, 1000)
-      ),
-    saveEvents: ev => {
-      if (!state.dbConnected) return false;
-      localStorage.setItem('relief_events', JSON.stringify(ev));
-      return true;
-    },
-    loadEvents: () => {
-      if (!state.dbConnected) return [];
-      return JSON.parse(localStorage.getItem('relief_events') || '[]');
-    },
-  };
-
-  // Initialize Leaflet map and load events
   useEffect(() => {
-    const map = L.map('map', {
-      minZoom: 7.4,
-      inertia: false,
-    })
-      .setView([23.6850, 90.3563], 7.2)
-      .setMaxBounds(BD_BOUNDS);
-    map.options.maxBoundsViscosity = 1.0;
+    // clean previous map (hot reload / strict mode)
+    if (mapRef.current) {
+      mapRef.current.remove();
+      mapRef.current = null;
+    }
+    if (!mapDivRef.current) return;
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
+    const map = L.map(mapDivRef.current, {
+      minZoom: 7.4,
+      maxBounds: BD_BOUNDS,
+      inertia: false,
+    }).setView([23.685, 90.3563], 7.2);
+    mapRef.current = map;
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
 
-    // delay invalidateSize until after initial render/layout
-    map.whenReady(() => {
-      setTimeout(() => {
-        map.invalidateSize();
-      }, 0);
-    });
+    L.rectangle(BD_BOUNDS, {
+      color: "#7a0c0c",
+      weight: 2,
+      fillOpacity: 0.03,
+    }).addTo(map);
 
-    setState(s => ({ ...s, map }));
+    // layer for markers
+    const lg = L.layerGroup().addTo(map);
+    markersLayerRef.current = lg;
 
-    // connect and load saved events
-    DatabaseService.connect().then(() => {
-      const loaded = DatabaseService.loadEvents();
-      if (loaded.length) {
-        loaded.forEach(e => createMarker(e, map));
-        setState(s => ({ ...s, events: loaded }));
-      }
-    });
+    // first render
+    renderMarkers(ALL_EVENTS);
 
-    // cleanup on unmount
+    map.whenReady(() => setTimeout(() => map.invalidateSize(), 0));
+
     return () => {
       map.remove();
+      mapRef.current = null;
+      markersLayerRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync sidebar list whenever events change
-  useEffect(() => {
-    const list = document.getElementById('event-list');
-    list.innerHTML = '';
-    if (!state.events.length) {
-      list.innerHTML =
-        '<div class="event-item">No events found. Add some events!</div>';
-      return;
-    }
-    state.events.forEach(event => {
-      const item = document.createElement('div');
-      item.className = `event-item ${event.type}`;
-      item.innerHTML = `
-        <span class="type">${
-          event.type === 'flood' ? 'Flood' : 'Cyclone'
-        }</span>
-        ${event.location.name.substring(0, 30)}${
-        event.location.name.length > 30 ? '...' : ''
-      }
-      `;
-      item.onclick = () => {
-        state.map.flyTo(event.location.coordinates, 12);
-        showDetails(event);
-      };
-      list.appendChild(item);
+  // ---- helpers
+  const renderMarkers = (events) => {
+    if (!markersLayerRef.current) return;
+    markersLayerRef.current.clearLayers();
+
+    const dotIcon = L.divIcon({
+      className: "pin",
+      html: '<span class="pin-dot"></span>',
+      iconSize: [16, 16],
+      iconAnchor: [8, 8],
     });
-  }, [state.events]);
 
-  // helper to add a new event
-  const addEvent = e => {
-    e.id = Date.now();
-    setState(s => ({ ...s, events: [...s.events, e] }));
-    createMarker(e, state.map);
+    events.forEach((e) => {
+      L.marker([e.lat, e.lon], { icon: dotIcon })
+        .addTo(markersLayerRef.current)
+        .bindTooltip(`${e.title} (${e.date})`);
+    });
   };
 
-// Modify the createMarker function
-const createMarker = (event, map) => {
-  const icon = L.divIcon({
-    className: `custom-marker ${event.type}`,
-    html: `
-      <div class="marker-circle">
-        <i class="fas ${event.type === 'flood' ? 'fa-water' : 'fa-wind'}"></i>
-      </div>
-    `,
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
-    popupAnchor: [0, -15]
-  });
-  
-  const marker = L.marker(event.location.coordinates, { icon })
-    .addTo(map)
-    .on('click', () => showDetails(event));
-  
-  state.markers[event.id] = marker;
-};
+  const applyFilter = () => {
+    // build predicates
+    const from = fromDate ? new Date(fromDate) : null;
+    const to = toDate ? new Date(toDate) : null;
 
-  // search by location and add event
-  const searchLocation = () => {
-    const q = document.getElementById('location-search').value;
-    if (!q) return;
-    axios
-      .get(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${q}+Bangladesh&bounded=1&viewbox=88.0,26.635,92.69,20.375`
-      )
-      .then(res => {
-        if (res.data.length) {
-          const loc = res.data[0];
-          const coords = [+loc.lat, +loc.lon];
-          addEvent({
-            type: state.currentEventType,
-            location: { name: loc.display_name, coordinates: coords },
-          });
-          state.map.flyTo(coords, 12);
-        }
-      });
+    const next = ALL_EVENTS.filter((e) => {
+      const d = new Date(e.date);
+      if (from && d < from) return false;
+      if (to && d > to) return false;
+      return true;
+    });
+
+    setFiltered(next);
+    renderMarkers(next);
+    setShowFilter(false);
   };
 
-  // show event details popup
-  const showDetails = event => {
-    document.querySelector('.event-details-card')?.remove();
-    const card = document.createElement('div');
-    card.className = 'event-details-card';
-    card.innerHTML = `
-      <div class="event-header ${event.type}">
-        <h3>${
-          event.type === 'flood' ? 'Flood Event' : 'Cyclone Event'
-        }</h3>
-        <button class="close-btn"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="event-body">
-        <p><i class="fas fa-map-marker-alt"></i> ${event.location.name}</p>
-        <p><i class="fas fa-calendar"></i> Reported: ${new Date().toLocaleDateString()}</p>
-        <p><i class="fas fa-exclamation-triangle"></i> Status: <span class="status-active">Active</span></p>
-        <div class="event-stats">
-          <div class="stat"><div class="stat-value">1,500</div><div class="stat-label">Affected</div></div>
-          <div class="stat"><div class="stat-value">12</div><div class="stat-label">Shelters</div></div>
-          <div class="stat"><div class="stat-value">45</div><div class="stat-label">Volunteers</div></div>
-        </div>
-      </div>
-      <div class="event-footer">
-        <button class="action-btn" id="save-event-btn">
-          <i class="fas fa-save"></i> Save to Database
-        </button>
-      </div>
-    `;
-    document.body.appendChild(card);
-    card.querySelector('.close-btn').onclick = () => card.remove();
-    card.querySelector('#save-event-btn').onclick = () => {
-      if (DatabaseService.saveEvents(state.events)) {
-        alert('Event saved to database!');
-      } else {
-        alert('Failed to save event. Database not connected.');
-      }
-    };
+  const clearFilter = () => {
+    setFromDate("");
+    setToDate("");
+    setFiltered(ALL_EVENTS);
+    renderMarkers(ALL_EVENTS);
+    setShowFilter(false);
   };
-
-  // toggle between flood/cyclone
-  const switchType = t => setState(s => ({ ...s, currentEventType: t }));
 
   return (
-    <div id="app">
-      <div className="title-header">
-        <i className="fas fa-hands-helping"></i>
-        Bangladesh Relief Management System
-      </div>
-
-      <div className="map-controls">
-        <div className="event-type-selector">
-          <button
-            className={`event-type-btn ${
-              state.currentEventType === 'flood' ? 'active' : ''
-            }`}
-            onClick={() => switchType('flood')}
-          >
-            <i className="fas fa-water"></i> Flood
-          </button>
-          <button
-            className={`event-type-btn ${
-              state.currentEventType === 'cyclone' ? 'active' : ''
-            }`}
-            onClick={() => switchType('cyclone')}
-          >
-            <i className="fas fa-wind"></i> Cyclone
-          </button>
+    <div className="home-app">
+      <header className="topbar">
+        <div className="logo">
+          <i className="fa-solid fa-hands-holding-circle" /> আশ্রয়
         </div>
-        <div className="search-container">
-          <input id="location-search" placeholder="Search location in Bangladesh…" />
-          <button onClick={searchLocation}>
-            <i className="fas fa-search"></i>
-          </button>
-        </div>
-      </div>
+      </header>
 
-      <div className="map-db-container">
-        <div className="database-panel">
-          <div className="database-header">
-            <h3><i className="fas fa-database"></i> Event Database</h3>
-            <button onClick={() => setState(s => ({ ...s }))}>
-              <i className="fas fa-sync-alt"></i>
+      <main className="main">
+        <aside className="sidebar">
+          <nav className="menu">
+            <a className="menu-item active">
+              <i className="fa-solid fa-house" />
+              Home
+            </a>
+            <a className="menu-item">
+              <i className="fa-solid fa-bell" />
+              Events
+            </a>
+            <a className="menu-item">
+              <i className="fa-solid fa-house-chimney" />
+              Shelters
+            </a>
+            <a className="menu-item">
+              <i className="fa-solid fa-users" />
+              Volunteers
+            </a>
+            <a className="menu-item">
+              <i className="fa-solid fa-dollar-sign" />
+              Donations
+            </a>
+            <a className="menu-item">
+              <i className="fa-solid fa-boxes-stacked" />
+              Inventory
+            </a>
+          </nav>
+        </aside>
+
+        <section className="content">
+          <div className="content-head">
+            <h1>Activities‑at‑a‑Glance</h1>
+            <button className="pill-btn" onClick={() => setShowFilter(true)}>
+              Filter By Occurrence
             </button>
           </div>
-          <div className="event-list" id="event-list"></div>
-          <div className="database-actions">
-            <button
-              className="db-btn"
-              onClick={() => {
-                if (DatabaseService.saveEvents(state.events)) {
-                  alert('Events saved!');
-                }
-              }}
-            >
-              <i className="fas fa-save"></i> Save
-            </button>
-            <button
-              className="db-btn"
-              onClick={() => {
-                const loaded = DatabaseService.loadEvents();
-                if (loaded.length) {
-                  state.events.forEach(m => state.markers[m.id]?.remove());
-                  setState(s => ({ ...s, events: loaded }));
-                  loaded.forEach(e => createMarker(e, state.map));
-                }
-              }}
-            >
-              <i className="fas fa-download"></i> Load
-            </button>
-          </div>
-        </div>
 
-        {/* full-height map container */}
-        <div id="map" style={{ height: '100%' }}></div>
-      </div>
+          <div className="canvas-row">
+            <div className="map-box">
+              <div ref={mapDivRef} id="map" />
+            </div>
+
+            <div className="right-card">
+              <h3>Active Events</h3>
+              <ul className="dot-list">
+                {filtered.map((e) => (
+                  <li key={e.id}>
+                    <span className="dot red" />
+                    {e.title} <span style={{ opacity: 0.65 }}>— {e.date}</span>
+                  </li>
+                ))}
+                {filtered.length === 0 && <li>No events in this range.</li>}
+              </ul>
+
+              <h3>Volunteers</h3>
+              <p>
+                Total Volunteers : <b>52</b>
+              </p>
+              <p>
+                Active Volunteers : <b>36</b>
+              </p>
+
+              <h3>Donations</h3>
+              <p>
+                Total Received : <b>Tk.26,503</b>
+              </p>
+              <p>
+                Received in the Current Month : <b>Tk.3,600</b>
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Filter Modal */}
+      {showFilter && (
+        <>
+          <div
+            className="modal-backdrop"
+            onClick={() => setShowFilter(false)}
+          />
+          <div className="modal">
+            <div className="modal-head">
+              <h2>Filter by Occurrence</h2>
+              <button
+                className="modal-close"
+                onClick={() => setShowFilter(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div className="field">
+                <label>From</label>
+                <input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </div>
+              <div className="field">
+                <label>To</label>
+                <input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="modal-actions">
+              <button className="btn ghost" onClick={clearFilter}>
+                Clear
+              </button>
+              <button className="btn primary" onClick={applyFilter}>
+                Apply
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
