@@ -1,13 +1,18 @@
-// frontend/src/App.jsx
-import React from 'react';
-import './App.css';
-import Homepage from './pages/homepage';
+
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Homepage from "./pages/homepage";
+import EventPage from "./pages/event";
 
 function App() {
   return (
-    <div className="app-container">
-      <Homepage />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Homepage />} />
+       <Route path="/events" element={<EventPage />} />
+
+      </Routes>
+    </Router>
   );
 }
 

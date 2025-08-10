@@ -1,67 +1,35 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
+import { NavLink } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./homepage.css";
 
 export default function Homepage() {
-  const mapRef = useRef(null); // Leaflet map instance
-  const mapDivRef = useRef(null); // DOM div for map
-  const markersLayerRef = useRef(null); // layer group for markers
+  const mapRef = useRef(null);
+  const mapDivRef = useRef(null);
+  const markersLayerRef = useRef(null);
 
-  // ---- Demo events (add yours or replace with API later)
-  // date format: YYYY-MM-DD
   const ALL_EVENTS = useMemo(
     () => [
-      {
-        id: 1,
-        type: "flood",
-        title: "Flood – Pabna Upazila",
-        lat: 24.0123,
-        lon: 89.241,
-        date: "2025-07-01",
-      },
-      {
-        id: 2,
-        type: "cyclone",
-        title: "Cyclone – Cox’s Bazar",
-        lat: 21.4272,
-        lon: 92.0058,
-        date: "2025-07-10",
-      },
-      {
-        id: 3,
-        type: "flood",
-        title: "Flood – Dhaka",
-        lat: 23.8103,
-        lon: 90.4125,
-        date: "2025-08-03",
-      },
-      {
-        id: 4,
-        type: "flood",
-        title: "Flood – Barishal",
-        lat: 22.701,
-        lon: 90.3535,
-        date: "2025-06-20",
-      },
+      { id: 1, type: "flood", title: "Flood – Pabna Upazila", lat: 24.0123, lon: 89.241, date: "2025-07-01" },
+      { id: 2, type: "cyclone", title: "Cyclone – Cox’s Bazar", lat: 21.4272, lon: 92.0058, date: "2025-07-10" },
+      { id: 3, type: "flood", title: "Flood – Dhaka", lat: 23.8103, lon: 90.4125, date: "2025-08-03" },
+      { id: 4, type: "flood", title: "Flood – Barishal", lat: 22.701, lon: 90.3535, date: "2025-06-20" },
     ],
     []
   );
 
-  // ---- UI State
   const [showFilter, setShowFilter] = useState(false);
-  const [fromDate, setFromDate] = useState(""); // e.g., "2025-07-01"
+  const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [filtered, setFiltered] = useState(ALL_EVENTS);
 
-  // ---- Map setup
   const BD_BOUNDS = [
     [20.375, 88.0],
     [26.635, 92.69],
   ];
 
   useEffect(() => {
-    // clean previous map (hot reload / strict mode)
     if (mapRef.current) {
       mapRef.current.remove();
       mapRef.current = null;
@@ -85,11 +53,9 @@ export default function Homepage() {
       fillOpacity: 0.03,
     }).addTo(map);
 
-    // layer for markers
     const lg = L.layerGroup().addTo(map);
     markersLayerRef.current = lg;
 
-    // first render
     renderMarkers(ALL_EVENTS);
 
     map.whenReady(() => setTimeout(() => map.invalidateSize(), 0));
@@ -102,7 +68,6 @@ export default function Homepage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ---- helpers
   const renderMarkers = (events) => {
     if (!markersLayerRef.current) return;
     markersLayerRef.current.clearLayers();
@@ -122,7 +87,6 @@ export default function Homepage() {
   };
 
   const applyFilter = () => {
-    // build predicates
     const from = fromDate ? new Date(fromDate) : null;
     const to = toDate ? new Date(toDate) : null;
 
@@ -157,27 +121,32 @@ export default function Homepage() {
       <main className="main">
         <aside className="sidebar">
           <nav className="menu">
-            <a className="menu-item active">
+            <NavLink to="/" end className={({ isActive }) => (isActive ? "menu-item active" : "menu-item")}>
               <i className="fa-solid fa-house" />
               Home
-            </a>
-            <a className="menu-item">
+            </NavLink>
+
+            <NavLink to="/events" className={({ isActive }) => (isActive ? "menu-item active" : "menu-item")}>
               <i className="fa-solid fa-bell" />
               Events
-            </a>
-            <a className="menu-item">
+            </NavLink>
+
+            <a className="menu-item" href="#">
               <i className="fa-solid fa-house-chimney" />
               Shelters
             </a>
-            <a className="menu-item">
+
+            <a className="menu-item" href="#">
               <i className="fa-solid fa-users" />
               Volunteers
             </a>
-            <a className="menu-item">
+
+            <a className="menu-item" href="#">
               <i className="fa-solid fa-dollar-sign" />
               Donations
             </a>
-            <a className="menu-item">
+
+            <a className="menu-item" href="#">
               <i className="fa-solid fa-boxes-stacked" />
               Inventory
             </a>
@@ -186,7 +155,7 @@ export default function Homepage() {
 
         <section className="content">
           <div className="content-head">
-            <h1>Activities‑at‑a‑Glance</h1>
+            <h1>Activities-at-a-Glance</h1>
             <button className="pill-btn" onClick={() => setShowFilter(true)}>
               Filter By Occurrence
             </button>
@@ -229,20 +198,13 @@ export default function Homepage() {
         </section>
       </main>
 
-      {/* Filter Modal */}
       {showFilter && (
         <>
-          <div
-            className="modal-backdrop"
-            onClick={() => setShowFilter(false)}
-          />
+          <div className="modal-backdrop" onClick={() => setShowFilter(false)} />
           <div className="modal">
             <div className="modal-head">
               <h2>Filter by Occurrence</h2>
-              <button
-                className="modal-close"
-                onClick={() => setShowFilter(false)}
-              >
+              <button className="modal-close" onClick={() => setShowFilter(false)}>
                 ×
               </button>
             </div>
@@ -250,19 +212,11 @@ export default function Homepage() {
             <div className="modal-body">
               <div className="field">
                 <label>From</label>
-                <input
-                  type="date"
-                  value={fromDate}
-                  onChange={(e) => setFromDate(e.target.value)}
-                />
+                <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
               </div>
               <div className="field">
                 <label>To</label>
-                <input
-                  type="date"
-                  value={toDate}
-                  onChange={(e) => setToDate(e.target.value)}
-                />
+                <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
               </div>
             </div>
 
