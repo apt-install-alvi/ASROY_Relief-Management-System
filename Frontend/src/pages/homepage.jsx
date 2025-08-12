@@ -4,7 +4,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./homepage.css";
 
-export default function Homepage() {
+export function Homepage() {
   const mapRef = useRef(null);
   const mapDivRef = useRef(null);
   const markersLayerRef = useRef(null);

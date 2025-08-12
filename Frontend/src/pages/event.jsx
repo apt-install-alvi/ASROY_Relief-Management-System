@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import "./event.css";
-import eventImg from "./flood.jpeg"; // place flood.jpeg in src/pages/
+import eventImg from "/assets/images/flood.jpeg";
+import { AddPopup } from "../components/add_popup";
 
-export default function EventPage() {
+export function EventPage() {
   const activeEvents = new Array(4).fill(0).map((_, i) => ({
     id: i + 1,
     title: "Flood",
@@ -20,6 +21,13 @@ export default function EventPage() {
     time: "08:53 am",
   }));
 
+  const [showPopup, setShowPopup] = useState(0);
+
+  function closePopup()
+  {
+    setShowPopup(0);
+  }
+  
   return (
     <div className="events-app">
       <aside className="sidebar">
@@ -57,10 +65,11 @@ export default function EventPage() {
         </nav>
       </aside>
 
+      
       <div className="events-main">
         <header className="events-header">
           <h2>Events</h2>
-          <button className="add-btn">Add</button>
+          <button className="add-btn" onClick={()=>setShowPopup(1)}>Add</button>
         </header>
 
         <div className="events-body">
@@ -121,6 +130,12 @@ export default function EventPage() {
               ))}
             </div>
           </section>
+
+          {showPopup ?
+            <div className="popup-backdrop" onClick={closePopup}> 
+              <AddPopup className="event-add-popup" header="Event" handleState={closePopup}></AddPopup>
+            </div>
+            : null}
         </div>
       </div>
     </div>
