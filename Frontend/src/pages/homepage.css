@@ -24,7 +24,7 @@ body { margin: 0; background: #f3f4f8; color: #222; font-family: system-ui, -app
 .sidebar {
   width: 88px;
   background: #5c0f0f; /* dark maroon */
-  color: white;
+  color: rgb(203, 17, 17);
   padding: 18px 12px;
   display: flex;
   flex-direction: column;
@@ -53,6 +53,16 @@ body { margin: 0; background: #f3f4f8; color: #222; font-family: system-ui, -app
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+.logo-icon {
+  width: 40px; /* Set the size */
+  height: auto;
+}
+
+.logo-text {
+  font-size: 16px;
+  color: #fff;  /* Adjust text color */
+  font-family: 'Arial', sans-serif;
 }
 
 .menu-item {

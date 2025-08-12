@@ -114,19 +114,35 @@ export function Homepage() {
     <div className="home-app">
       <header className="topbar">
         <div className="logo">
-          <i className="fa-solid fa-hands-holding-circle" /> আশ্রয়
+          <img
+            src="/assets/icons/logo_white.svg"
+            alt="Logo"
+            className="logo-icon"
+          />
+          <span className="logo-text">আশ্রয়</span>
         </div>
       </header>
 
       <main className="main">
         <aside className="sidebar">
           <nav className="menu">
-            <NavLink to="/" end className={({ isActive }) => (isActive ? "menu-item active" : "menu-item")}>
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) =>
+                isActive ? "menu-item active" : "menu-item"
+              }
+            >
               <i className="fa-solid fa-house" />
               Home
             </NavLink>
 
-            <NavLink to="/events" className={({ isActive }) => (isActive ? "menu-item active" : "menu-item")}>
+            <NavLink
+              to="/events"
+              className={({ isActive }) =>
+                isActive ? "menu-item active" : "menu-item"
+              }
+            >
               <i className="fa-solid fa-bell" />
               Events
             </NavLink>
@@ -200,11 +216,17 @@ export function Homepage() {
 
       {showFilter && (
         <>
-          <div className="modal-backdrop" onClick={() => setShowFilter(false)} />
+          <div
+            className="modal-backdrop"
+            onClick={() => setShowFilter(false)}
+          />
           <div className="modal">
             <div className="modal-head">
               <h2>Filter by Occurrence</h2>
-              <button className="modal-close" onClick={() => setShowFilter(false)}>
+              <button
+                className="modal-close"
+                onClick={() => setShowFilter(false)}
+              >
                 ×
               </button>
             </div>
@@ -212,11 +234,19 @@ export function Homepage() {
             <div className="modal-body">
               <div className="field">
                 <label>From</label>
-                <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+                <input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
               </div>
               <div className="field">
                 <label>To</label>
-                <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+                <input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
               </div>
             </div>
 
