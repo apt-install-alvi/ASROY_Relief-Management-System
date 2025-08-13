@@ -132,7 +132,7 @@ export function EventPage() {
           </section>
 
           {showPopup ?
-            <div className="popup-backdrop" onClick={closePopup}> 
+            <div className="popup-backdrop"> 
               <AddPopup className="event-add-popup" header="Event" handleState={closePopup}></AddPopup>
             </div>
             : null}
