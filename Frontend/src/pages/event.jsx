@@ -4,6 +4,7 @@ import "./event.css";
 import eventImg from "/assets/images/flood.jpeg";
 import { AddPopup } from "../components/Add_Popup";
 import { FilterModal } from "../components/FilterPopup";
+import { ViewCard } from "../components/ViewCard";
 
 export function EventPage() {
   const activeEvents = new Array(4).fill(0).map((_, i) => ({
@@ -24,7 +25,9 @@ export function EventPage() {
 
   const [showPopup, setShowPopup] = useState(0);
   const [showFilterModal, setShowFilterModal] = useState(0);
-
+  const [showViewCardModal, setShowViewCardModal] = useState(0);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  
   function closePopup()
   {
     setShowPopup(0);
@@ -34,6 +37,18 @@ export function EventPage() {
   {
     setShowFilterModal(0);
   }
+
+  function closeView()
+  {
+    setShowViewCardModal(0);
+  }
+
+  // function closeEditView()
+  // {
+  //   setShowEditCardModal(true);
+  // }
+
+
   
   return (
     <div className="events-app">
@@ -85,7 +100,10 @@ export function EventPage() {
 
             <div className="cards-grid">
               {activeEvents.map((ev) => (
-                <article className="event-card" key={ev.id}>
+                <article className="event-card" key={ev.id} onClick={() => {
+                  setSelectedEvent(ev);
+                  setShowViewCardModal(true);
+                }}>
                   <div className="card-img">
                     <img src={eventImg} alt={ev.title} />
                   </div>
@@ -115,7 +133,10 @@ export function EventPage() {
 
             <div className="cards-grid">
               {pastEvents.map((ev) => (
-                <article className="event-card" key={ev.id}>
+                <article className="event-card" key={ev.id} onClick={() => {
+                  setSelectedEvent(ev);
+                  setShowViewCardModal(true);
+                }}>
                   <div className="card-img">
                     <img src={eventImg} alt={ev.title} />
                   </div>
@@ -149,6 +170,18 @@ export function EventPage() {
               <FilterModal handleState={closeModal}></FilterModal>
             </div>
             : null}
+          
+          {(showViewCardModal && selectedEvent) ?
+            <div className="popup-backdrop">
+              <ViewCard
+                image={eventImg}
+                type={selectedEvent.title}
+                area={selectedEvent.area}
+                date={selectedEvent.date}
+                time={selectedEvent.time}
+                handleState={closeView}
+              />
+            </div> : null}          
         </div>
       </div>
     </div>
