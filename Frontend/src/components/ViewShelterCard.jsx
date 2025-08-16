@@ -1,56 +1,22 @@
 import React, { useState } from "react";
 import "./ViewCard.css";
+import "./ViewShelterCard.css";
 import { InputField } from "../components/InputField"; 
-import { formatTimeForInput } from "../utils/formatTimeInput";
-import { formatDateForInput } from "../utils/formatDateInput";
-import { formatTimeForDisplay } from "../utils/formatTimeDisplay";
 
-
-export function ViewCard({ image, type, area, date, time, handleState, onSave })
+export function ViewShelterCard({ image, name, area, total_capacity, current_capacity, handleState, onSave })
 {
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({ 
-      type, 
+      name, 
       area, 
-      date: formatDateForInput(date),
-      time: formatTimeForInput(time)
+      total_capacity,
+      current_capacity
       });
-    const [originalData] = useState({ type, area, date, time });
+    const [originalData] = useState({ name, area, total_capacity, current_capacity });
 
     const handleEditClick = () => {
       setIsEditing(true);
     };
-
-    const handleSave = () => {
-    const [year, month, day] = editData.date.split('-');
-    const formattedDate = `${day}/${month}/${year.slice(2)}`;
-    
-    const [hours, minutes] = editData.time.split(':');
-    let period = 'am';
-    let displayHours = hours;
-    
-    if (hours > 12) {
-      displayHours = String(hours - 12).padStart(2, '0');
-      period = 'pm';
-    } else if (hours === '12') {
-      period = 'pm';
-    } else if (hours === '00') {
-      displayHours = '12';
-    }
-
-    const formattedTime = `${displayHours}:${minutes} ${period}`;
-
-    const updatedData = {
-      title: editData.type,  
-      area: editData.area,
-      date: formattedDate,
-      time: formattedTime
-    };
-    
-    onSave(updatedData);
-    setIsEditing(false);
-  };
-
 
     const handleCancel = () => {
       if (JSON.stringify(editData) !== JSON.stringify(originalData)) {
@@ -67,25 +33,37 @@ export function ViewCard({ image, type, area, date, time, handleState, onSave })
       setEditData(prev => ({ ...prev, [field]: value }));
   };
   
+  const handleSave = () => {
+    const updatedData = {
+      name: editData.name,
+      area: editData.area,
+      total_capacity: editData.total_capacity,
+      current_capacity: editData.current_capacity
+    };
+    
+    onSave(updatedData);
+    setIsEditing(false);
+  };
+
   return (
     <div className="viewcard-body">
       <div className="modal-header">
-        <h5 className="title">View Event</h5>
+        <h5 className="title">View Shelter</h5>
         <button className="x-btn" onClick={isEditing ? handleCancel : handleState}><img src="/assets/icons/x_btn.svg"/></button>
       </div>
       <img className="view-img" src={image} />
        {isEditing ? 
         <>
-          <div className="edit-field">
-            <label htmlFor="type">Type: </label>
+          <div className="edit-field edit-shelter-field">
+            <label htmlFor="name">Name: </label>
             <InputField 
               fieldType="text" 
-              fieldID="type" 
-              value={editData.type}
-              onChange={(e) => handleInputChange("type", e.target.value)}
+              fieldID="name" 
+              value={editData.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
             />
           </div>
-          <div className="edit-field">
+          <div className="edit-field edit-shelter-field">
             <label htmlFor="area">Area: </label>
             <InputField 
               fieldType="text" 
@@ -94,30 +72,30 @@ export function ViewCard({ image, type, area, date, time, handleState, onSave })
               onChange={(e) => handleInputChange("area", e.target.value)}
             />
           </div>
-          <div className="edit-field">
-            <label htmlFor="date">Date: </label>
+          <div className="edit-field edit-shelter-field">
+            <label htmlFor="total_capacity">Total Capacity: </label>
             <InputField 
-              fieldType="date"
-              fieldID="date" 
-              value={editData.date}
-              onChange={(e) => handleInputChange("date", e.target.value)}
+              fieldType="text"
+              fieldID="total_capacity" 
+              value={editData.total_capacity}
+              onChange={(e) => handleInputChange("total_capacity", e.target.value)}
             />
           </div>
-          <div className="edit-field">
-            <label htmlFor="time">Time: </label>
+          <div className="edit-field edit-shelter-field">
+            <label htmlFor="current_capacity">Current Capacity: </label>
             <InputField 
-              fieldType="time"
-              fieldID="time" 
-              value={editData.time}
-              onChange={(e) => handleInputChange("time", e.target.value)}
+              fieldType="text"
+              fieldID="current_capacity" 
+              value={editData.current_capacity}
+              onChange={(e) => handleInputChange("current_capacity", e.target.value)}
             />
           </div>
         </>
         : <>
-          <p className="data"><span>Type: </span>{editData.type}</p>
+          <p className="data"><span>Name: </span>{editData.name}</p>
           <p className="data"><span>Area: </span>{editData.area}</p>
-          <p className="data"><span>Date: </span>{editData.date}</p>
-          <p className="data"><span>Time: </span>{formatTimeForDisplay(editData.time)}</p>
+          <p className="data"><span>Total Capacity: </span>{editData.total_capacity}</p>
+          <p className="data"><span>Current Capacity: </span>{editData.current_capacity}</p>
         </>
       }
 

@@ -1,38 +1,38 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import "./event.css";
-import eventImg from "/assets/images/flood.jpeg";
-import { AddPopup } from "../components/Add_Popup";
+import "./shelters.css";
+import shelterImg from "/assets/images/shelter.jpg";
+import { AddShelter } from "../components/AddShelter";
 import { FilterModal } from "../components/FilterPopup";
-import { ViewCard } from "../components/ViewCard";
+import { ViewShelterCard } from "../components/ViewShelterCard";
 
-export function EventPage() {
-const [activeEvents, setActiveEvents] = useState(
+export function ShelterPage() {
+const [activeshelters, setActiveshelters] = useState(
   new Array(4).fill(0).map((_, i) => ({
     id: i + 1,
-    title: "Flood",
-    area: "Kushtia Upazila",
-    date: "12/07/25",
-    time: "08:53 am",
+    name: "Motijheel Govt Boy's School",
+    area: "Motijheel",
+    total_capacity: 50,
+    current_capacity: 43
   }))
 );
 
-  const pastEvents = new Array(4).fill(0).map((_, i) => ({
+  const pastshelters = new Array(4).fill(0).map((_, i) => ({
     id: i + 10,
-    title: "Flood",
-    area: "Kushtia Upazila",
-    date: "12/07/25",
-    time: "08:53 am",
+    name: "Motijheel Govt Boy's School",
+    area: "Motijheel",
+    total_capacity: 50,
+    current_capacity: 43
   }));
 
   const handleSaveEvent = (updatedData) => {
-    setActiveEvents(prev => prev.map(ev => 
+    setActiveshelters(prev => prev.map(ev => 
       ev.id === selectedEvent.id ? { 
         ...ev, 
-        title: updatedData.title,
+        name: updatedData.name,
         area: updatedData.area,
-        date: updatedData.date,
-        time: updatedData.time
+        total_capacity: updatedData.total_capacity,
+        current_capacity: updatedData.current_capacity
       } : ev
     ));
     setShowViewCardModal(false);
@@ -59,7 +59,7 @@ const [activeEvents, setActiveEvents] = useState(
   }
   
   return (
-    <div className="events-app">
+    <div className="shelters-app">
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-icon">আশ্রয়</div>
@@ -76,11 +76,12 @@ const [activeEvents, setActiveEvents] = useState(
             <span>Events</span>
           </NavLink>
 
-         <NavLink to="/shelters" className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}>
+          
+          <NavLink to="/shelters" className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}>
             <i className="fa-solid fa-house-chimney" />
             <span>Shelters</span>
           </NavLink>
-          
+
           <a className="nav-item" href="#">
             <i className="fa-solid fa-users" />
             <span>Volunteers</span>
@@ -97,36 +98,36 @@ const [activeEvents, setActiveEvents] = useState(
       </aside>
 
       
-      <div className="events-main">
-        <header className="events-header">
-          <h2>Events</h2>
+      <div className="shelters-main">
+        <header className="shelters-header">
+          <h2>Shelters</h2>
           <button className="add-btn" onClick={()=>setShowPopup(1)}>Add</button>
         </header>
 
-        <div className="events-body">
+        <div className="shelters-body">
           <section className="section">
-            <h3 className="section-title">Active Events</h3>
+            <h3 className="section-title">Active Shelters</h3>
 
             <div className="cards-grid">
-              {activeEvents.map((ev) => (
+              {activeshelters.map((ev) => (
                 <article className="event-card" key={ev.id} onClick={() => {
                   setSelectedEvent(ev);
                   setShowViewCardModal(true);
                 }}>
                   <div className="card-img">
-                    <img src={eventImg} alt={ev.title} />
+                    <img src={shelterImg} alt={ev.name} />
                   </div>
                   <div className="card-info">
-                    <div className="card-title">{ev.title}</div>
+                    <div className="card-title">{ev.name}</div>
                     <div className="card-area">{ev.area}</div>
                     <div className="card-meta">
                       <div>
-                        <span className="meta-label">Date of Occurrence: </span>
-                        <span className="meta-value">{ev.date}</span>
+                        <span className="meta-label">Total Capacity: </span>
+                        <span className="meta-value">{ev.total_capacity}</span>
                       </div>
                       <div>
-                        <span className="meta-label">Time of Occurrence: </span>
-                        <span className="meta-value">{ev.time}</span>
+                        <span className="meta-label">Current Capacity: </span>
+                        <span className="meta-value">{ev.current_capacity}</span>
                       </div>
                     </div>
                   </div>
@@ -136,30 +137,30 @@ const [activeEvents, setActiveEvents] = useState(
           </section>
 
           <section className="section past-section">
-            <h3 className="section-title">Past Events</h3>
+            <h3 className="section-title">Past Shelters</h3>
 
             <button className="filter-btn" onClick={()=>setShowFilterModal(1)}>Filter</button>
 
             <div className="cards-grid">
-              {pastEvents.map((ev) => (
+              {pastshelters.map((ev) => (
                 <article className="event-card" key={ev.id} onClick={() => {
                   setSelectedEvent(ev);
                   setShowViewCardModal(true);
                 }}>
                   <div className="card-img">
-                    <img src={eventImg} alt={ev.title} />
+                    <img src={shelterImg} alt={ev.name} />
                   </div>
                   <div className="card-info">
-                    <div className="card-title">{ev.title}</div>
+                    <div className="card-title">{ev.name}</div>
                     <div className="card-area">{ev.area}</div>
                     <div className="card-meta">
                       <div>
-                        <span className="meta-label">Date of Occurrence :</span>{" "}
-                        <span className="meta-value">{ev.date}</span>
+                        <span className="meta-label">Total Capacity: </span>
+                        <span className="meta-value">{ev.total_capacity}</span>
                       </div>
                       <div>
-                        <span className="meta-label">Time of Occurrence :</span>{" "}
-                        <span className="meta-value">{ev.time}</span>
+                        <span className="meta-label">Time of Occurrence: </span>
+                        <span className="meta-value">{ev.current_capacity}</span>
                       </div>
                     </div>
                   </div>
@@ -170,7 +171,7 @@ const [activeEvents, setActiveEvents] = useState(
 
           {showPopup ?
             <div className="popup-backdrop"> 
-              <AddPopup header="Event" handleState={closePopup}></AddPopup>
+              <AddShelter header="Shelter" handleState={closePopup}></AddShelter>
             </div>
             : null}
           
@@ -182,16 +183,17 @@ const [activeEvents, setActiveEvents] = useState(
           
           {(showViewCardModal && selectedEvent) ?
             <div className="popup-backdrop">
-              <ViewCard
-                image={eventImg}
-                type={selectedEvent.title}
+              <ViewShelterCard
+                image={shelterImg}
+                name={selectedEvent.name}
                 area={selectedEvent.area}
-                date={selectedEvent.date}
-                time={selectedEvent.time}
+                total_capacity={selectedEvent.total_capacity}
+                current_capacity={selectedEvent.current_capacity}
                 handleState={closeView}
                 onSave={handleSaveEvent}
               />
-            </div> : null}          
+            </div>
+            : null}          
         </div>
       </div>
     </div>

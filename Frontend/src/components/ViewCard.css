@@ -45,3 +45,69 @@
   width: 80%;
   height: 80%;
 }
+
+.view-img
+{
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.edit-field
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 20px;
+}
+
+.data > span, .edit-field > label
+{
+  color: var(--red);
+  font-size: var(--large-para);
+  font-weight: var(--semibold);
+}
+
+.data
+{
+  color: var(--red);
+  font-size: var(--large-para);
+  margin: 4px 0px;
+}
+
+.edit-delete-btn-container
+{
+  display: flex;
+  width: 100%;
+  justify-content: end;
+  gap: 12px;
+}
+
+.edit-btn, .delete-btn, .save-btn
+{
+  background-color: var(--red);
+  border-radius: 10px;
+  margin: 12px 0px;
+  width: 100px;
+  padding: 8px 0px;
+  border-style: none;
+  color: var(--bg-light-grey);
+  font-size: var(--large-para);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.edit-btn:hover, .save-btn:hover
+{
+  background-color: #4e0000;
+}
+
+.delete-btn
+{
+  background-color: #ce0000;
+}
+
+.delete-btn:hover
+{
+  background-color: #ae0101;
+}

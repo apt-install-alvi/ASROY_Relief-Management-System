@@ -147,10 +147,12 @@ export function Homepage() {
               Events
             </NavLink>
 
-            <a className="menu-item" href="#">
-              <i className="fa-solid fa-house-chimney" />
-              Shelters
-            </a>
+            <NavLink to="/shelters" className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+              }>
+            <i className="fa-solid fa-house-chimney" />
+            Shelters
+          </NavLink>
 
             <a className="menu-item" href="#">
               <i className="fa-solid fa-users" />

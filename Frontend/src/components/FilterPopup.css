@@ -8,7 +8,7 @@
   align-items: start;
   justify-content: center;
   background-color: var(--bg-light-grey);
-  width: fit-content;
+  width: 600px;
   border-radius: 20px;
   position: fixed;
   top: 50%;
@@ -73,7 +73,6 @@ input[type="submit"]
   border-style: none;
   color: var(--bg-light-grey);
   font-size: var(--h6);
-  font-family: var(--default-font);
   transition: all 0.2s;
 }
 
