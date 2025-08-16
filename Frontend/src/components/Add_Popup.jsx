@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./Add_Popup.css"
-// import xbtn from "../../public/assets/icons/x_btn.svg"
+import { InputField } from "./InputField";
 
 export function AddPopup({header, handleState})
 {
@@ -14,9 +14,9 @@ export function AddPopup({header, handleState})
         </div>
         <form>
           <label htmlFor="name" className="label-name">Name</label>
-          <input className="input-field" type="text" id="name" name="name" placeholder="E.g-Flood" required />
+          <input className="input-field" type="text" id="name" placeholder="E.g-Flood"/>
           <label htmlFor="area" className="label-name">Area</label>
-          <select id="area" className="input-field"> {/*Dummy data, populate later with area from database*/}
+          <select id="area" className="dropdown"> {/*Dummy data, populate later with area from database*/}
             <option value="Dhaka">Dhaka</option>
             <option value="Khulna">Khulna</option>
             <option value="Rajshahi">Rajshahi</option>
@@ -28,11 +28,11 @@ export function AddPopup({header, handleState})
           <div className="date-time-field">
             <div>
               <label htmlFor="date" className="label-name">Date</label>
-              <input className="input-field date-field" type="date" id="date" name="date" value={date} onChange={(e) => setDate(e.target.value)} /> {/*embed icon later*/}
+              <input className="date-field" type="date" id="date" value={date} onChange={(e) => setDate(e.target.value)} />
             </div>
             <div>
               <label htmlFor="time" className="label-name">Time</label>
-              <input className="input-field time-field" type="time" id="time" name="time" value={time} onChange={(e) => setTime(e.target.value)} />
+              <input className="time-field" type="time" id="time" name="time" value={time} onChange={(e) => setTime(e.target.value)} />
             </div>
           </div>
 

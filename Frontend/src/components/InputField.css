@@ -1,0 +1,17 @@
+.input-field
+{
+  background-color: var(--bg-white);
+  border-radius: 8px;
+  padding: 12px 12px;
+  margin: 8px 0px;
+  width: 400px;
+  box-shadow: inset 0px 0px 6px var(--inner-shadow);
+  border: var(--inner-shadow) 1px solid;
+}
+
+.input-field::placeholder
+{
+  color: var(--placeholder-txt-color);
+  font-family: var(--default-font);
+  font-size: var(--regular);
+}

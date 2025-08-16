@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import "./event.css";
 import eventImg from "/assets/images/flood.jpeg";
-import { AddPopup } from "../components/add_popup";
+import { AddPopup } from "../components/Add_Popup";
+import { FilterModal } from "../components/FilterPopup";
 
 export function EventPage() {
   const activeEvents = new Array(4).fill(0).map((_, i) => ({
@@ -22,10 +23,16 @@ export function EventPage() {
   }));
 
   const [showPopup, setShowPopup] = useState(0);
+  const [showFilterModal, setShowFilterModal] = useState(0);
 
   function closePopup()
   {
     setShowPopup(0);
+  }
+
+  function closeModal()
+  {
+    setShowFilterModal(0);
   }
   
   return (
@@ -104,7 +111,7 @@ export function EventPage() {
           <section className="section past-section">
             <h3 className="section-title">Past Events</h3>
 
-            <button className="filter-area">Filter by Area</button>
+            <button className="filter-btn" onClick={()=>setShowFilterModal(1)}>Filter</button>
 
             <div className="cards-grid">
               {pastEvents.map((ev) => (
@@ -132,8 +139,14 @@ export function EventPage() {
           </section>
 
           {showPopup ?
-            <div className="popup-backdrop" onClick={closePopup}> 
-              <AddPopup className="event-add-popup" header="Event" handleState={closePopup}></AddPopup>
+            <div className="popup-backdrop"> 
+              <AddPopup header="Event" handleState={closePopup}></AddPopup>
+            </div>
+            : null}
+          
+          {showFilterModal ?
+            <div className="popup-backdrop"> 
+              <FilterModal handleState={closeModal}></FilterModal>
             </div>
             : null}
         </div>
