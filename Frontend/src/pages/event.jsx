@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import "./event.css";
 import eventImg from "/assets/images/flood.jpeg";
-import { AddPopup } from "../components/add_popup";
+import { AddPopup } from "../components/Add_Popup.jsx";
 
 export function EventPage() {
   const activeEvents = new Array(4).fill(0).map((_, i) => ({
@@ -140,4 +140,4 @@ export function EventPage() {
       </div>
     </div>
   );
-}
+} 
