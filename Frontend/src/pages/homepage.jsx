@@ -1,34 +1,27 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./homepage.css";
+import axios from "axios"; 
+import { areaCoordinates } from "./areaCoordinates.js"; 
 
 export function Homepage() {
   const mapRef = useRef(null);
   const mapDivRef = useRef(null);
   const markersLayerRef = useRef(null);
 
-  const ALL_EVENTS = useMemo(
-    () => [
-      { id: 1, type: "flood", title: "Flood – Pabna Upazila", lat: 24.0123, lon: 89.241, date: "2025-07-01" },
-      { id: 2, type: "cyclone", title: "Cyclone – Cox’s Bazar", lat: 21.4272, lon: 92.0058, date: "2025-07-10" },
-      { id: 3, type: "flood", title: "Flood – Dhaka", lat: 23.8103, lon: 90.4125, date: "2025-08-03" },
-      { id: 4, type: "flood", title: "Flood – Barishal", lat: 22.701, lon: 90.3535, date: "2025-06-20" },
-    ],
-    []
-  );
-
+  const [events, setEvents] = useState([]);       // all events from backend
+  const [filtered, setFiltered] = useState([]);   // filtered events
   const [showFilter, setShowFilter] = useState(false);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-  const [filtered, setFiltered] = useState(ALL_EVENTS);
-
+  const [filterTitle, setFilterTitle] = useState("Active Events");
   const BD_BOUNDS = [
     [20.375, 88.0],
     [26.635, 92.69],
   ];
-
+  // Initialize map
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.remove();
@@ -56,8 +49,6 @@ export function Homepage() {
     const lg = L.layerGroup().addTo(map);
     markersLayerRef.current = lg;
 
-    renderMarkers(ALL_EVENTS);
-
     map.whenReady(() => setTimeout(() => map.invalidateSize(), 0));
 
     return () => {
@@ -65,10 +56,47 @@ export function Homepage() {
       mapRef.current = null;
       markersLayerRef.current = null;
     };
+  }, []);
+
+  // Fetch events from backend
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/events/homepage")
+      .then(res => {
+        const allEvents = res.data.map(e => {
+          const coords = areaCoordinates[e.Area_name] || { lat: 23.685, lng: 90.3563 };
+          return {
+            id: e.Event_id,
+            title: e.Event_name,
+            area: e.Area_name,
+            date: e.Date_of_occurrence,
+            status: e.Status,
+            lat: coords.lat,
+            lon: coords.lng
+          };
+        });
+
+        setEvents(allEvents);
+
+        // Default: show only Active events
+        const activeEvents = allEvents.filter(ev => ev.status === "Active");
+        setFiltered(activeEvents);
+
+      })
+      .catch(err => console.error(err));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const renderMarkers = (events) => {
+  useEffect(() => {
+  if (mapRef.current && filtered.length) {
+    renderMarkers(filtered);
+  }
+}, [filtered]);
+
+
+  
+
+  // Render markers function
+  const renderMarkers = (eventsToRender) => {
     if (!markersLayerRef.current) return;
     markersLayerRef.current.clearLayers();
 
@@ -78,37 +106,54 @@ export function Homepage() {
       iconSize: [16, 16],
       iconAnchor: [8, 8],
     });
-
-    events.forEach((e) => {
-      L.marker([e.lat, e.lon], { icon: dotIcon })
-        .addTo(markersLayerRef.current)
-        .bindTooltip(`${e.title} (${e.date})`);
-    });
+eventsToRender.forEach(e => {
+  L.marker([e.lat, e.lon], { icon: dotIcon })
+    .addTo(markersLayerRef.current)
+    .bindTooltip(`${e.title} - ${e.area} - ${formatDisplayDate(e.date)}`);
+});
   };
 
   const applyFilter = () => {
-    const from = fromDate ? new Date(fromDate) : null;
-    const to = toDate ? new Date(toDate) : null;
+  const from = fromDate ? new Date(fromDate) : null;
+  const to = toDate ? new Date(toDate) : null;
 
-    const next = ALL_EVENTS.filter((e) => {
-      const d = new Date(e.date);
-      if (from && d < from) return false;
-      if (to && d > to) return false;
-      return true;
-    });
+  const next = events.filter(e => {
+    const d = new Date(e.date);
+    if (from && d < from) return false;
+    if (to && d > to) return false;
+    return true;
+  });
 
-    setFiltered(next);
-    renderMarkers(next);
-    setShowFilter(false);
-  };
+  setFiltered(next);
 
+  if (from || to) {
+    setFilterTitle(`${formatDisplayDate(fromDate)} — ${formatDisplayDate(toDate)}`);
+  } else {
+    setFilterTitle("Active Events");
+  }
+
+  setShowFilter(false);
+};
+
+  // Clear filter
   const clearFilter = () => {
     setFromDate("");
     setToDate("");
-    setFiltered(ALL_EVENTS);
-    renderMarkers(ALL_EVENTS);
+    const activeEvents = events.filter(e => e.status === "Active");
+    setFiltered(activeEvents);
+    setFilterTitle("Active Events");
     setShowFilter(false);
   };
+  const formatDisplayDate = (dateStr) => {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d)) return ""; 
+  const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  const day = d.getDate().toString().padStart(2, "0");
+  const month = months[d.getMonth()];
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+};
 
   return (
     <div className="home-app">
@@ -185,14 +230,15 @@ export function Homepage() {
             </div>
 
             <div className="right-card">
-              <h3>Active Events</h3>
+              <h3>{filterTitle}</h3>
               <ul className="dot-list">
                 {filtered.map((e) => (
                   <li key={e.id}>
                     <span className="dot red" />
-                    {e.title} <span style={{ opacity: 0.65 }}>— {e.date}</span>
+                    {e.title} - {e.area} - {formatDisplayDate(e.date)}
                   </li>
                 ))}
+
                 {filtered.length === 0 && <li>No events in this range.</li>}
               </ul>
 
