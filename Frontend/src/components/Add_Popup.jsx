@@ -1,5 +1,7 @@
 import { useState } from "react";
-import "./Add_Popup.css";
+
+import "./Add_Popup.css"
+import { InputField } from "./InputField";
 
 export function AddPopup({ header, handleState }) {
   const [eventName, setEventName] = useState("");
@@ -88,13 +90,12 @@ const handleSubmit = async (e) => {
 
 
   return (
-    <div className="popup-body">
-      <div className="popup-header">
-        <h4 className="title">Add {header}</h4>
-        <button className="x-btn" onClick={handleClose}>
-          <img src="/assets/icons/x_btn.svg" alt="Close popup" />
-        </button>
-      </div>
+
+      <div className="popup-body">
+        <div className="popup-header"> 
+          <h4 className="title">Add {header}</h4>
+          <button className="x-btn" onClick={handleState}><img src="/assets/icons/x_btn.svg"/></button>
+        </div>
 
       <form onSubmit={handleSubmit}>
         {/* Event Name */}

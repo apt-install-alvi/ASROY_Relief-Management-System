@@ -34,9 +34,8 @@
 .popup-header
 {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 260px;
+  width: 100%;
+  justify-content: space-between;
   margin-bottom: 20px;
 }
 
@@ -76,7 +75,13 @@ form
   font-weight: var(--semibold);
 }
 
-.input-field
+div:has(>.popup-add-btn)
+{
+  display: flex;
+  justify-content: end;
+}
+
+.dropdown
 {
   background-color: var(--bg-white);
   border-radius: 8px;
@@ -85,19 +90,6 @@ form
   width: 400px;
   box-shadow: inset 0px 0px 6px var(--inner-shadow);
   border: var(--inner-shadow) 1px solid;
-}
-
-.input-field::placeholder
-{
-  color: var(--placeholder-txt-color);
-  font-family: var(--default-font);
-  font-size: var(--regular);
-}
-
-div:has(>.popup-add-btn)
-{
-  display: flex;
-  justify-content: end;
 }
 
 .popup-add-btn
@@ -111,6 +103,12 @@ div:has(>.popup-add-btn)
   color: var(--bg-light-grey);
   font-size: var(--h6);
   font-family: var(--default-font);
+  transition: all 0.2s;
+}
+
+.popup-add-btn:hover
+{
+  filter: brightness(0.8);
 }
 
 .date-time-field
@@ -129,5 +127,11 @@ div:has(>.popup-add-btn)
 
 .date-field, .time-field
 {
+  background-color: var(--bg-white);
+  border-radius: 8px;
+  padding: 12px 12px;
+  margin: 8px 0px;
   width: 180px;
+  box-shadow: inset 0px 0px 6px var(--inner-shadow);
+  border: var(--inner-shadow) 1px solid;
 }
