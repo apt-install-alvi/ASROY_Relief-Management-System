@@ -4,7 +4,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./homepage.css";
 import axios from "axios"; 
-import { areaCoordinates } from "./areaCoordinates.js"; 
+import { areaCoordinates } from "../utils/areaCoordinates.js"; 
 
 export function Homepage() {
   const mapRef = useRef(null);
