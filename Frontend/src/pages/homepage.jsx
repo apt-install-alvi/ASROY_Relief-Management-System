@@ -4,7 +4,9 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./homepage.css";
 import axios from "axios"; 
-import { areaCoordinates } from "../utils/areaCoordinates.js"; 
+import { areaCoordinates } from "./areaCoordinates.js"; 
+import { ButtonWhite } from "../components/ButtonWhite.jsx";
+import { ButtonRed } from "../components/ButtonRed.jsx";
 
 export function Homepage() {
   const mapRef = useRef(null);
@@ -299,12 +301,10 @@ eventsToRender.forEach(e => {
             </div>
 
             <div className="modal-actions">
-              <button className="btn ghost" onClick={clearFilter}>
-                Clear
-              </button>
-              <button className="btn primary" onClick={applyFilter}>
-                Apply
-              </button>
+              <ButtonWhite btnText={"Clear"} onClick={clearFilter}>
+              </ButtonWhite>
+              <ButtonRed btnText={"Add Filter"} onClick={applyFilter}>
+              </ButtonRed>
             </div>
           </div>
         </>

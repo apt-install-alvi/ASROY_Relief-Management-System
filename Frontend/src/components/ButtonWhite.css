@@ -1,0 +1,9 @@
+.white-btn
+{
+  background-color: var(--bg-white);
+  color: var(--red);
+  font-size: var(--regular);
+  border: var(--red) solid 1px;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
