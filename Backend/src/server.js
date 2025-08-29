@@ -15,6 +15,7 @@ export const db = mysql.createConnection({
   database: "relief_distribution"
 });
 
+
 db.connect(err => {
   if (err) console.error(err);
   else console.log("Connected to MySQL");

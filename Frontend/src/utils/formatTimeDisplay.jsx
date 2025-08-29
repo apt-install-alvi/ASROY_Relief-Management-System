@@ -1,4 +1,4 @@
-function formatTimeDisplay(timeString) {
+export function formatTimeForDisplay(timeString) {
   if (!timeString) return "";
   
 

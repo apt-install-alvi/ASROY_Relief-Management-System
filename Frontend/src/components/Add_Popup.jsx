@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./Add_Popup.css"
 import { InputField } from "./InputField";
+import { AREA_NAMES, EVENT_TYPES } from "../utils/constants";
 
 export function AddPopup({ header, handleState, onAdd }) {
   const [eventName, setEventName] = useState("");
@@ -8,21 +9,6 @@ export function AddPopup({ header, handleState, onAdd }) {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
 
-const areaNames = [
-  "Bagerhat", "Bandarban", "Barguna", "Barisal", "Bhola", "Bogura", "Brahmanbaria",
-  "Chandpur", "Chapai Nawabganj", "Chattogram", "Chuadanga", "Coxs Bazar", "Cumilla",
-  "Dhaka", "Dinajpur", "Faridpur", "Feni", "Gaibandha", "Gazipur", "Gopalganj",
-  "Habiganj", "Jamalpur", "Jashore", "Jhalokathi", "Jhenaidah", "Joypurhat",
-  "Khagrachhari", "Khulna", "Kishoreganj", "Kurigram", "Kushtia", "Lakshmipur",
-  "Lalmonirhat", "Madaripur", "Magura", "Manikganj", "Meherpur", "Moulvibazar",
-  "Munshiganj", "Mymensingh", "Naogaon", "Narail", "Narayanganj", "Narsingdi",
-  "Natore", "Netrokona", "Nilphamari", "Noakhali", "Pabna", "Panchagarh",
-  "Patuakhali", "Pirojpur", "Rajbari", "Rajshahi", "Rangamati", "Rangpur",
-  "Satkhira", "Shariatpur", "Sherpur", "Sirajganj", "Sunamganj", "Sylhet",
-  "Tangail", "Thakurgaon"
-];
-
-  const eventNames = ["Flood", "Cyclone", "Landslide", "Earthquake", "Drought", "Fire"];
 
   // Reset form fields
   const resetForm = () => {
@@ -119,12 +105,12 @@ const handleSubmit = async (e) => {
           required
         />
         <datalist id="event-list">
-          {eventNames.map((ev, idx) => (
-            <option key={idx} value={ev} />
-          ))}
-        </datalist>
+            {EVENT_TYPES.map((ev, idx) => (
+              <option key={idx} value={ev} />
+            ))}
+          </datalist>
 
-        {/* Area Name */}
+    
         <label htmlFor="area" className="label-name">Area</label>
         <input
           list="area-list"
@@ -136,11 +122,11 @@ const handleSubmit = async (e) => {
           onChange={(e) => setAreaName(e.target.value)}
           required
         />
-        <datalist id="area-list">
-          {areaNames.map((area, idx) => (
-            <option key={idx} value={area} />
-          ))}
-        </datalist>
+             <datalist id="area-list">
+            {AREA_NAMES.map((area, idx) => (
+              <option key={idx} value={area} />
+            ))}
+          </datalist>
 
         {/* Date and Time */}
         <div className="date-time-field">

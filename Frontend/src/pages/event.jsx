@@ -8,15 +8,17 @@ import { ViewCard } from "../components/ViewCard";
 import { formatDateForDisplay } from "../utils/formatDateDisplay";
 import { formatTimeForDisplay } from "../utils/formatTimeDisplay";
 
-
 export function EventPage() {
   const [activeEvents, setActiveEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
+  const [allActiveEvents, setAllActiveEvents] = useState([]); // backup for reset
+  const [allPastEvents, setAllPastEvents] = useState([]);     // backup for reset
   const [showPopup, setShowPopup] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [showViewCardModal, setShowViewCardModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
+  // --------------------- Fetch Events ---------------------
   useEffect(() => {
     fetch("http://localhost:5000/api/events/all")
       .then(res => res.json())
@@ -25,27 +27,48 @@ export function EventPage() {
         const inactive = data.filter(ev => ev.Status !== "Active");
         setActiveEvents(active);
         setPastEvents(inactive);
+        setAllActiveEvents(active);
+        setAllPastEvents(inactive);
       })
       .catch(err => console.error(err));
   }, []);
 
-  const handleSaveEvent = (updatedData) => {
-    if (!selectedEvent) return;
+  // --------------------- Save / Update Event ---------------------
+  const handleSaveEvent = (updatedEvent) => {
+    const isNowActive = updatedEvent.Status === "Active";
 
-    // Update in active or past events
-    if (selectedEvent.Status === "Active") {
-      setActiveEvents(prev =>
-        prev.map(ev => ev.Event_id === selectedEvent.Event_id ? { ...ev, ...updatedData } : ev)
-      );
+    if (isNowActive) {
+      setActiveEvents(prev => [
+        ...prev.filter(ev => ev.Event_id !== updatedEvent.Event_id),
+        updatedEvent
+      ]);
+      setPastEvents(prev => prev.filter(ev => ev.Event_id !== updatedEvent.Event_id));
     } else {
-      setPastEvents(prev =>
-        prev.map(ev => ev.Event_id === selectedEvent.Event_id ? { ...ev, ...updatedData } : ev)
-      );
+      setPastEvents(prev => [
+        ...prev.filter(ev => ev.Event_id !== updatedEvent.Event_id),
+        updatedEvent
+      ]);
+      setActiveEvents(prev => prev.filter(ev => ev.Event_id !== updatedEvent.Event_id));
     }
 
-    setShowViewCardModal(false);
+    setShowViewCardModal(false); // close modal
   };
 
+  // --------------------- Handle Filter Results ---------------------
+ const handleFilterResults = (filteredEvents) => {
+  const events = filteredEvents || [];
+  const active = events.filter(ev => ev.Status === "Active");
+  const inactive = events.filter(ev => ev.Status !== "Active");
+  setActiveEvents(active);
+  setPastEvents(inactive);
+};
+
+  const resetFilters = () => {
+    setActiveEvents(allActiveEvents);
+    setPastEvents(allPastEvents);
+  };
+
+  // --------------------- Close Modals ---------------------
   const closePopup = () => setShowPopup(false);
   const closeModal = () => setShowFilterModal(false);
   const closeView = () => setShowViewCardModal(false);
@@ -110,15 +133,14 @@ export function EventPage() {
                     <div className="card-title">{ev.Event_name}</div>
                     <div className="card-area">{ev.area}</div>
                     <div className="card-meta">
-                     <div>
-                      <span className="meta-label">Date of Occurrence: </span>
-                      <span className="meta-value">{formatDateForDisplay(ev.Date_of_occurrence)}</span>
-                    </div>
-                    <div>
-                      <span className="meta-label">Time of Occurrence: </span>
-                      <span className="meta-value">{formatTimeForDisplay(ev.Time_of_occurrence)}</span>
-                    </div>
-
+                      <div>
+                        <span className="meta-label">Date of Occurrence: </span>
+                        <span className="meta-value">{formatDateForDisplay(ev.Date_of_occurrence)}</span>
+                      </div>
+                      <div>
+                        <span className="meta-label">Time of Occurrence: </span>
+                        <span className="meta-value">{formatTimeForDisplay(ev.Time_of_occurrence)}</span>
+                      </div>
                     </div>
                   </div>
                 </article>
@@ -129,7 +151,10 @@ export function EventPage() {
           {/* Past Events */}
           <section className="section past-section">
             <h3 className="section-title">Past Events</h3>
-            <button className="filter-btn" onClick={() => setShowFilterModal(true)}>Filter</button>
+            <div className="filter-controls">
+              <button className="filter-btn" onClick={() => setShowFilterModal(true)}>Filter</button>
+              <button className="reset-btn" onClick={resetFilters}>Reset</button>
+            </div>
             <div className="cards-grid">
               {pastEvents.map(ev => (
                 <article className="event-card" key={ev.Event_id} onClick={() => {
@@ -145,14 +170,14 @@ export function EventPage() {
                     <div className="card-meta">
                       <div>
                         <span className="meta-label">Date of Occurrence: </span>
-                         <span className="meta-value">{formatDateForDisplay(ev.Date_of_occurrence)}</span>
-                        </div>
-                        <div>
-                          <span className="meta-label">Time of Occurrence: </span>
-                          <span className="meta-value">{formatTimeForDisplay(ev.Time_of_occurrence)}</span>
-                        </div>
-                        </div>
+                        <span className="meta-value">{formatDateForDisplay(ev.Date_of_occurrence)}</span>
                       </div>
+                      <div>
+                        <span className="meta-label">Time of Occurrence: </span>
+                        <span className="meta-value">{formatTimeForDisplay(ev.Time_of_occurrence)}</span>
+                      </div>
+                    </div>
+                  </div>
                 </article>
               ))}
             </div>
@@ -165,8 +190,13 @@ export function EventPage() {
                 header="Event"
                 handleState={closePopup}
                 onAdd={(newEvent) => {
-                  if (newEvent.Status === "Active") setActiveEvents(prev => [newEvent, ...prev]);
-                  else setPastEvents(prev => [newEvent, ...prev]);
+                  if (newEvent.Status === "Active") {
+                    setActiveEvents(prev => [newEvent, ...prev]);
+                    setAllActiveEvents(prev => [newEvent, ...prev]);
+                  } else {
+                    setPastEvents(prev => [newEvent, ...prev]);
+                    setAllPastEvents(prev => [newEvent, ...prev]);
+                  }
                 }}
               />
             </div>
@@ -175,36 +205,36 @@ export function EventPage() {
           {/* Filter Modal */}
           {showFilterModal && (
             <div className="popup-backdrop">
-              <FilterModal handleState={closeModal} />
+              <FilterModal 
+                handleState={closeModal} 
+                onFilter={handleFilterResults}
+              />
             </div>
           )}
 
-          {showViewCardModal && selectedEvent ? (
-  (() => {
-    
-    const mappedEvent = {
-      type: selectedEvent.Event_name,
-      area: selectedEvent.area, 
-      date: formatDateForDisplay(selectedEvent.Date_of_occurrence),
-      time: formatTimeForDisplay(selectedEvent.Time_of_occurrence),
-    };
-
-    return (
-      <div className="popup-backdrop">
-        <ViewCard
-          image={eventImg}
-          type={mappedEvent.type}
-          area={mappedEvent.area}
-          date={mappedEvent.date}
-          time={mappedEvent.time}
-          handleState={closeView}
-          onSave={handleSaveEvent}
-                />
-              </div>
-            );
-          })()
-        ) : null}
-
+          {/* View Card */}
+          {showViewCardModal && selectedEvent && (
+            <div className="popup-backdrop">
+              <ViewCard
+                eventId={selectedEvent.Event_id}
+                image={selectedEvent.Event_Image}
+                type={selectedEvent.Event_name}
+                area={selectedEvent.area}
+                date={selectedEvent.Date_of_occurrence}
+                time={selectedEvent.Time_of_occurrence}
+                status={selectedEvent.Status}
+                handleState={closeView}
+                onUpdate={handleSaveEvent}
+                onDelete={(id) => {
+                  setActiveEvents(prev => prev.filter(ev => ev.Event_id !== id));
+                  setPastEvents(prev => prev.filter(ev => ev.Event_id !== id));
+                  setAllActiveEvents(prev => prev.filter(ev => ev.Event_id !== id));
+                  setAllPastEvents(prev => prev.filter(ev => ev.Event_id !== id));
+                  closeView();
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
