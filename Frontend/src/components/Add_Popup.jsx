@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./Add_Popup.css"
 import { InputField } from "./InputField";
 
-export function AddPopup({ header, handleState }) {
+export function AddPopup({ header, handleState, onAdd }) {
   const [eventName, setEventName] = useState("");
   const [areaName, setAreaName] = useState("");
   const [date, setDate] = useState("");
@@ -76,11 +76,21 @@ const handleSubmit = async (e) => {
 
     const data = await response.json();
     if (data.success) {
-      alert(`Event added successfully! ID: ${data.Event_id}`);
-      handleClose(); // Reset and close popup
-    } else {
-      alert("Error: " + data.error);
-    }
+  const newEvent = {
+    id: data.Event_id,
+    title: eventName,
+    area: areaName,
+    date,
+    time: formattedTime,
+  };
+
+  if (onAdd) onAdd(newEvent); // <-- update EventPage state
+
+  handleClose(); // Reset and close popup
+} else {
+  alert("Error: " + data.error);
+}
+
   } catch (err) {
     console.error(err);
     alert("Something went wrong while adding the event");
