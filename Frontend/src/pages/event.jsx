@@ -55,13 +55,15 @@ export function EventPage() {
   };
 
   // --------------------- Handle Filter Results ---------------------
- const handleFilterResults = (filteredEvents) => {
-  const events = filteredEvents || [];
-  const active = events.filter(ev => ev.Status === "Active");
-  const inactive = events.filter(ev => ev.Status !== "Active");
+const handleFilterResults = (filteredEvents) => {
+  
+  const active = filteredEvents.filter(ev => ev.Status === "Active");
+  const inactive = filteredEvents.filter(ev => ev.Status !== "Active");
+
   setActiveEvents(active);
   setPastEvents(inactive);
 };
+
 
   const resetFilters = () => {
     setActiveEvents(allActiveEvents);

@@ -34,7 +34,7 @@ export function FilterModal({ handleState, onFilter }) {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
   e.preventDefault();
   if (!selectedFilter) return alert("Please select at least one filter");
 
@@ -55,16 +55,30 @@ export function FilterModal({ handleState, onFilter }) {
     default: return;
   }
 
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    if (onFilter) onFilter(data.events || []); // fallback to empty array
+  // Use fetch with .then() instead of async/await
+  fetch(url)
+  .then(res => res.json())
+  .then(data => {
+    // Normalize every event so React can safely use ev.area
+    const events = (data.events || []).map(ev => ({
+      Event_id: ev.Event_id ?? ev.id ?? ev.event_id,
+      Event_name: ev.Event_name ?? ev.name ?? "",
+      area: ev.area ?? ev.Area ?? ev.Area_name ?? "",
+      Status: ev.Status ?? ev.status ?? "Inactive",
+      Date_of_occurrence: ev.Date_of_occurrence ?? ev.date ?? "",
+      Time_of_occurrence: ev.Time_of_occurrence ?? ev.time ?? "",
+      Event_Image: ev.Event_Image ?? ev.image ?? ""
+    }));
+
+    if (onFilter) onFilter(events); // send normalized data to EventPage
     handleState(); // close modal
-  } catch (err) {
+  })
+  .catch(err => {
     console.error("Filter fetch error:", err);
     alert("Failed to fetch filtered events");
     if (onFilter) onFilter([]); // fallback
-  }
+  });
+
 };
 
 
