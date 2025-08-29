@@ -10,10 +10,30 @@ CREATE TABLE Event (
   Date_of_occurrence DATE,
   Time_of_occurrence TIME,
   Status ENUM('Active','Not Active') DEFAULT 'Active',
+  Event_Image VARCHAR(255),
   FOREIGN KEY (Event_area_id) REFERENCES Area(Area_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
+
+CREATE TABLE Shelter (
+    Shelter_id VARCHAR(4) PRIMARY KEY,
+    Shelter_name VARCHAR(50) NOT NULL,
+    Shelter_image VARCHAR(255) DEFAULT 'Frontend\\public\\assets\\images\\shelter.jpg'
+);
+
+create table shelter_in_area(
+Location_id varchar(4) primary key,
+shelter_id varchar(4),
+area_id varchar(4),
+CONSTRAINT sid_f_k
+FOREIGN KEY(shelter_id)
+REFERENCES Shelter(Shelter_id) on delete cascade on update cascade ,
+CONSTRAINT aid_f_k
+FOREIGN KEY(area_id)
+REFERENCES Area(Area_id) on delete cascade on update cascade
+);
+
 create table Donation(
 Donation_id varchar(5) primary key,
 Donor_donation_id varchar(4),
@@ -49,22 +69,8 @@ REFERENCES Goods(Goods_id) on delete cascade on update cascade
 );
 
 
-create table shelter_in_area(
-Location_id varchar(4) primary key,
-shelter_id varchar(4),
-area_id varchar(4),
-CONSTRAINT sid_f_k
-FOREIGN KEY(shelter_id)
-REFERENCES Shelter(Shelter_id) on delete cascade on update cascade ,
-CONSTRAINT aid_f_k
-FOREIGN KEY(area_id)
-REFERENCES Area(Area_id) on delete cascade on update cascade
-);
 
-create table Shelter(
-Shelter_id varchar(4) primary key,
-Shelter_name varchar(50) not null
-);
+
 
 create table Donor(
 Donor_id varchar(4) primary key,

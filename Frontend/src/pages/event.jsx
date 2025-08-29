@@ -1,65 +1,81 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import "./event.css";
 import eventImg from "/assets/images/flood.jpeg";
 import { AddPopup } from "../components/Add_Popup";
 import { FilterModal } from "../components/FilterPopup";
 import { ViewCard } from "../components/ViewCard";
+import { formatDateForDisplay } from "../utils/formatDateDisplay";
+import { formatTimeForDisplay } from "../utils/formatTimeDisplay";
 
 export function EventPage() {
-const [activeEvents, setActiveEvents] = useState(
-  new Array(4).fill(0).map((_, i) => ({
-    id: i + 1,
-    title: "Flood",
-    area: "Kushtia Upazila",
-    date: "12/07/25",
-    time: "08:53 am",
-  }))
-);
+  const [activeEvents, setActiveEvents] = useState([]);
+  const [pastEvents, setPastEvents] = useState([]);
+  const [allActiveEvents, setAllActiveEvents] = useState([]); // backup for reset
+  const [allPastEvents, setAllPastEvents] = useState([]);     // backup for reset
+  const [showPopup, setShowPopup] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showViewCardModal, setShowViewCardModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const pastEvents = new Array(4).fill(0).map((_, i) => ({
-    id: i + 10,
-    title: "Flood",
-    area: "Kushtia Upazila",
-    date: "12/07/25",
-    time: "08:53 am",
-  }));
+  // --------------------- Fetch Events ---------------------
+  useEffect(() => {
+    fetch("http://localhost:5000/api/events/all")
+      .then(res => res.json())
+      .then(data => {
+        const active = data.filter(ev => ev.Status === "Active");
+        const inactive = data.filter(ev => ev.Status !== "Active");
+        setActiveEvents(active);
+        setPastEvents(inactive);
+        setAllActiveEvents(active);
+        setAllPastEvents(inactive);
+      })
+      .catch(err => console.error(err));
+  }, []);
 
-  const handleSaveEvent = (updatedData) => {
-    setActiveEvents(prev => prev.map(ev => 
-      ev.id === selectedEvent.id ? { 
-        ...ev, 
-        title: updatedData.title,
-        area: updatedData.area,
-        date: updatedData.date,
-        time: updatedData.time
-      } : ev
-    ));
-    setShowViewCardModal(false);
+  // --------------------- Save / Update Event ---------------------
+  const handleSaveEvent = (updatedEvent) => {
+    const isNowActive = updatedEvent.Status === "Active";
+
+    if (isNowActive) {
+      setActiveEvents(prev => [
+        ...prev.filter(ev => ev.Event_id !== updatedEvent.Event_id),
+        updatedEvent
+      ]);
+      setPastEvents(prev => prev.filter(ev => ev.Event_id !== updatedEvent.Event_id));
+    } else {
+      setPastEvents(prev => [
+        ...prev.filter(ev => ev.Event_id !== updatedEvent.Event_id),
+        updatedEvent
+      ]);
+      setActiveEvents(prev => prev.filter(ev => ev.Event_id !== updatedEvent.Event_id));
+    }
+
+    setShowViewCardModal(false); // close modal
   };
 
-  const [showPopup, setShowPopup] = useState(0);
-  const [showFilterModal, setShowFilterModal] = useState(0);
-  const [showViewCardModal, setShowViewCardModal] = useState(0);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  
-  function closePopup()
-  {
-    setShowPopup(0);
-  }
+  // --------------------- Handle Filter Results ---------------------
+ const handleFilterResults = (filteredEvents) => {
+  const events = filteredEvents || [];
+  const active = events.filter(ev => ev.Status === "Active");
+  const inactive = events.filter(ev => ev.Status !== "Active");
+  setActiveEvents(active);
+  setPastEvents(inactive);
+};
 
-  function closeModal()
-  {
-    setShowFilterModal(0);
-  }
+  const resetFilters = () => {
+    setActiveEvents(allActiveEvents);
+    setPastEvents(allPastEvents);
+  };
 
-  function closeView()
-  {
-    setShowViewCardModal(0);
-  }
-  
+  // --------------------- Close Modals ---------------------
+  const closePopup = () => setShowPopup(false);
+  const closeModal = () => setShowFilterModal(false);
+  const closeView = () => setShowViewCardModal(false);
+
   return (
     <div className="events-app">
+      {/* Sidebar */}
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-icon">আশ্রয়</div>
@@ -70,17 +86,14 @@ const [activeEvents, setActiveEvents] = useState(
             <i className="fa-solid fa-house" />
             <span>Home</span>
           </NavLink>
-
           <NavLink to="/events" className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}>
             <i className="fa-solid fa-bell" />
             <span>Events</span>
           </NavLink>
-
-         <NavLink to="/shelters" className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}>
+          <NavLink to="/shelters" className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}>
             <i className="fa-solid fa-house-chimney" />
             <span>Shelters</span>
           </NavLink>
-          
           <a className="nav-item" href="#">
             <i className="fa-solid fa-users" />
             <span>Volunteers</span>
@@ -96,37 +109,37 @@ const [activeEvents, setActiveEvents] = useState(
         </nav>
       </aside>
 
-      
+      {/* Main Content */}
       <div className="events-main">
         <header className="events-header">
           <h2>Events</h2>
-          <button className="add-btn" onClick={()=>setShowPopup(1)}>Add</button>
+          <button className="add-btn" onClick={() => setShowPopup(true)}>Add</button>
         </header>
 
         <div className="events-body">
+          {/* Active Events */}
           <section className="section">
             <h3 className="section-title">Active Events</h3>
-
             <div className="cards-grid">
-              {activeEvents.map((ev) => (
-                <article className="event-card" key={ev.id} onClick={() => {
+              {activeEvents.map(ev => (
+                <article className="event-card" key={ev.Event_id} onClick={() => {
                   setSelectedEvent(ev);
                   setShowViewCardModal(true);
                 }}>
                   <div className="card-img">
-                    <img src={eventImg} alt={ev.title} />
+                    <img src={eventImg} alt={ev.Event_name} />
                   </div>
                   <div className="card-info">
-                    <div className="card-title">{ev.title}</div>
+                    <div className="card-title">{ev.Event_name}</div>
                     <div className="card-area">{ev.area}</div>
                     <div className="card-meta">
                       <div>
                         <span className="meta-label">Date of Occurrence: </span>
-                        <span className="meta-value">{ev.date}</span>
+                        <span className="meta-value">{formatDateForDisplay(ev.Date_of_occurrence)}</span>
                       </div>
                       <div>
                         <span className="meta-label">Time of Occurrence: </span>
-                        <span className="meta-value">{ev.time}</span>
+                        <span className="meta-value">{formatTimeForDisplay(ev.Time_of_occurrence)}</span>
                       </div>
                     </div>
                   </div>
@@ -135,31 +148,33 @@ const [activeEvents, setActiveEvents] = useState(
             </div>
           </section>
 
+          {/* Past Events */}
           <section className="section past-section">
             <h3 className="section-title">Past Events</h3>
-
-            <button className="filter-btn" onClick={()=>setShowFilterModal(1)}>Filter</button>
-
+            <div className="filter-controls">
+              <button className="filter-btn" onClick={() => setShowFilterModal(true)}>Filter</button>
+              <button className="reset-btn" onClick={resetFilters}>Reset</button>
+            </div>
             <div className="cards-grid">
-              {pastEvents.map((ev) => (
-                <article className="event-card" key={ev.id} onClick={() => {
+              {pastEvents.map(ev => (
+                <article className="event-card" key={ev.Event_id} onClick={() => {
                   setSelectedEvent(ev);
                   setShowViewCardModal(true);
                 }}>
                   <div className="card-img">
-                    <img src={eventImg} alt={ev.title} />
+                    <img src={eventImg} alt={ev.Event_name} />
                   </div>
                   <div className="card-info">
-                    <div className="card-title">{ev.title}</div>
+                    <div className="card-title">{ev.Event_name}</div>
                     <div className="card-area">{ev.area}</div>
                     <div className="card-meta">
                       <div>
-                        <span className="meta-label">Date of Occurrence :</span>{" "}
-                        <span className="meta-value">{ev.date}</span>
+                        <span className="meta-label">Date of Occurrence: </span>
+                        <span className="meta-value">{formatDateForDisplay(ev.Date_of_occurrence)}</span>
                       </div>
                       <div>
-                        <span className="meta-label">Time of Occurrence :</span>{" "}
-                        <span className="meta-value">{ev.time}</span>
+                        <span className="meta-label">Time of Occurrence: </span>
+                        <span className="meta-value">{formatTimeForDisplay(ev.Time_of_occurrence)}</span>
                       </div>
                     </div>
                   </div>
@@ -168,32 +183,60 @@ const [activeEvents, setActiveEvents] = useState(
             </div>
           </section>
 
-          {showPopup ?
-            <div className="popup-backdrop"> 
-              <AddPopup header="Event" handleState={closePopup}></AddPopup>
+          {/* Add Popup */}
+          {showPopup && (
+            <div className="popup-backdrop">
+              <AddPopup
+                header="Event"
+                handleState={closePopup}
+                onAdd={(newEvent) => {
+                  if (newEvent.Status === "Active") {
+                    setActiveEvents(prev => [newEvent, ...prev]);
+                    setAllActiveEvents(prev => [newEvent, ...prev]);
+                  } else {
+                    setPastEvents(prev => [newEvent, ...prev]);
+                    setAllPastEvents(prev => [newEvent, ...prev]);
+                  }
+                }}
+              />
             </div>
-            : null}
-          
-          {showFilterModal ?
-            <div className="popup-backdrop"> 
-              <FilterModal handleState={closeModal}></FilterModal>
+          )}
+
+          {/* Filter Modal */}
+          {showFilterModal && (
+            <div className="popup-backdrop">
+              <FilterModal 
+                handleState={closeModal} 
+                onFilter={handleFilterResults}
+              />
             </div>
-            : null}
-          
-          {(showViewCardModal && selectedEvent) ?
+          )}
+
+          {/* View Card */}
+          {showViewCardModal && selectedEvent && (
             <div className="popup-backdrop">
               <ViewCard
-                image={eventImg}
-                type={selectedEvent.title}
+                eventId={selectedEvent.Event_id}
+                image={selectedEvent.Event_Image}
+                type={selectedEvent.Event_name}
                 area={selectedEvent.area}
-                date={selectedEvent.date}
-                time={selectedEvent.time}
+                date={selectedEvent.Date_of_occurrence}
+                time={selectedEvent.Time_of_occurrence}
+                status={selectedEvent.Status}
                 handleState={closeView}
-                onSave={handleSaveEvent}
+                onUpdate={handleSaveEvent}
+                onDelete={(id) => {
+                  setActiveEvents(prev => prev.filter(ev => ev.Event_id !== id));
+                  setPastEvents(prev => prev.filter(ev => ev.Event_id !== id));
+                  setAllActiveEvents(prev => prev.filter(ev => ev.Event_id !== id));
+                  setAllPastEvents(prev => prev.filter(ev => ev.Event_id !== id));
+                  closeView();
+                }}
               />
-            </div> : null}          
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
-} 
+}

@@ -11,17 +11,19 @@ app.use(express.json());
 export const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "123456789",
-  database: "asroy"
+  password: "satadafannum",
+  database: "relief_distribution"
 });
+
 
 db.connect(err => {
   if (err) console.error(err);
   else console.log("Connected to MySQL");
 });
 
-// Use event routes
+
 app.use("/api/events", eventRoutes);
+
 
 const PORT = 5000;
 app.get("/api/ping", (req, res) => {

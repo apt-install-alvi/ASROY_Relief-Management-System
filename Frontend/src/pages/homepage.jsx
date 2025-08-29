@@ -11,8 +11,8 @@ export function Homepage() {
   const mapDivRef = useRef(null);
   const markersLayerRef = useRef(null);
 
-  const [events, setEvents] = useState([]);       // all events from backend
-  const [filtered, setFiltered] = useState([]);   // filtered events
+  const [events, setEvents] = useState([]);       
+  const [filtered, setFiltered] = useState([]);   
   const [showFilter, setShowFilter] = useState(false);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -23,40 +23,47 @@ export function Homepage() {
   ];
   // Initialize map
   useEffect(() => {
-    if (mapRef.current) {
-      mapRef.current.remove();
-      mapRef.current = null;
-    }
-    if (!mapDivRef.current) return;
+  // Exit if the div isn't mounted yet
+  if (!mapDivRef.current) return;
 
-    const map = L.map(mapDivRef.current, {
-      minZoom: 7.4,
-      maxBounds: BD_BOUNDS,
-      inertia: false,
-    }).setView([23.685, 90.3563], 7.2);
-    mapRef.current = map;
+  // Exit if map already exists
+  if (mapRef.current) return;
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; OpenStreetMap contributors",
-    }).addTo(map);
+  // Create map
+  const map = L.map(mapDivRef.current, {
+    minZoom: 7.4,
+    maxBounds: BD_BOUNDS,
+    inertia: false,
+  }).setView([23.685, 90.3563], 7.2);
 
-    L.rectangle(BD_BOUNDS, {
-      color: "#7a0c0c",
-      weight: 2,
-      fillOpacity: 0.03,
-    }).addTo(map);
+  mapRef.current = map;
 
-    const lg = L.layerGroup().addTo(map);
-    markersLayerRef.current = lg;
+  // Add tile layer
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors",
+  }).addTo(map);
 
-    map.whenReady(() => setTimeout(() => map.invalidateSize(), 0));
+  // Add Bangladesh rectangle bounds
+  L.rectangle(BD_BOUNDS, {
+    color: "#7a0c0c",
+    weight: 2,
+    fillOpacity: 0.03,
+  }).addTo(map);
 
-    return () => {
-      map.remove();
-      mapRef.current = null;
-      markersLayerRef.current = null;
-    };
-  }, []);
+  // Create a marker layer group
+  markersLayerRef.current = L.layerGroup().addTo(map);
+
+  // Fix for rendering inside hidden containers
+  map.whenReady(() => setTimeout(() => map.invalidateSize(), 0));
+
+  // Cleanup function on unmount
+  return () => {
+    map.remove();
+    mapRef.current = null;
+    markersLayerRef.current = null;
+  };
+}, []); // Empty dependency ensures this runs only once
+
 
   // Fetch events from backend
   useEffect(() => {
@@ -83,12 +90,12 @@ export function Homepage() {
 
       })
       .catch(err => console.error(err));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+ 
   }, []);
 
-  useEffect(() => {
-  if (mapRef.current && filtered.length) {
-    renderMarkers(filtered);
+useEffect(() => {
+  if (mapRef.current) {
+    renderMarkers(filtered); 
   }
 }, [filtered]);
 
@@ -113,37 +120,60 @@ eventsToRender.forEach(e => {
 });
   };
 
-  const applyFilter = () => {
-  const from = fromDate ? new Date(fromDate) : null;
-  const to = toDate ? new Date(toDate) : null;
+// Apply filter
+const applyFilter = () => {
+  axios.get("http://localhost:5000/api/events/homepage", {
+    params: { fromDate, toDate }
+  })
+  .then(res => {
+    const filteredEvents = res.data.map(e => {
+      const coords = areaCoordinates[e.Area_name] || { lat: 23.685, lng: 90.3563 };
+      return {
+        id: e.Event_id,
+        title: e.Event_name,
+        area: e.Area_name,
+        date: e.Date_of_occurrence,
+        status: e.Status,
+        lat: coords.lat,
+        lon: coords.lng
+      };
+    });
 
-  const next = events.filter(e => {
-    const d = new Date(e.date);
-    if (from && d < from) return false;
-    if (to && d > to) return false;
-    return true;
-  });
-
-  setFiltered(next);
-
-  if (from || to) {
-    setFilterTitle(`${formatDisplayDate(fromDate)} — ${formatDisplayDate(toDate)}`);
-  } else {
-    setFilterTitle("Active Events");
-  }
-
-  setShowFilter(false);
+    setFiltered(filteredEvents);
+    setFilterTitle(fromDate || toDate ? `${formatDisplayDate(fromDate)} — ${formatDisplayDate(toDate)}` : "All Events");
+    setShowFilter(false);
+  })
+  .catch(err => console.error(err));
 };
 
-  // Clear filter
-  const clearFilter = () => {
-    setFromDate("");
-    setToDate("");
-    const activeEvents = events.filter(e => e.status === "Active");
-    setFiltered(activeEvents);
-    setFilterTitle("Active Events");
-    setShowFilter(false);
-  };
+// Clear filter (show all events)
+const clearFilter = () => {
+  setFromDate("");
+  setToDate("");
+
+  axios.get("http://localhost:5000/api/events/homepage")
+    .then(res => {
+      const allEvents = res.data.map(e => {
+        const coords = areaCoordinates[e.Area_name] || { lat: 23.685, lng: 90.3563 };
+        return {
+          id: e.Event_id,
+          title: e.Event_name,
+          area: e.Area_name,
+          date: e.Date_of_occurrence,
+          status: e.Status,
+          lat: coords.lat,
+          lon: coords.lng
+        };
+      });
+
+      setFiltered(allEvents);
+      setFilterTitle("All Events");
+      setShowFilter(false);
+    })
+    .catch(err => console.error(err));
+};
+
+
   const formatDisplayDate = (dateStr) => {
   if (!dateStr) return "";
   const d = new Date(dateStr);
@@ -311,4 +341,4 @@ eventsToRender.forEach(e => {
       )}
     </div>
   );
-}
+} 
