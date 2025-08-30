@@ -1,4 +1,4 @@
-import "./InputField.css"
+import "./styles/InputField.css";
 
 export function InputField({ fieldType, fieldID, placeholderTxt, value, onChange })
 {

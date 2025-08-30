@@ -1,4 +1,4 @@
-import "./ButtonWhite.css";
+import "./styles/ButtonWhite.css";
 
 export function ButtonWhite({ btnText })
 {

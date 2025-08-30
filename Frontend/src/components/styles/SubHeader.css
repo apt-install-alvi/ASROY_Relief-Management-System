@@ -1,0 +1,7 @@
+.sub-header
+{
+  margin: 0px;
+  color: var(--red);
+  font-size: var(--h6);
+  font-weight: var(--semibold);
+}

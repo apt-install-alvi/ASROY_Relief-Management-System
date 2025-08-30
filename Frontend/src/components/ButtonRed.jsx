@@ -1,4 +1,4 @@
-import "./ButtonRed.css";
+import "./styles/ButtonRed.css";
 
 export function ButtonRed({ btnText })
 {

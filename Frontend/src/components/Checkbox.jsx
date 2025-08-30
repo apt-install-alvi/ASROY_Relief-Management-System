@@ -1,4 +1,4 @@
-import "./Checkbox.css"
+import "./styles/Checkbox.css";
 export function Checkbox({ boxLabel, boxCount, checked, onChange })
 {
   return (

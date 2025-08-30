@@ -43,7 +43,7 @@ export function Homepage() {
     }).addTo(map);
 
     L.rectangle(BD_BOUNDS, {
-      color: "#7a0c0c",
+      color: "#700000",
       weight: 2,
       fillOpacity: 0.03,
     }).addTo(map);

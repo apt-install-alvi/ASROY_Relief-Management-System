@@ -1,0 +1,52 @@
+@font-face {
+  font-family: ShohidShafkatSamir;
+  src: url(/fonts/Li_Shohid_Shafkat_Samir_Unicode.ttf);
+}
+
+.sidebar
+{
+  padding: 0px;
+  width: 20%;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  gap: 12px;
+
+  background-color: var(--red);
+
+  position: fixed;
+  top: 0px;
+  left: 0px;
+
+  z-index: 101;
+
+}
+
+.sidebar-top
+{
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 12px;
+
+  width: 100%;
+  padding: 24px 0px 28px 28px;
+  
+}
+
+.sidebar-top img
+{
+  width: 32px;
+  height: 32px;
+}
+
+.sidebar-top p
+{
+  font-family: "ShohidShafkatSamir";
+  font-size: var(--h6);
+  font-weight: 300;
+  margin: 0px;
+}

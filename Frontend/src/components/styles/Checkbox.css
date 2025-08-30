@@ -1,0 +1,21 @@
+.box-label-container
+{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+input[type="checkbox"]
+{
+  accent-color: #ad0404;
+  width: 20px;
+  height: 20px;
+}
+
+.checkbox-label
+{
+  font-size: var(--large-para);
+  font-weight: var(--semibold);
+  color: var(--red);
+  margin-right: 20px;
+}
