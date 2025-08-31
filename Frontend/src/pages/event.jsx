@@ -66,29 +66,55 @@ const [activeEvents, setActiveEvents] = useState(
         </div>
 
         <nav className="side-nav">
-          <NavLink to="/" className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}>
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+          >
             <i className="fa-solid fa-house" />
             <span>Home</span>
           </NavLink>
 
-          <NavLink to="/events" className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}>
+          <NavLink
+            to="/events"
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+          >
             <i className="fa-solid fa-bell" />
             <span>Events</span>
           </NavLink>
 
-         <NavLink to="/shelters" className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}>
+          <NavLink
+            to="/shelters"
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+          >
             <i className="fa-solid fa-house-chimney" />
             <span>Shelters</span>
           </NavLink>
-          
-          <a className="nav-item" href="#">
+
+          <NavLink
+            to="/voulunter"
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+          >
             <i className="fa-solid fa-users" />
-            <span>Volunteers</span>
-          </a>
-          <a className="nav-item" href="#">
+            Volunteers
+          </NavLink>
+          <NavLink
+            to="/donation"
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+          >
             <i className="fa-solid fa-dollar-sign" />
-            <span>Donations</span>
-          </a>
+            Donations
+          </NavLink>
+
           <a className="nav-item" href="#">
             <i className="fa-solid fa-boxes-stacked" />
             <span>Inventory</span>
@@ -96,11 +122,12 @@ const [activeEvents, setActiveEvents] = useState(
         </nav>
       </aside>
 
-      
       <div className="events-main">
         <header className="events-header">
           <h2>Events</h2>
-          <button className="add-btn" onClick={()=>setShowPopup(1)}>Add</button>
+          <button className="add-btn" onClick={() => setShowPopup(1)}>
+            Add
+          </button>
         </header>
 
         <div className="events-body">
@@ -109,10 +136,14 @@ const [activeEvents, setActiveEvents] = useState(
 
             <div className="cards-grid">
               {activeEvents.map((ev) => (
-                <article className="event-card" key={ev.id} onClick={() => {
-                  setSelectedEvent(ev);
-                  setShowViewCardModal(true);
-                }}>
+                <article
+                  className="event-card"
+                  key={ev.id}
+                  onClick={() => {
+                    setSelectedEvent(ev);
+                    setShowViewCardModal(true);
+                  }}
+                >
                   <div className="card-img">
                     <img src={eventImg} alt={ev.title} />
                   </div>
@@ -138,14 +169,23 @@ const [activeEvents, setActiveEvents] = useState(
           <section className="section past-section">
             <h3 className="section-title">Past Events</h3>
 
-            <button className="filter-btn" onClick={()=>setShowFilterModal(1)}>Filter</button>
+            <button
+              className="filter-btn"
+              onClick={() => setShowFilterModal(1)}
+            >
+              Filter
+            </button>
 
             <div className="cards-grid">
               {pastEvents.map((ev) => (
-                <article className="event-card" key={ev.id} onClick={() => {
-                  setSelectedEvent(ev);
-                  setShowViewCardModal(true);
-                }}>
+                <article
+                  className="event-card"
+                  key={ev.id}
+                  onClick={() => {
+                    setSelectedEvent(ev);
+                    setShowViewCardModal(true);
+                  }}
+                >
                   <div className="card-img">
                     <img src={eventImg} alt={ev.title} />
                   </div>
@@ -168,19 +208,19 @@ const [activeEvents, setActiveEvents] = useState(
             </div>
           </section>
 
-          {showPopup ?
-            <div className="popup-backdrop"> 
+          {showPopup ? (
+            <div className="popup-backdrop">
               <AddPopup header="Event" handleState={closePopup}></AddPopup>
             </div>
-            : null}
-          
-          {showFilterModal ?
-            <div className="popup-backdrop"> 
+          ) : null}
+
+          {showFilterModal ? (
+            <div className="popup-backdrop">
               <FilterModal handleState={closeModal}></FilterModal>
             </div>
-            : null}
-          
-          {(showViewCardModal && selectedEvent) ?
+          ) : null}
+
+          {showViewCardModal && selectedEvent ? (
             <div className="popup-backdrop">
               <ViewCard
                 image={eventImg}
@@ -191,7 +231,8 @@ const [activeEvents, setActiveEvents] = useState(
                 handleState={closeView}
                 onSave={handleSaveEvent}
               />
-            </div> : null}          
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

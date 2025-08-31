@@ -192,22 +192,35 @@ eventsToRender.forEach(e => {
               Events
             </NavLink>
 
-            <NavLink to="/shelters" className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
-              }>
-            <i className="fa-solid fa-house-chimney" />
-            Shelters
-          </NavLink>
+            <NavLink
+              to="/shelters"
+              className={({ isActive }) =>
+                isActive ? "nav-item active" : "nav-item"
+              }
+            >
+              <i className="fa-solid fa-house-chimney" />
+              Shelters
+            </NavLink>
 
-            <a className="menu-item" href="#">
+            <NavLink
+              to="/voulunter"
+              className={({ isActive }) =>
+                isActive ? "nav-item active" : "nav-item"
+              }
+            >
               <i className="fa-solid fa-users" />
               Volunteers
-            </a>
+            </NavLink>
 
-            <a className="menu-item" href="#">
+            <NavLink
+              to="/donation"
+              className={({ isActive }) =>
+                isActive ? "nav-item active" : "nav-item"
+              }
+            >
               <i className="fa-solid fa-dollar-sign" />
               Donations
-            </a>
+            </NavLink>
 
             <a className="menu-item" href="#">
               <i className="fa-solid fa-boxes-stacked" />
