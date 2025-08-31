@@ -87,14 +87,6 @@ VALUES
 ('E018', 'A011', 'Cyclone', STR_TO_DATE('18-OCT-2024', '%d-%b-%Y'), '13:00:00', 'Not Active'); -- Teknaf
 
 
-
-insert into Shelter
-values
-('S001' , 'Govt Primary School Dhaka'),
-('S002' ,'Parallel High School'),
-('S003'  ,  'Bera Bhanga High School and College');
-
-
 insert into Donor
 values
 ('D001' , 'Yeaser Ahmad' ,  01731176916),
@@ -182,11 +174,6 @@ values
 ('DO003'  , 'D002' , 'Clothes'  , 100);
 
 
-insert into shelter_in_area
-values
-('L001'  , 'S001' , 'A001'),
-('L002'  , 'S003' , 'A001'),
-('L003'  , 'S003' , 'A003');
 
 
 insert into Donation_Distribution

@@ -80,3 +80,54 @@ input[type="submit"]:hover
 {
   filter: brightness(0.8);
 }
+.date-range-field {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  width: 50%;
+}
+
+.date-range-field > div {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+}
+
+.date-range-field label {
+  font-family: var(--default-font);
+  font-size: var(--h6);
+  font-weight: var(--semibold);
+  color: var(--red);
+  margin-bottom: 4px;
+}
+/* Dropdown styles */
+.dropdown-field {
+  margin: 10px 0;
+}
+
+.dropdown-field label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #333;
+}
+
+.filter-dropdown {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+}
+
+.filter-dropdown:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Adjust spacing for dropdown fields */
+.dropdown-field + .dropdown-field {
+  margin-top: 15px;
+}

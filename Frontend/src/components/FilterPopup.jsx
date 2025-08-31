@@ -2,90 +2,192 @@ import { useState } from "react";
 import { Checkbox } from "./Checkbox";
 import { InputField } from "./InputField";
 import "./FilterPopup.css";
+import { AREA_NAMES, EVENT_TYPES } from "../utils/constants"; // Import your constants
 
-export function FilterModal({ handleState })
-{
+export function FilterModal({ handleState, onFilter }) {
+  const [selectedFilter, setSelectedFilter] = useState(null);
+  const [filterValues, setFilterValues] = useState({
+    type: "",
+    area: "",
+    date: { from: "", to: "" }
+  });
 
-  const [filters, setFilters] = useState(
-    {
-      type: { checked: false, value: "" }, 
-      area: { checked: false, value: "" }, 
-      date: { checked: false, value: "" } 
+  const handleCheckbox = (filterName, isChecked) => {
+    if (isChecked) {
+      setSelectedFilter(filterName);
+    } else {
+      setSelectedFilter(null);
     }
-  )
+  };
 
-  function handleCheckbox(filterName, isChecked)
-  {
-    setFilters(prevState =>
-    (
-      {
-      ...prevState,
-      [filterName]: { ...prevState[filterName], checked: isChecked }
-      }
-    )
-    );
+  const handleInputChange = (filterName, field, value) => {
+    if (filterName === 'date') {
+      setFilterValues(prev => ({
+        ...prev,
+        date: { ...prev.date, [field]: value }
+      }));
+    } else {
+      setFilterValues(prev => ({
+        ...prev,
+        [filterName]: value
+      }));
+    }
+  };
+
+  const handleSubmit = (e) => {
+  e.preventDefault();
+  if (!selectedFilter) return alert("Please select at least one filter");
+
+  let url = "";
+  switch (selectedFilter) {
+    case "type":
+      if (!filterValues.type) return alert("Select a type");
+      url = `http://localhost:5000/api/events/filter/type/${encodeURIComponent(filterValues.type)}`;
+      break;
+    case "area":
+      if (!filterValues.area) return alert("Select an area");
+      url = `http://localhost:5000/api/events/filter/area/${encodeURIComponent(filterValues.area)}`;
+      break;
+    case "date":
+      if (!filterValues.date.from || !filterValues.date.to) return alert("Select both dates");
+      url = `http://localhost:5000/api/events/filter/date?fromDate=${filterValues.date.from}&toDate=${filterValues.date.to}`;
+      break;
+    default: return;
   }
 
-  function handleInputVisibility(filterName, value)
-  {
-    setFilters(prevState =>
-    (
-      {
-        ...prevState,
-        [filterName]: { ...prevState[filterName], value }
-      }
-    )
-  );
-}
-   
+  // Use fetch with .then() instead of async/await
+  fetch(url)
+  .then(res => res.json())
+  .then(data => {
+    // Normalize every event so React can safely use ev.area
+    const events = (data.events || []).map(ev => ({
+      Event_id: ev.Event_id ?? ev.id ?? ev.event_id,
+      Event_name: ev.Event_name ?? ev.name ?? "",
+      area: ev.area ?? ev.Area ?? ev.Area_name ?? "",
+      Status: ev.Status ?? ev.status ?? "Inactive",
+      Date_of_occurrence: ev.Date_of_occurrence ?? ev.date ?? "",
+      Time_of_occurrence: ev.Time_of_occurrence ?? ev.time ?? "",
+      Event_Image: ev.Event_Image ?? ev.image ?? ""
+    }));
+
+    if (onFilter) onFilter(events); // send normalized data to EventPage
+    handleState(); // close modal
+  })
+  .catch(err => {
+    console.error("Filter fetch error:", err);
+    alert("Failed to fetch filtered events");
+    if (onFilter) onFilter([]); // fallback
+  });
+
+};
+
+
+  const isFilterSelected = (filterName) => {
+    return selectedFilter === filterName;
+  };
 
   return (
     <div className="filter-modal-body">
-      
       <div className="modal-header">
         <h5 className="title">Filter By</h5>
-        <button className="x-btn"><img src="/assets/icons/x_btn.svg" onClick={handleState}/></button>
+        <button className="x-btn" onClick={handleState}>
+          <img src="/assets/icons/x_btn.svg" alt="close" />
+        </button>
       </div>
 
-      <form className="filter-body-content">
+      <form className="filter-body-content" onSubmit={handleSubmit}>
+        {/* Type Dropdown */}
         <div>
-          <Checkbox boxLabel="Type" boxCount="checkbox-type" checked={filters.type.checked} onChange={(e) => handleCheckbox("type", e.target.checked)}></Checkbox>
-          
-          {filters.type.checked ?
-            <InputField
-              fieldType="text"
-              fieldID="type"
-              placeholderTxt="E.g-Flood"
-              value={filters.type.value} onChange={(e)=>handleInputVisibility("type", e.target.value)}></InputField>
-          : null}
+          <Checkbox 
+            boxLabel="Type" 
+            boxCount="checkbox-type" 
+            checked={isFilterSelected('type')} 
+            onChange={e => handleCheckbox("type", e.target.checked)} 
+          />
+          {isFilterSelected('type') && (
+            <div className="dropdown-field">
+              <label htmlFor="type">Select Type:</label>
+              <select
+                id="type"
+                value={filterValues.type}
+                onChange={e => handleInputChange("type", "value", e.target.value)}
+                required
+                className="filter-dropdown"
+              >
+                <option value="">-- Select Event Type --</option>
+                {EVENT_TYPES.map((type, index) => (
+                  <option key={index} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
+        {/* Area Dropdown */}
         <div>
-          <Checkbox boxLabel="Area" boxCount="checkbox-area" checked={filters.area.checked} onChange={(e) => handleCheckbox("area", e.target.checked)}></Checkbox>
-          
-          {filters.area.checked ?
-            <InputField
-              fieldType="text"
-              fieldID="area"
-              placeholderTxt="E.g-Dhaka"
-              value={filters.area.value} onChange={(e)=>handleInputVisibility("area", e.target.value)}></InputField>
-          : null}
+          <Checkbox 
+            boxLabel="Area" 
+            boxCount="checkbox-area" 
+            checked={isFilterSelected('area')} 
+            onChange={e => handleCheckbox("area", e.target.checked)} 
+          />
+          {isFilterSelected('area') && (
+            <div className="dropdown-field">
+              <label htmlFor="area">Select Area:</label>
+              <select
+                id="area"
+                value={filterValues.area}
+                onChange={e => handleInputChange("area", "value", e.target.value)}
+                required
+                className="filter-dropdown"
+              >
+                <option value="">-- Select Area --</option>
+                {AREA_NAMES.map((area, index) => (
+                  <option key={index} value={area}>{area}</option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
+        {/* Date Range */}
         <div>
-          <Checkbox boxLabel="Date" boxCount="checkbox-date" checked={filters.date.checked} onChange={(e) => handleCheckbox("date", e.target.checked)}></Checkbox>
-          
-          {filters.date.checked ?
-            <InputField
-              fieldType="date"
-              fieldID="date"
-              value={filters.date.value} onChange={(e)=>handleInputVisibility("date", e.target.value)}></InputField>
-          : null}
+          <Checkbox 
+            boxLabel="Date" 
+            boxCount="checkbox-date" 
+            checked={isFilterSelected('date')} 
+            onChange={e => handleCheckbox("date", e.target.checked)} 
+          />
+          {isFilterSelected('date') && (
+            <div className="date-range-field">
+              <div>
+                <label htmlFor="fromDate">From</label>
+                <InputField
+                  fieldType="date"
+                  fieldID="fromDate"
+                  value={filterValues.date.from}
+                  onChange={e => handleInputChange("date", "from", e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="toDate">To</label>
+                <InputField
+                  fieldType="date"
+                  fieldID="toDate"
+                  value={filterValues.date.to}
+                  onChange={e => handleInputChange("date", "to", e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="submit-div"><input type="submit" value="Filter"/></div>
+        <div className="submit-div">
+          <input type="submit" value="Filter" />
+        </div>
       </form>
-
     </div>
   );
 }

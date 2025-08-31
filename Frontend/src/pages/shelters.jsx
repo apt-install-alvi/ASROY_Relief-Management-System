@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import axios from "axios";
 import "./shelters.css";
 import shelterImg from "/assets/images/shelter.jpg";
 import { AddShelter } from "../components/AddShelter";
@@ -7,64 +8,59 @@ import { FilterModal } from "../components/FilterPopup";
 import { ViewShelterCard } from "../components/ViewShelterCard";
 
 export function ShelterPage() {
-const [activeshelters, setActiveshelters] = useState(
-  new Array(4).fill(0).map((_, i) => ({
-    id: i + 1,
-    name: "Motijheel Govt Boy's School",
-    area: "Motijheel",
-    total_capacity: 50,
-    current_capacity: 43
-  }))
-);
+  const [activeShelters, setActiveShelters] = useState([]);
+  const [pastShelters, setPastShelters] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showViewCardModal, setShowViewCardModal] = useState(false);
+  const [selectedShelter, setSelectedShelter] = useState(null);
 
-  const pastshelters = new Array(4).fill(0).map((_, i) => ({
-    id: i + 10,
-    name: "Motijheel Govt Boy's School",
-    area: "Motijheel",
-    total_capacity: 50,
-    current_capacity: 43
-  }));
+  // Fetch shelters from backend
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/shelters")
+      .then((res) => {
+        const active = res.data.filter((s) => s.Status === "Active");
+        const past = res.data.filter((s) => s.Status !== "Active");
+        setActiveShelters(active);
+        setPastShelters(past);
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
-  const handleSaveEvent = (updatedData) => {
-    setActiveshelters(prev => prev.map(ev => 
-      ev.id === selectedEvent.id ? { 
-        ...ev, 
-        name: updatedData.name,
-        area: updatedData.area,
-        total_capacity: updatedData.total_capacity,
-        current_capacity: updatedData.current_capacity
-      } : ev
-    ));
+  const handleSaveShelter = (updatedData, action) => {
+    if (action === "delete") {
+      setActiveShelters((prev) =>
+        prev.filter((s) => s.Shelter_id !== selectedShelter.Shelter_id)
+      );
+      setPastShelters((prev) =>
+        prev.filter((s) => s.Shelter_id !== selectedShelter.Shelter_id)
+      );
+    } else {
+      setActiveShelters((prev) =>
+        prev.map((s) =>
+          s.Shelter_id === selectedShelter.Shelter_id
+            ? { ...s, ...updatedData }
+            : s
+        )
+      );
+      setPastShelters((prev) =>
+        prev.map((s) =>
+          s.Shelter_id === selectedShelter.Shelter_id
+            ? { ...s, ...updatedData }
+            : s
+        )
+      );
+    }
     setShowViewCardModal(false);
   };
 
-  const [showPopup, setShowPopup] = useState(0);
-  const [showFilterModal, setShowFilterModal] = useState(0);
-  const [showViewCardModal, setShowViewCardModal] = useState(0);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  
-  function closePopup()
-  {
-    setShowPopup(0);
-  }
-
-  function closeModal()
-  {
-    setShowFilterModal(0);
-  }
-
-  function closeView()
-  {
-    setShowViewCardModal(0);
-  }
-  
   return (
     <div className="shelters-app">
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-icon">আশ্রয়</div>
         </div>
-
         <nav className="side-nav">
           <NavLink
             to="/"
@@ -75,7 +71,6 @@ const [activeshelters, setActiveshelters] = useState(
             <i className="fa-solid fa-house" />
             <span>Home</span>
           </NavLink>
-
           <NavLink
             to="/events"
             className={({ isActive }) =>
@@ -85,7 +80,6 @@ const [activeshelters, setActiveshelters] = useState(
             <i className="fa-solid fa-bell" />
             <span>Events</span>
           </NavLink>
-
           <NavLink
             to="/shelters"
             className={({ isActive }) =>
@@ -95,26 +89,25 @@ const [activeshelters, setActiveshelters] = useState(
             <i className="fa-solid fa-house-chimney" />
             <span>Shelters</span>
           </NavLink>
-
           <NavLink
-            to="/voulunter"
-            className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
-            }
-          >
-            <i className="fa-solid fa-users" />
-            Volunteers
-          </NavLink>
-          <NavLink
-            to="/donation"
-            className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
-            }
-          >
-            <i className="fa-solid fa-dollar-sign" />
-            Donations
-          </NavLink>
-
+                     to="/voulunter"
+                     className={({ isActive }) =>
+                       isActive ? "nav-item active" : "nav-item"
+                     }
+                   >
+                     <i className="fa-solid fa-users" />
+                     Volunteers
+                   </NavLink>
+                   <NavLink
+                     to="/donation"
+                     className={({ isActive }) =>
+                       isActive ? "nav-item active" : "nav-item"
+                     }
+                   >
+                     <i className="fa-solid fa-dollar-sign" />
+                     Donations
+                   </NavLink>
+         
           <a className="nav-item" href="#">
             <i className="fa-solid fa-boxes-stacked" />
             <span>Inventory</span>
@@ -125,7 +118,7 @@ const [activeshelters, setActiveshelters] = useState(
       <div className="shelters-main">
         <header className="shelters-header">
           <h2>Shelters</h2>
-          <button className="add-btn" onClick={() => setShowPopup(1)}>
+          <button className="add-btn" onClick={() => setShowPopup(true)}>
             Add
           </button>
         </header>
@@ -133,33 +126,30 @@ const [activeshelters, setActiveshelters] = useState(
         <div className="shelters-body">
           <section className="section">
             <h3 className="section-title">Active Shelters</h3>
-
             <div className="cards-grid">
-              {activeshelters.map((ev) => (
+              {activeShelters.map((s) => (
                 <article
+                  key={s.Shelter_id}
                   className="event-card"
-                  key={ev.id}
                   onClick={() => {
-                    setSelectedEvent(ev);
+                    setSelectedShelter(s);
                     setShowViewCardModal(true);
                   }}
                 >
                   <div className="card-img">
-                    <img src={shelterImg} alt={ev.name} />
+                    <img src={shelterImg} alt={s.Shelter_name} />
                   </div>
                   <div className="card-info">
-                    <div className="card-title">{ev.name}</div>
-                    <div className="card-area">{ev.area}</div>
+                    <div className="card-title">{s.Shelter_name}</div>
+                    <div className="card-area">{s.Area_name}</div>
                     <div className="card-meta">
                       <div>
                         <span className="meta-label">Total Capacity: </span>
-                        <span className="meta-value">{ev.total_capacity}</span>
+                        {s.Total_capacity}
                       </div>
                       <div>
                         <span className="meta-label">Current Capacity: </span>
-                        <span className="meta-value">
-                          {ev.current_capacity}
-                        </span>
+                        {s.Current_capacity}
                       </div>
                     </div>
                   </div>
@@ -170,40 +160,36 @@ const [activeshelters, setActiveshelters] = useState(
 
           <section className="section past-section">
             <h3 className="section-title">Past Shelters</h3>
-
             <button
               className="filter-btn"
-              onClick={() => setShowFilterModal(1)}
+              onClick={() => setShowFilterModal(true)}
             >
               Filter
             </button>
-
             <div className="cards-grid">
-              {pastshelters.map((ev) => (
+              {pastShelters.map((s) => (
                 <article
+                  key={s.Shelter_id}
                   className="event-card"
-                  key={ev.id}
                   onClick={() => {
-                    setSelectedEvent(ev);
+                    setSelectedShelter(s);
                     setShowViewCardModal(true);
                   }}
                 >
                   <div className="card-img">
-                    <img src={shelterImg} alt={ev.name} />
+                    <img src={shelterImg} alt={s.Shelter_name} />
                   </div>
                   <div className="card-info">
-                    <div className="card-title">{ev.name}</div>
-                    <div className="card-area">{ev.area}</div>
+                    <div className="card-title">{s.Shelter_name}</div>
+                    <div className="card-area">{s.Area_name}</div>
                     <div className="card-meta">
                       <div>
                         <span className="meta-label">Total Capacity: </span>
-                        <span className="meta-value">{ev.total_capacity}</span>
+                        {s.Total_capacity}
                       </div>
                       <div>
-                        <span className="meta-label">Time of Occurrence: </span>
-                        <span className="meta-value">
-                          {ev.current_capacity}
-                        </span>
+                        <span className="meta-label">Current Capacity: </span>
+                        {s.Current_capacity}
                       </div>
                     </div>
                   </div>
@@ -212,34 +198,33 @@ const [activeshelters, setActiveshelters] = useState(
             </div>
           </section>
 
-          {showPopup ? (
+          {showPopup && (
             <div className="popup-backdrop">
               <AddShelter
                 header="Shelter"
-                handleState={closePopup}
-              ></AddShelter>
-            </div>
-          ) : null}
-
-          {showFilterModal ? (
-            <div className="popup-backdrop">
-              <FilterModal handleState={closeModal}></FilterModal>
-            </div>
-          ) : null}
-
-          {showViewCardModal && selectedEvent ? (
-            <div className="popup-backdrop">
-              <ViewShelterCard
-                image={shelterImg}
-                name={selectedEvent.name}
-                area={selectedEvent.area}
-                total_capacity={selectedEvent.total_capacity}
-                current_capacity={selectedEvent.current_capacity}
-                handleState={closeView}
-                onSave={handleSaveEvent}
+                handleState={() => setShowPopup(false)}
               />
             </div>
-          ) : null}
+          )}
+          {showFilterModal && (
+            <div className="popup-backdrop">
+              <FilterModal handleState={() => setShowFilterModal(false)} />
+            </div>
+          )}
+          {showViewCardModal && selectedShelter && (
+            <div className="popup-backdrop">
+              <ViewShelterCard
+                shelterId={selectedShelter.Shelter_id}
+                image={shelterImg}
+                name={selectedShelter.Shelter_name}
+                area={selectedShelter.Area_name}
+                total_capacity={selectedShelter.Total_capacity}
+                current_capacity={selectedShelter.Current_capacity}
+                handleState={() => setShowViewCardModal(false)}
+                onSave={handleSaveShelter}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
