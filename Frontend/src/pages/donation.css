@@ -85,6 +85,30 @@
 .dn-update.blue{border-left-color:#2563eb}
 .dn-update-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
 .dn-update-head h4{margin:0}
+/* Add button container */
+/* Add button container aligned to the left */
+/* Add button container aligned to the right */
+.add-btn-container {
+  display: flex;
+  justify-content: flex-end;  /* Aligns the button to the right */
+  margin-top: 20px;  /* Adjust margin as needed */
+}
+
+.add-btn {
+  padding: 12px 24px;
+  background-color: var(--red);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-btn:hover {
+  background-color: darkred;
+}
+
 
 /* Responsive */
 @media (max-width:1100px){ .dn-stats-grid{grid-template-columns:1fr 1fr} }

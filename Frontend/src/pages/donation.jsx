@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { MapPin, Calendar, Users, Package, DollarSign } from "lucide-react";
 import "./donation.css";
-
+import { NewCampaignPopup } from "../components/newCampaignPopup";
 /* --- Mock campaign data (replace with API calls) --- */
 const campaign = {
   event_id: 1,
@@ -16,7 +16,7 @@ const campaign = {
   target_amount: 500000,
   raised_amount: 325000,
   beneficiaries: 1250,
-  image: "/flood-relief-operations-with-volunteers-distributi.png",
+  image: "/assets/images/floodcamp.jpg",
 };
 
 const recentDonations = [
@@ -60,11 +60,24 @@ const distributions = [
   },
 ];
 
-export  function Donation() {
+export function Donation() {
   const [tab, setTab] = useState("overview");
   const progress = Math.round(
     (campaign.raised_amount / campaign.target_amount) * 100
   );
+
+  // State for showing the popup
+  const [showPopup, setShowPopup] = useState(false);
+
+  // Handle Add Campaign button click
+  const handleAddClick = () => {
+    setShowPopup(true); // Show the popup
+  };
+
+  // Handle closing the popup
+  const closePopup = () => {
+    setShowPopup(false); // Close the popup
+  };
 
   return (
     <div className="home-app">
@@ -145,6 +158,13 @@ export  function Donation() {
             <h1>Donations</h1>
           </div>
 
+          {/* Add Button centered */}
+          <div className="add-btn-container">
+            <button className="add-btn" onClick={handleAddClick}>
+              Add Campaign
+            </button>
+          </div>
+
           {/* ===== Donation page body (page-specific .dn-* classes) ===== */}
           <div className="dn-container">
             {/* Hero */}
@@ -200,6 +220,11 @@ export  function Donation() {
                   )
                 )}
               </div>
+
+              {/* Overview */}
+              {tab === "overview" && (
+                <div className="dn-stack">{/* Content */}</div>
+              )}
 
               {/* Overview */}
               {tab === "overview" && (
@@ -400,6 +425,13 @@ export  function Donation() {
                 </div>
               )}
             </div>
+            {/* New Campaign Popup */}
+            {showPopup && (
+              <NewCampaignPopup
+                onClose={closePopup}
+                onSave={(newCampaign) => console.log(newCampaign)}
+              />
+            )}
             {/* ===== /Donation page body ===== */}
           </div>
         </section>
