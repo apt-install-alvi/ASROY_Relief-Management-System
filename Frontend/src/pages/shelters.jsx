@@ -90,7 +90,7 @@ export function ShelterPage() {
             <span>Shelters</span>
           </NavLink>
           <NavLink
-                     to="/voulunter"
+                     to="/volunteer"
                      className={({ isActive }) =>
                        isActive ? "nav-item active" : "nav-item"
                      }

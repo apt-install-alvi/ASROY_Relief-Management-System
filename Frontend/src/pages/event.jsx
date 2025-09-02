@@ -115,7 +115,7 @@ const handleFilterResults = (filteredEvents) => {
           </NavLink>
 
           <NavLink
-            to="/voulunter"
+            to="/volunteer"
             className={({ isActive }) =>
               isActive ? "nav-item active" : "nav-item"
             }

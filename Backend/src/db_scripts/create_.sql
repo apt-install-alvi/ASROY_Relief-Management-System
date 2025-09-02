@@ -82,8 +82,10 @@ CREATE TABLE Volunteer (
     Volunteer_id VARCHAR(4) PRIMARY KEY,
     Volunteer_name VARCHAR(50) NOT NULL,
     Volunteer_gender ENUM('Male', 'Female' ,'Better not to mention') DEFAULT 'Better not to mention',
-    Volunteer_age NUMERIC not null check (Volunteer_age >15)
+    Volunteer_age NUMERIC NOT NULL CHECK (Volunteer_age > 15),
+    Volunteer_Image VARCHAR(255) DEFAULT NULL
 );
+
 
 create table Volunteer_Assigned_Distribution(
 Volunteer_distribution_id varchar(5) primary key,
