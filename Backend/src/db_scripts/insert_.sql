@@ -97,17 +97,18 @@ values
 ('D006', 'Mahbub Rahman',   01999887766);
 
 
-insert into Volunteer
-values
-  ('V001' , 'Karim' , 'Male'  , 20),
-  ('V002' , 'Kuddus Khan Pathan' , 'Male' , 70),
-  ('V003' , 'Pinky Akhter' , default  , 35),
-  ('V004', 'Ali Hassan',       'Male',    25),
-  ('V005', 'Ayesha Siddique',  'Female',  30),
-  ('V006', 'Rahim Uddin',      DEFAULT,   19),
-  ('V007', 'Fatima Noor',      'Female',  27),
-  ('V008', 'Imran Chowdhury',  'Male',    22),
-  ('V009', 'Nasima Begum',     DEFAULT,   33);
+INSERT INTO Volunteer (Volunteer_id, Volunteer_name, Volunteer_gender, Volunteer_age, Volunteer_Image)
+VALUES
+  ('V001' , 'Karim' , 'Male'  , 20, NULL),
+  ('V002' , 'Kuddus Khan Pathan' , 'Male' , 70, NULL),
+  ('V003' , 'Pinky Akhter' , DEFAULT  , 35, NULL),
+  ('V004', 'Ali Hassan', 'Male', 25, NULL),
+  ('V005', 'Ayesha Siddique', 'Female', 30, NULL),
+  ('V006', 'Rahim Uddin', DEFAULT, 19, NULL),
+  ('V007', 'Fatima Noor', 'Female', 27, NULL),
+  ('V008', 'Imran Chowdhury', 'Male', 22, NULL),
+  ('V009', 'Nasima Begum', DEFAULT, 33, NULL);
+
 
 
 insert into  Goods 

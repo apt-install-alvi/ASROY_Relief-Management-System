@@ -123,7 +123,7 @@ export function Donation() {
               <span>Shelters</span>
             </NavLink>
             <NavLink
-              to="/voulunter"
+              to="/volunteer"
               className={({ isActive }) =>
                 isActive ? "menu-item active" : "menu-item"
               }
