@@ -1,64 +1,33 @@
 import "../components/styles/test.css";
-import { Card } from "../components/Card";
-import { ButtonRed } from "../components/ButtonRed";
-import { ButtonWhite } from "../components/ButtonWhite";
-import { InputField } from "../components/InputField";
-import { ModalHeader } from "../components/ModalHeader";
-import { ButtonSidebar } from "../components/ButtonSidebar";
-import { Header } from "./Header";
-import { Sidebar } from "../components/Sidebar";
-import { SubHeader } from "../components/SubHeader";
-import { InputWithLabel } from "../components/InputWithLabel";
+import { Card } from "../components/base_components/Card";
+import { ButtonRed } from "../components/base_components/ButtonRed";
+import { ButtonWhite } from "../components/base_components/ButtonWhite";
+import { InputField } from "../components/base_components/InputField";
+import { ModalHeader } from "../components/base_components/ModalHeader";
+import { ButtonSidebar } from "../components/base_components/ButtonSidebar";
+import { Header } from "../components/base_components/Header";
+import { Sidebar } from "../components/large_components/Sidebar";
+import { SubHeader } from "../components/base_components/SubHeader";
+import { EventAddModal } from "../components/large_components/EventAddModal";
+import { EventFilterModal } from "../components/large_components/EventFilterModal";
 
-import { useState } from "react";
-import { EventAddModal } from "../components/EventAddModal";
+import { InputWithLabel } from "../components/base_components/InputWithLabel";
 
+// import { useState, useEffect } from "react";
+import { ViewEventCard } from "../components/large_components/ViewEventCard";
+// import { formatTimeForDisplay } from "../utils/formatTimeDisplay";
+// import { formatDateForDisplay } from "../utils/formatDateDisplay";
+// import { assignImg } from "../utils/assignImg";
+import { ShelterAddModal } from "../components/large_components/ShelterAddModal";
 
+  
 export function Test()
 {
-  const [showAddModal, setShowAddModal] = useState(false);
-
-  function handleAddModalClose()
-  {
-    setShowAddModal(false);
-  }
 
   return (
     <>
-      <Sidebar></Sidebar>
-      <Header title={"Events"}></Header>
-      <main>
-        <section className="active-events">
-          <div className="events-subheader">
-            <SubHeader title={"Active Events"}></SubHeader>
-            <ButtonRed btnText={"Add Event"} onClick={()=>setShowAddModal(true)}></ButtonRed>
-          </div>
-          <div className="card-grid">
-            <Card img={"/assets/images/Flood.jpg"} title={"Flood"} field1={"Kushtia Upazilla"} field2={"Date: 22282912"} field3={"Time: 928321js"}></Card>
-            <Card img={"/assets/images/Flood.jpg"} title={"Flood"} field1={"Kushtia Upazilla"} field2={"Date: 22282912"} field3={"Time: 928321js"}></Card>
-            <Card img={"/assets/images/Flood.jpg"} title={"Flood"} field1={"Kushtia Upazilla"} field2={"Date: 22282912"} field3={"Time: 928321js"}></Card>
-            <Card img={"/assets/images/Flood.jpg"} title={"Flood"} field1={"Kushtia Upazilla"} field2={"Date: 22282912"} field3={"Time: 928321js"}></Card>
-          </div>
-        </section>
-        
-        <section className="past-events">
-          <div className="events-subheader">
-            <SubHeader title={"Past Events"}></SubHeader>
-            <ButtonRed btnText={"Filter Event"}></ButtonRed>
-          </div>
-          <div className="card-grid">
-            <Card img={"/assets/images/Flood.jpg"} title={"Flood"} field1={"Kushtia Upazilla"} field2={"Date: 22282912"} field3={"Time: 928321js"}></Card>
-            <Card img={"/assets/images/Flood.jpg"} title={"Flood"} field1={"Kushtia Upazilla"} field2={"Date: 22282912"} field3={"Time: 928321js"}></Card>
-            <Card img={"/assets/images/Flood.jpg"} title={"Flood"} field1={"Kushtia Upazilla"} field2={"Date: 22282912"} field3={"Time: 928321js"}></Card>
-            <Card img={"/assets/images/Flood.jpg"} title={"Flood"} field1={"Kushtia Upazilla"} field2={"Date: 22282912"} field3={"Time: 928321js"}></Card>
-          </div>
-        </section>
-        
-        {showAddModal ? 
-          <div className="modal-backdrop">
-            <EventAddModal handleState={handleAddModalClose}></EventAddModal>
-          </div> : null}
-      </main>
+      <ShelterAddModal></ShelterAddModal>
+      {/* <Sidebar></Sidebar> */}
     </>
   );
 }

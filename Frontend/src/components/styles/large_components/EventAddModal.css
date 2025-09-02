@@ -1,0 +1,30 @@
+.modal
+{
+  background-color: var(--bg-light-grey);
+  width: fit-content;
+  padding: 3.2%;
+  border-radius: 20px;
+}
+
+.inputs-in-modal
+{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.add-date-time-inputs
+{
+  display: flex;
+  gap: 40px;
+}
+
+
+.modal-btn-position
+{
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  justify-content: end;
+  gap: 8px;
+}

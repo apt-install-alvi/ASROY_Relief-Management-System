@@ -12,16 +12,18 @@ export const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "Jelaushekodu!1",
-  database: "asroy"
+  database: "asroy",
 });
+
 
 db.connect(err => {
   if (err) console.error(err);
   else console.log("Connected to MySQL");
 });
 
-// Use event routes
+
 app.use("/api/events", eventRoutes);
+
 
 const PORT = 5000;
 app.get("/api/ping", (req, res) => {

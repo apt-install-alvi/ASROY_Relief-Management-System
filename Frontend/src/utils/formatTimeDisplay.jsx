@@ -1,20 +1,19 @@
-export function formatTimeForDisplay(timeStr)
-{
-  if (timeStr.includes('am') || timeStr.includes('pm')) return timeStr;
+export function formatTimeForDisplay(timeString) {
+  if (!timeString) return "";
   
-  const [hours, minutes] = timeStr.split(':');
-  let period = 'am';
-  let displayHours = hours;
+
+  const [hoursStr, minutes] = timeString.split(":");
+  if (!hoursStr) return timeString; 
   
-  const hoursNum = parseInt(hours, 10);
+  let hours = parseInt(hoursStr);
+  let period = "am";
   
-  if (hoursNum >= 12) {
-    period = 'pm';
-    displayHours = hoursNum > 12 ? String(hoursNum - 12) : hours;
-  }
-  if (hoursNum === 0) {
-    displayHours = '12';
+  if (hours >= 12) {
+    period = "pm";
+    if (hours > 12) hours -= 12;
+  } else if (hours === 0) {
+    hours = 12;
   }
 
-  return `${displayHours}:${minutes} ${period}`;
+  return `${hours}:${minutes} ${period}`;
 }

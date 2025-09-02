@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import "./shelters.css";
 import shelterImg from "/assets/images/shelter.jpg";
-import { AddShelter } from "../components/AddShelter";
-import { FilterModal } from "../components/FilterPopup";
-import { ViewShelterCard } from "../components/ViewShelterCard";
+import { AddShelter } from "../components/old/AddShelter";
+import { FilterModal } from "../components/old/FilterPopup";
+import { ViewShelterCard } from "../components/old/ViewShelterCard";
 
 export function ShelterPage() {
 const [activeshelters, setActiveshelters] = useState(

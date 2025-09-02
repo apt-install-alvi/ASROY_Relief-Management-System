@@ -5,8 +5,8 @@ import "leaflet/dist/leaflet.css";
 import "./homepage.css";
 import axios from "axios"; 
 import { areaCoordinates } from "./areaCoordinates.js"; 
-import { ButtonWhite } from "../components/ButtonWhite.jsx";
-import { ButtonRed } from "../components/ButtonRed.jsx";
+import { ButtonWhite } from "../components/base_components/ButtonWhite.jsx";
+import { ButtonRed } from "../components/base_components/ButtonRed.jsx";
 
 export function Homepage() {
   const mapRef = useRef(null);
