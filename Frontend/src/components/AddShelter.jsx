@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { AREA_NAMES } from "../utils/constants"; // import your AREA_NAMES array
 import "./Add_Popup.css";
 
 export function AddShelter({ header, handleState }) {
-  const [areas, setAreas] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     area: "",
@@ -10,16 +10,20 @@ export function AddShelter({ header, handleState }) {
     current_capacity: "",
   });
 
-  // Fetch areas from backend
-  useEffect(() => {
-    fetch("/shelters/areas")
-      .then((res) => res.json())
-      .then((data) => setAreas(data))
-      .catch((err) => console.error("Error fetching areas:", err));
-  }, []);
+  const [filteredAreas, setFilteredAreas] = useState(AREA_NAMES);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+
+    // filter areas as user types
+    if (field === "area") {
+      const filtered = AREA_NAMES.filter((a) =>
+        a.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredAreas(filtered);
+      setDropdownOpen(true);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -31,24 +35,26 @@ export function AddShelter({ header, handleState }) {
       return;
     }
 
-    try {
-      const res = await fetch("/shelters/add", {
+        try {
+      const res = await fetch("http://localhost:5000/api/shelters/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, area, total_capacity, current_capacity }),
       });
 
-      const result = await res.json();
-      if (result.success) {
-        alert("Shelter added successfully!:${result.Shelter_id}");
-        handleState(); // close popup
-      } else {
-        alert("Error: " + result.error);
+      if (!res.ok) {
+        const text = await res.text(); // get server error text
+        throw new Error(`HTTP ${res.status}: ${text}`);
       }
+
+      const result = await res.json();
+      alert("Shelter added!");
+      handleState();
     } catch (err) {
       console.error(err);
-      alert("Something went wrong!");
+      alert("Failed to add shelter: " + err.message);
     }
+
   };
 
   return (
@@ -59,6 +65,7 @@ export function AddShelter({ header, handleState }) {
           <img src="/assets/icons/x_btn.svg" />
         </button>
       </div>
+
       <form onSubmit={handleSubmit}>
         <label htmlFor="name" className="label-name">Name</label>
         <input
@@ -68,23 +75,38 @@ export function AddShelter({ header, handleState }) {
           placeholder="E.g-Relief Center"
           value={formData.name}
           onChange={(e) => handleChange("name", e.target.value)}
-          autoComplete="off" // disable autocomplete
+          autoComplete="off"
         />
 
         <label htmlFor="area" className="label-name">Area</label>
-        <select
-          id="area"
-          className="dropdown"
-          value={formData.area}
-          onChange={(e) => handleChange("area", e.target.value)}
-        >
-          <option value="">Select Area</option>
-          {areas.map((area) => (
-            <option key={area.Area_id} value={area.Area_name}>
-              {area.Area_name}
-            </option>
-          ))}
-        </select>
+        <div className="area-dropdown">
+          <input
+            className="input-field"
+            type="text"
+            id="area"
+            placeholder="Select Area"
+            value={formData.area}
+            onChange={(e) => handleChange("area", e.target.value)}
+            onFocus={() => setDropdownOpen(true)}
+            autoComplete="off"
+          />
+
+          {dropdownOpen && filteredAreas.length > 0 && (
+            <ul className="dropdown-list">
+              {filteredAreas.map((area) => (
+                <li
+                  key={area}
+                  onClick={() => {
+                    handleChange("area", area);
+                    setDropdownOpen(false);
+                  }}
+                >
+                  {area}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         <label htmlFor="t_cap" className="label-name">Total Capacity</label>
         <input
