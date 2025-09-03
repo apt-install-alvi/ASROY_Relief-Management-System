@@ -92,7 +92,7 @@ export function ShelterAddModal({handleState})
   return (
     <div className="modal">
       {/* <ModalHeader header="Add Event" handleState={() => { handleState(); resetForm();} }></ModalHeader> */}
-      <ModalHeader header="Add Shelter" handleState={() => handleState}></ModalHeader>
+      <ModalHeader header="Add Shelter" handleState={handleState}></ModalHeader>
       {/* <form className="inputs-in-modal" onSubmit={handleSubmit}> */}
       <form className="inputs-in-modal" >
         <InputWithLabel

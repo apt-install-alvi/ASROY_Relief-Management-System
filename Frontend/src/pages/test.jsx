@@ -19,15 +19,14 @@ import { ViewEventCard } from "../components/large_components/ViewEventCard";
 // import { formatDateForDisplay } from "../utils/formatDateDisplay";
 // import { assignImg } from "../utils/assignImg";
 import { ShelterAddModal } from "../components/large_components/ShelterAddModal";
+import { ShelterFilterModal } from "../components/large_components/ShelterFilterModal";
+import { ViewShelterCard } from "../components/large_components/ViewShelterCard";  
 
-  
 export function Test()
 {
-
   return (
     <>
-      <ShelterAddModal></ShelterAddModal>
-      {/* <Sidebar></Sidebar> */}
+      
     </>
   );
 }
