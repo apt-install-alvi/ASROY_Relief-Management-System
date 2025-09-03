@@ -35,7 +35,7 @@ export function AddShelter({ header, handleState }) {
       return;
     }
 
-        try {
+    try {
       const res = await fetch("http://localhost:5000/api/shelters/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -54,7 +54,6 @@ export function AddShelter({ header, handleState }) {
       console.error(err);
       alert("Failed to add shelter: " + err.message);
     }
-
   };
 
   return (
@@ -67,7 +66,9 @@ export function AddShelter({ header, handleState }) {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <label htmlFor="name" className="label-name">Name</label>
+        <label htmlFor="name" className="label-name">
+          Name
+        </label>
         <input
           className="input-field"
           type="text"
@@ -78,7 +79,9 @@ export function AddShelter({ header, handleState }) {
           autoComplete="off"
         />
 
-        <label htmlFor="area" className="label-name">Area</label>
+        <label htmlFor="area" className="label-name">
+          Area
+        </label>
         <div className="area-dropdown">
           <input
             className="input-field"
@@ -108,7 +111,9 @@ export function AddShelter({ header, handleState }) {
           )}
         </div>
 
-        <label htmlFor="t_cap" className="label-name">Total Capacity</label>
+        <label htmlFor="t_cap" className="label-name">
+          Total Capacity
+        </label>
         <input
           className="input-field"
           type="number"
@@ -118,7 +123,9 @@ export function AddShelter({ header, handleState }) {
           onChange={(e) => handleChange("total_capacity", e.target.value)}
         />
 
-        <label htmlFor="c_cap" className="label-name">Current Capacity</label>
+        <label htmlFor="c_cap" className="label-name">
+          Current Capacity
+        </label>
         <input
           className="input-field"
           type="number"

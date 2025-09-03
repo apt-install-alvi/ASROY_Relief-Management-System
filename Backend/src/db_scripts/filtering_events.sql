@@ -9,7 +9,7 @@ BEGIN
            a.Area_name
     FROM Event e
     JOIN Area a ON e.Event_area_id = a.Area_id
-    WHERE e.Status = 'Active'
+    
       AND (fromDate IS NULL OR e.Date_of_occurrence >= fromDate)
       AND (toDate IS NULL OR e.Date_of_occurrence <= toDate)
     ORDER BY e.Date_of_occurrence DESC;

@@ -14,13 +14,12 @@ export function ShelterPage() {
   const [showViewCardModal, setShowViewCardModal] = useState(false);
   const [selectedShelter, setSelectedShelter] = useState(null);
 
- 
   useEffect(() => {
     axios
       .get("http://localhost:5000/api/shelters")
       .then((res) => {
         setActiveShelters(res.data);
-        setPastShelters([]); 
+        setPastShelters([]);
       })
       .catch((err) => console.error(err));
   }, []);
@@ -54,8 +53,8 @@ export function ShelterPage() {
 
   const renderShelterCard = (s) => {
     const imageUrl = s.Shelter_image
-      ? 'http://localhost:5000/${s.Shelter_image}'
-      : "/assets/images/shelter.jpg"; 
+      ? `http://localhost:5000/${s.Shelter_image}`
+      : "/assets/images/shelter.jpg";
 
     return (
       <article
@@ -94,23 +93,48 @@ export function ShelterPage() {
           <div className="brand-icon">আশ্রয়</div>
         </div>
         <nav className="side-nav">
-          <NavLink to="/" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+          >
             <i className="fa-solid fa-house" />
             <span>Home</span>
           </NavLink>
-          <NavLink to="/events" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+          <NavLink
+            to="/events"
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+          >
             <i className="fa-solid fa-bell" />
             <span>Events</span>
           </NavLink>
-          <NavLink to="/shelters" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+          <NavLink
+            to="/shelters"
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+          >
             <i className="fa-solid fa-house-chimney" />
             <span>Shelters</span>
           </NavLink>
-          <NavLink to="/volunteer" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+          <NavLink
+            to="/volunteer"
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+          >
             <i className="fa-solid fa-users" />
             Volunteers
           </NavLink>
-          <NavLink to="/donation" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+          <NavLink
+            to="/donation"
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+          >
             <i className="fa-solid fa-dollar-sign" />
             Donations
           </NavLink>
@@ -139,7 +163,10 @@ export function ShelterPage() {
 
           {showPopup && (
             <div className="popup-backdrop">
-              <AddShelter header="Shelter" handleState={() => setShowPopup(false)} />
+              <AddShelter
+                header="Shelter"
+                handleState={() => setShowPopup(false)}
+              />
             </div>
           )}
 
@@ -153,7 +180,11 @@ export function ShelterPage() {
             <div className="popup-backdrop">
               <ViewShelterCard
                 shelterId={selectedShelter.Shelter_id}
-                image={selectedShelter.Shelter_image ? 'http://localhost:5000/${selectedShelter.Shelter_image}' : "/assets/images/shelter.jpg"}
+                image={
+                  selectedShelter.Shelter_image
+                    ? `http://localhost:5000/${selectedShelter.Shelter_image}`
+                    : "/assets/images/shelter.jpg"
+                }
                 name={selectedShelter.Shelter_name}
                 area={selectedShelter.Area_name}
                 total_capacity={selectedShelter.Total_capacity}
