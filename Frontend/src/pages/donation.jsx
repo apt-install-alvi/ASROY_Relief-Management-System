@@ -16,7 +16,7 @@ const campaign = {
   target_amount: 500000,
   raised_amount: 325000,
   beneficiaries: 1250,
-  image: "/assets/images/floodcamp.jpg",
+  image: "/assets/images/flood.jpeg",
 };
 
 const recentDonations = [
@@ -85,7 +85,7 @@ export function Donation() {
       {/* 2) TOP BAR (uses .topbar from homepage.css) */}
       <header className="topbar">
         <div className="brand">
-          <i className="fa-solid fa-people-group" />
+         
           আশ্রয়
         </div>
       </header>

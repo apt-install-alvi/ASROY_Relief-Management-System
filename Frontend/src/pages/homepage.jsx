@@ -199,65 +199,65 @@ const clearFilter = () => {
       </header>
 
       <main className="main">
-        <aside className="sidebar">
-          <nav className="menu">
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) =>
-                isActive ? "menu-item active" : "menu-item"
-              }
-            >
-              <i className="fa-solid fa-house" />
-              Home
-            </NavLink>
-
-            <NavLink
-              to="/events"
-              className={({ isActive }) =>
-                isActive ? "menu-item active" : "menu-item"
-              }
-            >
-              <i className="fa-solid fa-bell" />
-              Events
-            </NavLink>
-
-            <NavLink
-              to="/shelters"
-              className={({ isActive }) =>
-                isActive ? "nav-item active" : "nav-item"
-              }
-            >
-              <i className="fa-solid fa-house-chimney" />
-              Shelters
-            </NavLink>
-
-            <NavLink
-              to="/volunteer"
-              className={({ isActive }) =>
-                isActive ? "nav-item active" : "nav-item"
-              }
-            >
-              <i className="fa-solid fa-users" />
-              Volunteers
-            </NavLink>
-
-            <NavLink
-              to="/donation"
-              className={({ isActive }) =>
-                isActive ? "nav-item active" : "nav-item"
-              }
-            >
-              <i className="fa-solid fa-dollar-sign" />
-              Donations
-            </NavLink>
-
-            <a className="menu-item" href="#">
-              <i className="fa-solid fa-boxes-stacked" />
-              Inventory
-            </a>
-          </nav>
-        </aside>
+         <aside className="sidebar">
+                       <nav className="menu">
+                         <NavLink
+                           to="/"
+                           end
+                           className={({ isActive }) =>
+                             isActive ? "menu-item active" : "menu-item"
+                           }
+                         >
+                           <i className="fa-solid fa-house" />
+                           <span>Home</span>
+                         </NavLink>
+                         <NavLink
+                           to="/events"
+                           className={({ isActive }) =>
+                             isActive ? "menu-item active" : "menu-item"
+                           }
+                         >
+                           <i className="fa-solid fa-bell" />
+                           <span>Events</span>
+                         </NavLink>
+                         <NavLink
+                           to="/shelters"
+                           className={({ isActive }) =>
+                             isActive ? "menu-item active" : "menu-item"
+                           }
+                         >
+                           <i className="fa-solid fa-house-chimney" />
+                           <span>Shelters</span>
+                         </NavLink>
+                         <NavLink
+                           to="/volunteer"
+                           className={({ isActive }) =>
+                             isActive ? "menu-item active" : "menu-item"
+                           }
+                         >
+                           <i className="fa-solid fa-users" />
+                           <span>Volunteers</span>
+                         </NavLink>
+                         <NavLink
+                           to="/donation"
+                           className={({ isActive }) =>
+                             isActive ? "menu-item active" : "menu-item"
+                           }
+                         >
+                           <i className="fa-solid fa-dollar-sign" />
+                           <span>Donations</span>
+                         </NavLink>
+                         <NavLink
+                           to="/inventory"
+                           className={({ isActive }) =>
+                             isActive ? "menu-item active" : "menu-item"
+                           }
+                         >
+                           <i className="fa-solid fa-box" />
+                           <span>Inventory</span>
+                         </NavLink>
+                       </nav>
+                     </aside>
 
         <section className="content">
           <div className="content-head">

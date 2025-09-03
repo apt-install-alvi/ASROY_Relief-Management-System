@@ -19,6 +19,8 @@ CREATE TABLE Event (
 CREATE TABLE Shelter (
     Shelter_id VARCHAR(4) PRIMARY KEY,
     Shelter_name VARCHAR(50) NOT NULL,
+    Total_capacity numeric,
+    Current_capacity numeric,
     Shelter_image VARCHAR(255) DEFAULT 'Frontend\\public\\assets\\images\\shelter.jpg'
 );
 

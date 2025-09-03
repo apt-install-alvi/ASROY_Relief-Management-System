@@ -78,67 +78,65 @@ const handleFilterResults = (filteredEvents) => {
   return (
     <div className="events-app">
       {/* Sidebar */}
-      <aside className="sidebar">
-        <div className="brand">
-          <div className="brand-icon">আশ্রয়</div>
-        </div>
-
-        <nav className="side-nav">
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
-            }
-          >
-            <i className="fa-solid fa-house" />
-            <span>Home</span>
-          </NavLink>
-
-          <NavLink
-            to="/events"
-            className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
-            }
-          >
-            <i className="fa-solid fa-bell" />
-            <span>Events</span>
-          </NavLink>
-
-          <NavLink
-            to="/shelters"
-            className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
-            }
-          >
-            <i className="fa-solid fa-house-chimney" />
-            <span>Shelters</span>
-          </NavLink>
-
-          <NavLink
-            to="/volunteer"
-            className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
-            }
-          >
-            <i className="fa-solid fa-users" />
-            Volunteers
-          </NavLink>
-          <NavLink
-            to="/donation"
-            className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
-            }
-          >
-            <i className="fa-solid fa-dollar-sign" />
-            Donations
-          </NavLink>
-
-          <a className="nav-item" href="#">
-            <i className="fa-solid fa-boxes-stacked" />
-            <span>Inventory</span>
-          </a>
-        </nav>
-      </aside>
+             <aside className="sidebar">
+               <nav className="menu">
+                 <NavLink
+                   to="/"
+                   end
+                   className={({ isActive }) =>
+                     isActive ? "menu-item active" : "menu-item"
+                   }
+                 >
+                   <i className="fa-solid fa-house" />
+                   <span>Home</span>
+                 </NavLink>
+                 <NavLink
+                   to="/events"
+                   className={({ isActive }) =>
+                     isActive ? "menu-item active" : "menu-item"
+                   }
+                 >
+                   <i className="fa-solid fa-bell" />
+                   <span>Events</span>
+                 </NavLink>
+                 <NavLink
+                   to="/shelters"
+                   className={({ isActive }) =>
+                     isActive ? "menu-item active" : "menu-item"
+                   }
+                 >
+                   <i className="fa-solid fa-house-chimney" />
+                   <span>Shelters</span>
+                 </NavLink>
+                 <NavLink
+                   to="/volunteer"
+                   className={({ isActive }) =>
+                     isActive ? "menu-item active" : "menu-item"
+                   }
+                 >
+                   <i className="fa-solid fa-users" />
+                   <span>Volunteers</span>
+                 </NavLink>
+                 <NavLink
+                   to="/donation"
+                   className={({ isActive }) =>
+                     isActive ? "menu-item active" : "menu-item"
+                   }
+                 >
+                   <i className="fa-solid fa-dollar-sign" />
+                   <span>Donations</span>
+                 </NavLink>
+                 <NavLink
+                   to="/inventory"
+                   className={({ isActive }) =>
+                     isActive ? "menu-item active" : "menu-item"
+                   }
+                 >
+                   <i className="fa-solid fa-box" />
+                   <span>Inventory</span>
+                 </NavLink>
+               </nav>
+             </aside>
 
       <div className="events-main">
         <header className="events-header">
