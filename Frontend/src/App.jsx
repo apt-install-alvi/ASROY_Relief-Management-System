@@ -5,7 +5,7 @@ import { Homepage } from "./pages/homepage";
 import { EventPage } from "./pages_new/event";
 import { ShelterPage } from "./pages_new/shelters";
 import { Test } from "./pages/test";
-// import "./index.css";
+import { ShelterPageNew } from "./pages_new/shelter";
 
 function App() {
   return (
@@ -13,8 +13,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/events" element={<EventPage />} />
-        <Route path="/shelters" element={<ShelterPage />} />
+        {/* <Route path="/shelters" element={<ShelterPage />} /> */}
         <Route path="/test" element={<Test />}></Route>
+        <Route path="/shelternew" element={<ShelterPageNew />}></Route>
       </Routes>
     </Router>
   );
