@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import "./ViewCard.css";
-import "./ViewShelterCard.css";
+import "./ViewShelterCard_OLD.css";
 import { InputField } from "../base_components/InputField"; 
 
-export function ViewShelterCard({ image, name, area, total_capacity, current_capacity, handleState, onSave })
+export function ViewShelterCard_OLD({ image, name, area, total_capacity, current_capacity, handleState, onSave })
 {
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({ 

@@ -4,7 +4,7 @@ import "./shelters.css";
 import shelterImg from "/assets/images/shelter.jpg";
 import { AddShelter } from "../components/old/AddShelter";
 import { FilterModal } from "../components/old/FilterPopup";
-import { ViewShelterCard } from "../components/old/ViewShelterCard";
+import { ViewShelterCard_OLD } from "../components/old/ViewShelterCard_OLD";
 
 export function ShelterPage() {
 const [activeshelters, setActiveshelters] = useState(
@@ -183,7 +183,7 @@ const [activeshelters, setActiveshelters] = useState(
           
           {(showViewCardModal && selectedEvent) ?
             <div className="popup-backdrop">
-              <ViewShelterCard
+              <ViewShelterCard_OLD
                 image={shelterImg}
                 name={selectedEvent.name}
                 area={selectedEvent.area}
