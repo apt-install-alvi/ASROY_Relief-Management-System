@@ -93,30 +93,15 @@ export function ShelterPage() {
           <div className="brand-icon">আশ্রয়</div>
         </div>
         <nav className="side-nav">
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
-            }
-          >
+          <NavLink to="/" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
             <i className="fa-solid fa-house" />
             <span>Home</span>
           </NavLink>
-          <NavLink
-            to="/events"
-            className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
-            }
-          >
+          <NavLink to="/events" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
             <i className="fa-solid fa-bell" />
             <span>Events</span>
           </NavLink>
-          <NavLink
-            to="/shelters"
-            className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
-            }
-          >
+          <NavLink to="/shelters" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
             <i className="fa-solid fa-house-chimney" />
             <span>Shelters</span>
           </NavLink>
@@ -163,10 +148,7 @@ export function ShelterPage() {
 
           {showPopup && (
             <div className="popup-backdrop">
-              <AddShelter
-                header="Shelter"
-                handleState={() => setShowPopup(false)}
-              />
+              <AddShelter header="Shelter" handleState={() => setShowPopup(false)} />
             </div>
           )}
 

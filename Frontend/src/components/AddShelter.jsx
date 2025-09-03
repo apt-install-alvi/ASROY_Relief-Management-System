@@ -54,6 +54,7 @@ export function AddShelter({ header, handleState }) {
       console.error(err);
       alert("Failed to add shelter: " + err.message);
     }
+
   };
 
   return (

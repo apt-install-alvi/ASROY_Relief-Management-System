@@ -147,14 +147,14 @@ const handleFilterResults = (filteredEvents) => {
         </header>
 
         <div className="events-body">
-          {/* Active Events */}
+         
           <section className="section">
             <h3 className="section-title">Active Events</h3>
             <div className="cards-grid">
               {activeEvents.map((ev) => (
                 <article
                   className="event-card"
-                  key={ev.id}
+                  key={ev.Event_id}
                   onClick={() => {
                     setSelectedEvent(ev);
                     setShowViewCardModal(true);
@@ -197,7 +197,7 @@ const handleFilterResults = (filteredEvents) => {
               {pastEvents.map((ev) => (
                 <article
                   className="event-card"
-                  key={ev.id}
+                   key={ev.Event_id}
                   onClick={() => {
                     setSelectedEvent(ev);
                     setShowViewCardModal(true);
@@ -254,7 +254,7 @@ const handleFilterResults = (filteredEvents) => {
             </div>
           )}
 
-          {/* View Card */}
+         
           {showViewCardModal && selectedEvent && (
             <div className="popup-backdrop">
               <ViewCard
