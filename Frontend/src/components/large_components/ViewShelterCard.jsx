@@ -1,134 +1,97 @@
 import { ModalHeader } from "../base_components/ModalHeader";
-// import { useState } from "react";
-// import { formatDateForInput } from "../../utils/formatDateInput";
-// import { formatTimeForInput } from "../../utils/formatTimeInput";
+import { useState, useEffect } from "react";
 import { InputWithLabel } from "../base_components/InputWithLabel";
 import { Checkbox } from "../base_components/Checkbox";
 import { AREA_NAMES, EVENT_TYPES } from "../../utils/constants";
 import { ButtonRed } from "../base_components/ButtonRed";
 import { ButtonWhite } from "../base_components/ButtonWhite";
+import axios from "axios";
 
-// export function ViewEventCard({
-//   eventId,
-//   type,
-//   area,
-//   date,
-//   time,
-//   status,
-//   handleState,
-//   onUpdate,
-//   onDelete })
-export function ViewShelterCard({handleState})
-  
+
+export function ViewShelterCard({shelterId, name, area, total_capacity, current_capacity, handleState, onSave })  
 {
-  // const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  // const initialEditData = {
-  //   type: type || "",
-  //   area: area || "",
-  //   date: date ? formatDateForInput(date) : "",
-  //   time: time ? formatTimeForInput(time) : "",
-  //   isInactive: status === "Not Active"
-  // };
+    // Debug the incoming props
+  useEffect(() => {
+    console.log("ViewShelterCard props:", {
+      shelterId, name, area, total_capacity, current_capacity
+    });
+  }, []);
 
-  // const [editData, setEditData] = useState(initialEditData);
-  // const [originalData] = useState(initialEditData);
+  const [editData, setEditData] = useState({
+    name: name || "",
+    area: area || "",
+    total_capacity: total_capacity || 0,
+    current_capacity: current_capacity || 0
+  });
+  const [originalData] = useState(editData);
 
-  // function handleEditClick()
-  // {
-  //   setIsEditing(true);
-  // }
+  function handleEditClick()
+  {
+    setIsEditing(true);
+  }
 
-  // function handleInputChange(field, value)
-  // {
-  //   setEditData(prev => ({ ...prev, [field]: value }));
-  // }
+  function handleInputChange(field, value)
+  {
+    setEditData(prev => ({ ...prev, [field]: value }));
+  }
 
-  // function handleCancel()
-  // {
-  //   if (JSON.stringify(editData) !== JSON.stringify(originalData))
-  //   {
-  //     if (!window.confirm("Are you sure you want to cancel editing? Any changes you made will not be saved.")) return;
-  //   }
+  function handleCancel()
+  {
+    if (JSON.stringify(editData) !== JSON.stringify(originalData))
+    {
+      if (!window.confirm("Are you sure you want to cancel editing? Any changes you made will not be saved.")) return;
+    }
 
-  //   setEditData(originalData);
-  //   setIsEditing(false);
-  // }
+    setEditData(originalData);
+    setIsEditing(false);
+  }
 
-  // async function handleSave()
-  // {
-  //   try
-  //     {
-  //       const response = await fetch(`http://localhost:5000/api/events/edit/${eventId}`,
-  //         {
-  //           method: "PUT",
-  //           headers: { "Content-Type": "application/json" },
-  //           body: JSON.stringify({
-  //             eventName: editData.type,
-  //             areaName: editData.area,
-  //             date: editData.date,
-  //             time: editData.time.length === 5 ? editData.time + ":00" : editData.time,
-  //             status: editData.isInactive ? "Not Active" : "Active"
-  //           })
-  //         }
-  //       );
+  async function handleSave()
+  {
+    try {
+      await axios.put(`http://localhost:5000/api/shelternew/update/${shelterId}`, editData);
+      onSave(editData); // update state in parent
+      setIsEditing(false);
+      alert("Shelter updated successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update shelter");
+    }
+  }
 
-  //     const data = await response.json();
-  //     if (!data.success)
-  //       throw new Error(data.error || "Update failed");
+  async function handleDeleteClick()
+  {
+    if (!window.confirm("Are you sure you want to delete this event?"))
+      return;
 
-  //     onUpdate({
-  //       Event_id: eventId,
-  //       Event_name: editData.type,
-  //       area: editData.area,
-  //       Date_of_occurrence: editData.date,
-  //       Time_of_occurrence: editData.time,
-  //       status: editData.isInactive ? "Not Active" : "Active"
-  //     });
-
-  //     setIsEditing(false);
-  //   }
-      
-  //   catch (err)
-  //   {
-  //     alert(err.message);
-  //     console.error(err);
-  //   }
-  // }
-
-  // async function handleDeleteClick()
-  // {
-  //   if (!window.confirm("Are you sure you want to delete this event?")) return;
-
-  //   try
-  //   {
-  //     const response = await fetch(`http://localhost:5000/api/events/delete/${eventId}`, { method: "DELETE" });
-  //     const data = await response.json();
-
-  //     if (!data.success)
-  //       throw new Error(data.error || "Delete failed");
-
-  //     if (onDelete) onDelete(eventId);
-  //   }
-    
-  //   catch (err)
-  //   {
-  //     alert(err.message);
-  //     console.error(err);
-  //   }
-  // }
+    try
+    {
+      await axios.delete(`http://localhost:5000/api/shelternew/delete/${shelterId}`);
+      alert("Shelter deleted successfully");
+      handleState(); // close modal
+      onSave(null, "delete"); // inform parent to remove from list
+    }
+    catch (err)
+    {
+      console.error(err);
+      alert("Failed to delete shelter");
+    }
+  }
 
   return (
     <div className="modal">
-      <ModalHeader header={"View Shelter"} handleState={handleState}></ModalHeader>
-      {/* <ModalHeader header={"View Event"} handleState={handleState} onClick={isEditing ? handleCancel : handleState}></ModalHeader>
+      <ModalHeader header={"View Shelter"} handleState={handleState} onClick={isEditing ? handleCancel : handleState}></ModalHeader>
+      
       {isEditing ? 
         <div className="inputs-in-modal">
            <InputWithLabel
             labelFor={"name"} 
-            label={"Name"} 
-            value={editData.type}
-            onChange={(e)=>handleInputChange("type", e.target.value)}
+            label={"Name"}
+            fieldType={"text"}
+            value={editData.name}
+            onChange={(e)=>handleInputChange("name", e.target.value)}
           ></InputWithLabel> 
 
           <InputWithLabel
@@ -150,8 +113,8 @@ export function ViewShelterCard({handleState})
               labelFor={"curr_cap"}
               label={"Current Capacity"}
               fieldType={"text"}
-              value={editData.date} 
-              onChange={(e) => handleInputChange("date", e.target.value)}>
+              value={editData.current_capacity} 
+              onChange={(e) => handleInputChange("current_capacity", e.target.value)}>
             </InputWithLabel>
  
             <InputWithLabel
@@ -159,42 +122,28 @@ export function ViewShelterCard({handleState})
               labelFor={"tot_cap"}
               label={"Total capacity"}
               fieldType={"text"}
-              value={editData.time} 
-              onChange={(e) => handleInputChange("time", e.target.value)}
+              value={editData.total_capacity} 
+              onChange={(e) => handleInputChange("total_capacity", e.target.value)}
             ></InputWithLabel>
           </div>
         </div>
-        : */}
-        {/* <div className="inputs-in-modal">
-           <InputWithLabel labelFor={"type"} label={"Type"} value={editData.type}></InputWithLabel>
-           <InputWithLabel labelFor={"area"} label={"Area"} value={editData.area}></InputWithLabel>
-           <InputWithLabel labelFor={"date"}  label={"Date"} value={editData.date}></InputWithLabel>
-           <InputWithLabel labelFor={"time"} label={"Time"} value={editData.time}></InputWithLabel>
-           <InputWithLabel labelFor={"status"} label={"Status"} value={editData.isInactive ? "Not Active" : "Active"}></InputWithLabel>
-         </div> */}
-      
+        : 
         <div className="inputs-in-modal">
-          <InputWithLabel labelFor={"name"} label={"Name"}></InputWithLabel>
-          <InputWithLabel labelFor={"area"} label={"Area"}></InputWithLabel>
-          <div className="add-date-time-inputs">
-            <InputWithLabel labelFor={"curr_cap"}  label={"Current Capacity"} className={"date-time-fields"}></InputWithLabel>
-            <InputWithLabel labelFor={"tot_cap"} label={"Total Capacity"} className={"date-time-fields"}></InputWithLabel>
-          </div>
-          
-        </div>
-      {/* } */}
+           <InputWithLabel labelFor={"name"} label={"Name"} value={editData.name}></InputWithLabel>
+           <InputWithLabel labelFor={"area"} label={"Area"} value={editData.area}></InputWithLabel>
+           <InputWithLabel labelFor={"curr_cap"}  label={"Current Capacity"} value={editData.current_capacity}></InputWithLabel>
+           <InputWithLabel labelFor={"tot_cap"} label={"Total Capacity"} value={editData.total_capacity}></InputWithLabel>
+         </div>}
 
       <div className="modal-btn-position">
-        {/* {isEditing ?
-          // <ButtonRed btnText={"Save"} onClick={handleSave}></ButtonRed>
-          // :
-          // <>
-          //   <ButtonWhite btnText={"Delete"} onClick={handleDeleteClick}></ButtonWhite>
-          //   <ButtonRed btnText={"Edit"} onClick={handleEditClick}></ButtonRed>
-          // </>
-         } */}
-            <ButtonWhite btnText={"Delete"}></ButtonWhite>
-            <ButtonRed btnText={"Edit"}></ButtonRed> 
+        {isEditing ?
+          <ButtonRed btnText={"Save"} onClick={handleSave}></ButtonRed>
+          :
+          <>
+            <ButtonWhite btnText={"Delete"} onClick={handleDeleteClick}></ButtonWhite>
+            <ButtonRed btnText={"Edit"} onClick={handleEditClick}></ButtonRed>
+          </>
+         }
       </div>
     </div>
   );

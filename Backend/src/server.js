@@ -2,6 +2,7 @@ import express from "express";
 import mysql from "mysql2";
 import cors from "cors";
 import eventRoutes from "./routes/eventRoutes.js"; // import event routes
+import shelterRoutes from "./routes/shelterRoutes.js"; 
 
 const app = express();
 app.use(cors());
@@ -23,7 +24,7 @@ db.connect(err => {
 
 
 app.use("/api/events", eventRoutes);
-
+app.use("/api/shelternew", shelterRoutes);
 
 const PORT = 5000;
 app.get("/api/ping", (req, res) => {

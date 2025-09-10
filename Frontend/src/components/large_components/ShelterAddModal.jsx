@@ -1,110 +1,90 @@
 import { ModalHeader } from "../base_components/ModalHeader";
 import { InputWithLabel } from "../base_components/InputWithLabel";
 import { AREA_NAMES, EVENT_TYPES } from "../../utils/constants";
+import { useState } from "react";
 
-// import { useState } from "react";
-
-
-// export function ShelterAddModal({handleState, onAdd})
 export function ShelterAddModal({handleState})
 {
-  // const [eventName, setEventName] = useState("");
-  // const [areaName, setAreaName] = useState("");
-  // const [date, setDate] = useState("");
-  // const [time, setTime] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    area: "",
+    total_capacity: "",
+    current_capacity: "",
+  });
 
-  //Prevent prev values in the form from retaining
-  // function resetForm()
-  // {
-  //   setEventName("");
-  //   setAreaName("");
-  //   setDate("");
-  //   setTime("");
-  // }
+  // const [filteredAreas, setFilteredAreas] = useState(AREA_NAMES);
+  // const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // async function handleSubmit(e)
-  // {
-  //   e.preventDefault();
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
-  //   // Convert time to MySQL TIME format (HH:MM:SS)
-  //   function convertToMySQLTime(amPmTime)
-  //   {
-  //     // If time is already in 24-hour format (HH:MM), append ":00"
-  //     if (!amPmTime.includes("AM") && !amPmTime.includes("PM"))
-  //     {
-  //       return `${amPmTime}:00`;
-  //     }
+    // filter areas as user types
+    // if (field === "area") {
+    // const filtered = AREA_NAMES.filter((a) =>
+    // a.toLowerCase().includes(value.toLowerCase())
+    // );
+    // setFilteredAreas(filtered);
+    // setDropdownOpen(true);
+  };
 
-  //     const [time, modifier] = amPmTime.split(" "); // ["08:30", "AM"]
-  //     let [hours, minutes] = time.split(":").map(Number);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { name, area, total_capacity, current_capacity } = formData;
 
-  //     if (modifier === "PM" && hours !== 12) hours += 12;
-  //     if (modifier === "AM" && hours === 12) hours = 0;
+    if (!name || !area || !total_capacity || !current_capacity) {
+      alert("All fields are required!");
+      return;
+    }
 
-  //     return `${hours.toString().padStart(2, "0")}
-  //     :${minutes.toString().padStart(2, "0")}:00`;
-  //   }
+    try
+    {   
+      const res = await fetch("http://localhost:5000/api/shelternew/add",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, area, total_capacity, current_capacity }),
+      });
 
-  //   const formattedTime = convertToMySQLTime(time);
+      if (!res.ok)
+      {
+        const text = await res.text();
+        throw new Error(`HTTP ${res.status}: ${text}`);
+      }
 
-  //   const formData = {
-  //     eventName,
-  //     areaName,
-  //     date,
-  //     time: formattedTime
-  //   };
-
-  //   try
-  //   {
-  //     const response = await fetch("http://localhost:5000/api/events/add",
-  //       {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify(formData)
-  //       });
-
-  //     const data = await response.json();
-  //     if (data.success) {
-  //       const newEvent = {
-  //         id: data.Event_id,
-  //         title: eventName,
-  //         area: areaName,
-  //         date,
-  //         time: formattedTime
-  //       }
-
-  //       if (onAdd) {
-  //         onAdd(newEvent);
-  //         handleState();
-  //       }
-  //       else {
-  //         alert("Error: " + data.error);
-  //       }
-  //     }
-  //   }
-  //   catch (err)
-  //   {
-  //     console.error(err);
-  //     alert("Something went wrong while adding the event");
-  //   }
-  // }
+      // const result = await res.json();
+      // alert("Shelter added!");
+      // handleState();
+    }
+    
+    catch (err)
+    {
+      console.error(err);
+      alert("Failed to add shelter: " + err.message);
+    }
+  };
 
   return (
     <div className="modal">
-      {/* <ModalHeader header="Add Event" handleState={() => { handleState(); resetForm();} }></ModalHeader> */}
-      <ModalHeader header="Add Shelter" handleState={() => handleState}></ModalHeader>
-      {/* <form className="inputs-in-modal" onSubmit={handleSubmit}> */}
-      <form className="inputs-in-modal" >
+      <ModalHeader header="Add Shelter" handleState={handleState}></ModalHeader>
+      <form className="inputs-in-modal" onSubmit={handleSubmit}>
         <InputWithLabel
           labelFor={"name"}
           label={"Name"}
-          fieldType={"text"}>
+          fieldType={"text"}
+          placeholderTxt={"E.g - Khulna Central Masjid"}
+          value={formData.name}
+          onChange={(e)=>handleChange("name", e.target.value)}
+        >
         </InputWithLabel>
 
         <InputWithLabel
           labelFor={"area"} 
           label={"Area"} 
-          listName={"area-list"}>
+          listName={"area-list"}
+          placeholderTxt={"Select Area"}
+          value={formData.area}
+          onChange={(e)=>handleChange("area", e.target.value)}
+        >
         </InputWithLabel>
         <datalist id="area-list">
           {AREA_NAMES.map((area, idx) => (
@@ -114,10 +94,13 @@ export function ShelterAddModal({handleState})
       
         <div className="add-date-time-inputs">
           <InputWithLabel
-          className={"date-time-fields"}
-          labelFor={"curr_cap"}
-          label={"Current Capacity"}
-          fieldType={"text"}
+            className={"date-time-fields"}
+            labelFor={"curr_cap"}
+            label={"Current Capacity"}
+            fieldType={"text"}
+            placeholderTxt={"E.g - 50"}
+            value={formData.current_capacity}
+            onChange={(e)=>handleChange("current_capacity", e.target.value)}
           ></InputWithLabel>
 
           <InputWithLabel
@@ -125,7 +108,11 @@ export function ShelterAddModal({handleState})
             labelFor={"tot_cap"}
             label={"Total Capacity"}
             fieldType={"text"}
+            placeholderTxt={"E.g - 100"}
+            value={formData.total_capacity}
+            onChange={(e)=>handleChange("total_capacity", e.target.value)}
           ></InputWithLabel>
+
         </div>
         <InputWithLabel
           labelFor={"shelter-img"}

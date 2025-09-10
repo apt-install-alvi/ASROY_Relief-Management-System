@@ -1,9 +1,9 @@
 import "../styles/base_components/Card.css";
 
-export function Card({ img, title, field1, field2, field3, onClick})
+export function Card({ img, title, field1, field2, field3, onClick, ckey})
 {
   return (
-    <div className="card-body" onClick={onClick}>
+    <div className="card-body" onClick={onClick} key={ckey}>
       <div className="card-img"><img src={img}></img></div>
       <div className="card-content">
         <p className="card-title">{title}</p>
