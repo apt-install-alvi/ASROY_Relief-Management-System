@@ -1,6 +1,16 @@
 /* Map + right card row */
-.canvas-row { flex: 1; display: flex; gap: 18px; min-height: 0; }
-.map-box { flex: 1; min-width: 0; min-height: 0; }
+.canvas-row { 
+  flex: 1; 
+  display: flex; 
+  gap: 18px; 
+  height: 500px;
+}
+
+.map-box { 
+  flex: 1; 
+  height: 100%;
+}
+
 #map {
   height: 100%;
   min-height: 420px;

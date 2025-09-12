@@ -75,9 +75,16 @@ export function Test()
     const lg = L.layerGroup().addTo(map);
     markersLayerRef.current = lg;
 
-    map.whenReady(() => setTimeout(() => map.invalidateSize(), 0));
+    // map.whenReady(() => setTimeout(() => map.invalidateSize(), 0));
 
+    const handleResize = () =>
+    {
+      setTimeout(() => {map.invalidateSize();}, 100);
+    };
+
+    window.addEventListener('resize', handleResize);
     return () => {
+      window.removeEventListener('resize', handleResize);
       map.remove();
       mapRef.current = null;
       markersLayerRef.current = null;

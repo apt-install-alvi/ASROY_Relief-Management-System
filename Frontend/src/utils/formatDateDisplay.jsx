@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// utils/formatDateDisplay.js
+>>>>>>> e46976180579a7d809d27a3777a82f69dc654058
 export function formatDateForDisplay(sqlDate) {
   if (!sqlDate) return "";
 
@@ -21,4 +25,8 @@ export function formatDateForDisplay(sqlDate) {
   const monthName = months[parseInt(month, 10) - 1];
 
   return `${day}-${monthName}-${year}`;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> e46976180579a7d809d27a3777a82f69dc654058

@@ -11,6 +11,7 @@ CREATE TABLE Event (
   Time_of_occurrence TIME,
   Status ENUM('Active','Not Active') DEFAULT 'Active',
   Event_Image VARCHAR(255),
+  Event_Image VARCHAR(255),
   FOREIGN KEY (Event_area_id) REFERENCES Area(Area_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
