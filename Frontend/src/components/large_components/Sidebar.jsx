@@ -13,9 +13,9 @@ export function Sidebar()
         <ButtonSidebar link={"/"} icon={"/assets/icons/Home.svg"} btnText={"Home"}></ButtonSidebar>
         <ButtonSidebar link={"/events"} icon={"/assets/icons/Events.svg"} btnText={"Events"}></ButtonSidebar>
         <ButtonSidebar link={"/shelternew"} icon={"/assets/icons/Shelter.svg"} btnText={"Shelters"}></ButtonSidebar>
-        <ButtonSidebar link={"/"} icon={"/assets/icons/Volunteer.svg"} btnText={"Volunteers"}></ButtonSidebar>
-        <ButtonSidebar link={"/"} icon={"/assets/icons/Donation.svg"} btnText={"Donations"}></ButtonSidebar>
-        <ButtonSidebar link={"/"} icon={"/assets/icons/Inventory.svg"} btnText={"Inventory"}></ButtonSidebar>
+        <ButtonSidebar link={"/volunteer"} icon={"/assets/icons/Volunteer.svg"} btnText={"Volunteers"}></ButtonSidebar>
+        <ButtonSidebar link={"/donation"} icon={"/assets/icons/Donation.svg"} btnText={"Donations"}></ButtonSidebar>
+        <ButtonSidebar link={"/inventory"} icon={"/assets/icons/Inventory.svg"} btnText={"Inventory"}></ButtonSidebar>
       </nav>      
     </>
   )

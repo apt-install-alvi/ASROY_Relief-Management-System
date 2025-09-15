@@ -25,9 +25,8 @@ import { ViewShelterCard } from "../components/large_components/ViewShelterCard"
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "./homepage.css";
 import axios from "axios"; 
-import { areaCoordinates } from "./areaCoordinates.js"; 
+import { areaCoordinates } from "../utils/areaCoordinates.js"; 
 
 
 
@@ -59,7 +58,8 @@ export function Test()
       minZoom: 7.4,
       maxBounds: BD_BOUNDS,
       inertia: false,
-    }).setView([23.685, 90.3563], 7.2);
+    });
+    map.fitBounds(BD_BOUNDS);
     mapRef.current = map;
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -133,6 +133,7 @@ export function Test()
     markersLayerRef.current.clearLayers();
 
     const dotIcon = L.divIcon({
+      className: "pin", 
       html: '<span class="pin-dot"></span>',
       iconSize: [16, 16],
       iconAnchor: [8, 8],

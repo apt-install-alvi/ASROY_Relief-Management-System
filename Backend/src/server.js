@@ -9,8 +9,14 @@ import volunteerRoutes from "./routes/volunteerRoutes.js";
 import shelterRoutes from "./routes/shelterRoutes.js"; 
 
 const app = express();
+
 app.use(cors());
-app.use(express.json());
+app.use((req, res, next) => {
+  if (req.is("multipart/form-data")) {
+    return next();
+  }
+  express.json()(req, res, next);
+});
 app.use(express.urlencoded({ extended: true }));
 
 export const db = mysql.createConnection({
@@ -34,8 +40,10 @@ app.use("/uploads", express.static(uploadsPath));
 
 app.use("/api/events", eventRoutes);
 app.use("/api/volunteers", volunteerRoutes);
-app.use("/api/shelters", shelterRoutes); 
+app.use("/api/shelternew", shelterRoutes); 
+
 const PORT = process.env.PORT || 5000;
+
 app.get("/api/ping", (req, res) => {
   res.json({ success: true, message: "Frontend-backend connection OK" });
 });
@@ -49,5 +57,5 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, error: "Internal server error" });
 });
 
-app.listen(PORT, () => console.log('Server running on port ${PORT}'));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

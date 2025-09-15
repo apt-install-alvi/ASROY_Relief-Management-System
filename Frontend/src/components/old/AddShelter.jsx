@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AREA_NAMES } from "../utils/constants"; // import your AREA_NAMES array
+import { AREA_NAMES } from "../../utils/constants"; // import your AREA_NAMES array
 import "./Add_Popup.css";
 
 export function AddShelter({ header, handleState }) {

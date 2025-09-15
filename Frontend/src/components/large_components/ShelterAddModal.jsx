@@ -2,6 +2,7 @@ import { ModalHeader } from "../base_components/ModalHeader";
 import { InputWithLabel } from "../base_components/InputWithLabel";
 import { AREA_NAMES, EVENT_TYPES } from "../../utils/constants";
 import { useState } from "react";
+import { BASE_URL, safeParseJson } from "../../utils/api";
 
 export function ShelterAddModal({handleState})
 {
@@ -12,48 +13,69 @@ export function ShelterAddModal({handleState})
     current_capacity: "",
   });
 
-  // const [filteredAreas, setFilteredAreas] = useState(AREA_NAMES);
-  // const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [file, setFile] = useState(null);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-
-    // filter areas as user types
-    // if (field === "area") {
-    // const filtered = AREA_NAMES.filter((a) =>
-    // a.toLowerCase().includes(value.toLowerCase())
-    // );
-    // setFilteredAreas(filtered);
-    // setDropdownOpen(true);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const { name, area, total_capacity, current_capacity } = formData;
-
-    if (!name || !area || !total_capacity || !current_capacity) {
-      alert("All fields are required!");
-      return;
+  function handleFileChange(e) 
+  {
+    const selectedFile = e.target.files[0];
+    console.log("Selected file:", selectedFile);
+    if (selectedFile)
+    {
+      console.log("File name:", selectedFile.name);
+      console.log("File size:", selectedFile.size);
+      console.log("File type:", selectedFile.type);
     }
+    setFile(selectedFile);
+  };
+
+  async function handleSubmit(e)
+  {
+    e.preventDefault();
 
     try
-    {   
-      const res = await fetch("http://localhost:5000/api/shelternew/add",
+    { 
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("area", formData.area);
+      data.append("total_capacity", formData.total_capacity);
+      data.append("current_capacity", formData.current_capacity);
+      if (file) data.append("image", file);
+
+      const res = await fetch(`${BASE_URL}/api/shelternew/add`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, area, total_capacity, current_capacity }),
+        body: data
       });
 
+      
+      const result = await safeParseJson(res);
       if (!res.ok)
+        throw new Error(result.error || "Failed to add shelter");
+
+      if (result.success && result.shelter)
       {
-        const text = await res.text();
-        throw new Error(`HTTP ${res.status}: ${text}`);
+        const createdShelter = result.shelter;
+
+        // Normalize image path
+        if (createdShelter.Shelter_image)
+        {
+          createdShelter.Shelter_image = createdShelter.Shelter_image.startsWith("http") ?
+            createdShelter.Shelter_image : `${BASE_URL}${createdShelter.Shelter_image}`;
+        }
+        
+        alert("Shelter added successfully.");
+        handleState();
+      }
+      
+      else
+      {
+        throw new Error("Invalid response from server");
       }
 
-      // const result = await res.json();
-      // alert("Shelter added!");
-      // handleState();
     }
     
     catch (err)
@@ -117,7 +139,9 @@ export function ShelterAddModal({handleState})
         <InputWithLabel
           labelFor={"shelter-img"}
           label={"Image"}
-          fieldType={"file"}>
+          fieldType={"file"}
+          onChange={handleFileChange}
+        >
         </InputWithLabel>
         <div className="modal-btn-position"><input type="submit" value="Add" className="red-btn"/></div>
       </form>

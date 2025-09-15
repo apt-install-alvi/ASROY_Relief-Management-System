@@ -4,7 +4,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./homepage.css";
 import axios from "axios"; 
-import { areaCoordinates } from "./areaCoordinates.js"; 
+import { areaCoordinates } from "../utils/areaCoordinates.js"; 
 import { ButtonWhite } from "../components/base_components/ButtonWhite.jsx";
 import { ButtonRed } from "../components/base_components/ButtonRed.jsx";
 
@@ -38,26 +38,15 @@ export function Homepage() {
     inertia: false,
   }).setView([23.685, 90.3563], 7.2);
 
-<<<<<<< HEAD
     L.rectangle(BD_BOUNDS, {
       color: "#700000",
       weight: 2,
       fillOpacity: 0.03,
     }).addTo(map);
-=======
-  mapRef.current = map;
->>>>>>> e46976180579a7d809d27a3777a82f69dc654058
 
   // Add tile layer
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors",
-  }).addTo(map);
-
-  // Add Bangladesh rectangle bounds
-  L.rectangle(BD_BOUNDS, {
-    color: "#7a0c0c",
-    weight: 2,
-    fillOpacity: 0.03,
   }).addTo(map);
 
   // Create a marker layer group

@@ -119,7 +119,8 @@ CREATE TABLE Volunteer (
     Volunteer_name VARCHAR(50) NOT NULL,
     Volunteer_gender ENUM('Male', 'Female' ,'Better not to mention') DEFAULT 'Better not to mention',
     Volunteer_age NUMERIC NOT NULL CHECK (Volunteer_age > 15),
-    Volunteer_Image VARCHAR(255) DEFAULT NULL
+    Volunteer_Image VARCHAR(255) DEFAULT NULL,
+    Status VARCHAR(20) DEFAULT 'Active'
 );
 
 

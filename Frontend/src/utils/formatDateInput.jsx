@@ -5,8 +5,5 @@ export function formatDateForInput(dateString) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> e46976180579a7d809d27a3777a82f69dc654058
+

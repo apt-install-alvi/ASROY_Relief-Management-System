@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Checkbox } from "../base_components/Checkbox";
 import { InputField } from "../base_components/InputField";
 import "./FilterPopup.css";
-import { AREA_NAMES, EVENT_TYPES } from "../utils/constants"; // Import your constants
+import { AREA_NAMES, EVENT_TYPES } from "../../utils/constants.js"; // Import your constants
 
 export function FilterModal({ handleState, onFilter }) {
   const [selectedFilter, setSelectedFilter] = useState(null);

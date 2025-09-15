@@ -6,7 +6,7 @@ import "../components/volunteerAdd.css";
 import "../components/VolunteerViewcard.css";
 import VolunteerAddPopup from "../components/VolunteerAddPopup";
 import VolunteerViewCard from "../components/VolunteerViewCard";
-import { FilterModal } from "../components/FilterPopup";
+import { FilterModal } from "../components/old/FilterPopup";
 import { BASE_URL, safeParseJson } from "../utils/api";
 
 const PLACEHOLDER = "/assets/images/volunteer.jpeg";

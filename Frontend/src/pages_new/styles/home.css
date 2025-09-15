@@ -1,9 +1,19 @@
 /* Map + right card row */
+.main
+{
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: 100%;
+  margin-top: 40px;
+}
+
 .canvas-row { 
-  flex: 1; 
+  margin-top: -24px;
   display: flex; 
-  gap: 18px; 
-  height: 500px;
+  gap: 20px; 
+  flex: 1 1 auto;
+  min-height: 60vh;
 }
 
 .map-box { 
@@ -19,27 +29,61 @@
   overflow: hidden;
 }
 
-/* Right info card */
 .right-card {
   width: 360px;
+  height: max-content;
   background: var(--bg-white);
   border-radius: 12px;
   box-shadow: 0 6px 22px rgba(0,0,0,.08);
-  padding: 16px 18px;
-  overflow: auto;
+  padding: 20px 18px;
 }
-.right-card h3 { margin: 12px 0 10px; color: var(--red);}
-.right-card p { margin: 6px 0; }
 
-/* lists with dots */
-.dot-list { list-style: none; padding: 0; margin: 8px 0 14px; display: grid; gap: 10px; }
-.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
-.dot.red { background: #b21515; }
+.right-card h3 
+{ 
+  margin: 12px 0 10px; 
+  color: var(--red);
+}
 
-/* Simple marker style for Leaflet divIcon */
-/* .pin { position: relative; } */
-.pin-dot {
+.right-card p 
+{ 
+  margin: 6px 0; 
+}
+
+.dot-list 
+{ 
+  list-style: none; 
+  padding: 0; 
+  margin: 8px 0 14px; 
+  display: grid; 
+  gap: 10px; 
+}
+
+.dot 
+{ 
+  display: inline-block;
+  width: 8px; 
+  height: 8px; 
+  border-radius: 50%; 
+  margin-right: 8px; 
+}
+
+.dot.red 
+{ 
+  background: #b21515; 
+}
+
+.pin 
+{ 
+  position: relative; 
+}
+
+.pin-dot 
+{
   position: relative;
-  display: inline-block; width: 12px; height: 12px; border-radius: 50%;
-  background: #c90d0d; box-shadow: 0 0 0 3px rgba(178,21,21,.15);
+  display: inline-block; 
+  width: 12px; 
+  height: 12px; 
+  border-radius: 50%;
+  background: #c90d0d; 
+  box-shadow: 0 0 0 3px rgba(178,21,21,.15);
 }

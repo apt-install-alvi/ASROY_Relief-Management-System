@@ -16,8 +16,4 @@ export function formatTimeForDisplay(timeString) {
   }
 
   return `${hours}:${minutes} ${period}`;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> e46976180579a7d809d27a3777a82f69dc654058

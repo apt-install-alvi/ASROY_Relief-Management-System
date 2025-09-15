@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { ShelterAddModal } from "../components/large_components/ShelterAddModal";
 import { ShelterFilterModal } from "../components/large_components/ShelterFilterModal";
 import { ViewShelterCard } from "../components/large_components/ViewShelterCard";  
+import { BASE_URL } from "../utils/api";
 
 export function ShelterPageNew()
 {
@@ -87,7 +88,6 @@ export function ShelterPageNew()
           <div className="events-subheader">
             <div className="modal-btn-position">
               <ButtonRed btnText={"Add Shelter"} onClick={() => setShowAddModal(true)}></ButtonRed>
-              {/* <ButtonRed btnText={"Filter"} onClick={() => { setShowFilterModal(true); setShowResetBtn(true); }}></ButtonRed> */}
               <ButtonRed btnText={"Filter"} onClick={() => setShowFilterModal(true)}></ButtonRed>
             </div>
           </div>
@@ -95,7 +95,7 @@ export function ShelterPageNew()
             {shelters.map((s) =>(
               <Card
                 ckey={s.Shelter_id}
-                img={"/assets/images/shelter.jpg"}
+                img={s.Shelter_image ? `${BASE_URL}${s.Shelter_image}` : "/assets/images/shelter.jpg"}
                 title={s.Shelter_name}
                 field1={s.Area_name}
                 field2={`Current Capacity: ${s.Current_capacity}`} 
@@ -130,7 +130,7 @@ export function ShelterPageNew()
                 current_capacity={selectedShelter.Current_capacity}
                 total_capacity={selectedShelter.Total_capacity}
                 handleState={closeViewModal}
-                onUpdate={handleSaveShelter}
+                onSave={handleSaveShelter}
                 onDelete={(id) => {
                   setShelters(prev => prev.filter(s => s.Shelter_id !== id));
                   setAllShelters(prev => prev.filter(s => s.Shelter_id !== id));
