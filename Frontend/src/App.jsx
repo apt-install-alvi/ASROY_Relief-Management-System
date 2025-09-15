@@ -16,7 +16,6 @@ function App() {
         {/* <Route path="/" element={<Homepage />} /> */}
         <Route path="/" element={<HomePage />} />
         <Route path="/events" element={<EventPage />} />
-        {/* <Route path="/shelters" element={<ShelterPage />} /> */}
         <Route path="/test" element={<Test />}></Route>
         <Route path="/shelternew" element={<ShelterPageNew />}></Route>
         <Route path="/donation" element={<Donation />} />
