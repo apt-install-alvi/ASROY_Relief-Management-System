@@ -8,6 +8,9 @@ import { ShelterAddModal } from "../components/large_components/ShelterAddModal"
 import { ShelterFilterModal } from "../components/large_components/ShelterFilterModal";
 import { ViewShelterCard } from "../components/large_components/ViewShelterCard";  
 import { BASE_URL } from "../utils/api";
+import { ButtonWhite } from "../components/base_components/ButtonWhite";
+
+const PLACEHOLDER = "/assets/images/shelter.jpg";
 
 export function ShelterPageNew()
 {
@@ -17,15 +20,15 @@ export function ShelterPageNew()
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedShelter, setSelectedShelter] = useState(null);
-  // const [showResetBtn, setShowResetBtn] = useState(false);
+  const [isFiltered, setIsFiltered] = useState(false);
 
  
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/shelternew")
+      .get(`${BASE_URL}/api/shelternew`)
       .then((res) => {
-        console.log("API Response Data:", res.data); // Add this line
-        console.log("First shelter object:", res.data[0]); // Add this line
+        console.log("API Response Data:", res.data);
+        console.log("First shelter object:", res.data[0]);
         setShelters(res.data);
         setAllShelters(res.data);
       })
@@ -54,12 +57,27 @@ export function ShelterPageNew()
       setShowViewModal(false);
   };
   
-  // function resetFilters()
-  // {
-  //   setShelters(allShelters);
-  //   setShowResetBtn(false);
-  // }
-  //img handle
+  //handle filtering
+  function handleFilterResults(filteredShelters)
+  {
+    if (filteredShelters === null)
+    {
+      setShelters(allShelters);
+      setIsFiltered(false);
+    }
+
+    else
+    {
+      setShelters(filteredShelters);
+      setIsFiltered(true);
+    }
+  }
+
+  function resetFilters()
+  {
+    setShelters(allShelters);
+    setIsFiltered(false);
+  }
 
   //close modals
   function closeAddModal()
@@ -89,24 +107,24 @@ export function ShelterPageNew()
             <div className="modal-btn-position">
               <ButtonRed btnText={"Add Shelter"} onClick={() => setShowAddModal(true)}></ButtonRed>
               <ButtonRed btnText={"Filter"} onClick={() => setShowFilterModal(true)}></ButtonRed>
+              {isFiltered ?
+              <ButtonWhite btnText={"Reset Filters"} onClick={resetFilters}></ButtonWhite> : null}
             </div>
           </div>
           <div className="card-grid">
             {shelters.map((s) =>(
               <Card
                 ckey={s.Shelter_id}
-                img={s.Shelter_image ? `${BASE_URL}${s.Shelter_image}` : "/assets/images/shelter.jpg"}
+                img={PLACEHOLDER}
                 title={s.Shelter_name}
                 field1={s.Area_name}
                 field2={`Current Capacity: ${s.Current_capacity}`} 
                 field3={`Total Capacity: ${s.Total_capacity}`}
                 onClick={() => {
-                  console.log("Selected shelter:", s); // Debug log
                   setSelectedShelter(s);
                   setShowViewModal(true);
                 }}>
               </Card>))}
-
           </div>
         </section>
         
@@ -117,25 +135,19 @@ export function ShelterPageNew()
         
         {showFilterModal ? 
           <div className="modal-backdrop">
-            {/* <ShelterFilterModal handleState={closeFilterModal} onFilter={handleFilterResults}></ShelterFilterModal> */}
-            <ShelterFilterModal handleState={closeFilterModal}></ShelterFilterModal>
+            <ShelterFilterModal handleState={closeFilterModal} onFilter={handleFilterResults}></ShelterFilterModal>
           </div> : null}
         
         {(showViewModal && selectedShelter) ?
           <div className="modal-backdrop">
              <ViewShelterCard
-                eventId={selectedShelter.Shelter_id}
+                shelterId={selectedShelter.Shelter_id}
                 name={selectedShelter.Shelter_name}
                 area={selectedShelter.Area_name}
                 current_capacity={selectedShelter.Current_capacity}
                 total_capacity={selectedShelter.Total_capacity}
                 handleState={closeViewModal}
                 onSave={handleSaveShelter}
-                onDelete={(id) => {
-                  setShelters(prev => prev.filter(s => s.Shelter_id !== id));
-                  setAllShelters(prev => prev.filter(s => s.Shelter_id !== id));
-                  closeViewModal();
-                }}
             ></ViewShelterCard>
           </div>
           : null}

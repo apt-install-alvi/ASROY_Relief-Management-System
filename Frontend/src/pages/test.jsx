@@ -1,288 +1,263 @@
-import "../components/styles/test.css";
-import "../pages_new/styles/home.css";
-import { Card } from "../components/base_components/Card";
+import React, { useState, useEffect } from "react";
+import VolunteerAddPopup from "../components/VolunteerAddPopup";
+import VolunteerViewCard from "../components/VolunteerViewCard";
+import { FilterModal } from "../components/old/FilterPopup";
+import { BASE_URL, safeParseJson } from "../utils/api";
+import { Sidebar } from "../components/large_components/Sidebar";
+import { Header } from "../components/base_components/Header";
 import { ButtonRed } from "../components/base_components/ButtonRed";
 import { ButtonWhite } from "../components/base_components/ButtonWhite";
-import { InputField } from "../components/base_components/InputField";
-import { ModalHeader } from "../components/base_components/ModalHeader";
-import { ButtonSidebar } from "../components/base_components/ButtonSidebar";
-import { Header } from "../components/base_components/Header";
-import { Sidebar } from "../components/large_components/Sidebar";
+import { Card } from "../components/base_components/Card";
 import { SubHeader } from "../components/base_components/SubHeader";
-import { EventAddModal } from "../components/large_components/EventAddModal";
-import { EventFilterModal } from "../components/large_components/EventFilterModal";
 
-import { InputWithLabel } from "../components/base_components/InputWithLabel";
+const PLACEHOLDER = "/assets/images/volunteer_default.jpeg";
 
-// import { useState, useEffect } from "react";
-import { ViewEventCard } from "../components/large_components/ViewEventCard";
-// import { formatTimeForDisplay } from "../utils/formatTimeDisplay";
-// import { formatDateForDisplay } from "../utils/formatDateDisplay";
-// import { assignImg } from "../utils/assignImg";
-import { ShelterAddModal } from "../components/large_components/ShelterAddModal";
-import { ShelterFilterModal } from "../components/large_components/ShelterFilterModal";
-import { ViewShelterCard } from "../components/large_components/ViewShelterCard"; 
-import React, { useEffect, useRef, useState } from "react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import axios from "axios"; 
-import { areaCoordinates } from "../utils/areaCoordinates.js"; 
+export function Test() {
+  const [activeVolunteers, setActiveVolunteers] = useState([]);
+  const [pastVolunteers, setPastVolunteers] = useState([]);
+  const [allActiveVolunteers, setAllActiveVolunteers] = useState([]);
+  const [allPastVolunteers, setAllPastVolunteers] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedVolunteer, setSelectedVolunteer] = useState(null);
+  const [isFiltered, setIsFiltered] = useState(false);
 
-
-
-export function Test()
-{
-  const mapRef = useRef(null);
-  const mapDivRef = useRef(null);
-  const markersLayerRef = useRef(null);
-
-  const [events, setEvents] = useState([]);       // all events from backend
-  const [filtered, setFiltered] = useState([]);   // filtered events
-  const [showFilterModal, setshowFilterModal] = useState(false);
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  const [filterTitle, setFilterTitle] = useState("Active Events");
-  const BD_BOUNDS = [
-    [20.375, 88.0],
-    [26.635, 92.69],
-  ];
-  // Initialize map
   useEffect(() => {
-    if (mapRef.current) {
-      mapRef.current.remove();
-      mapRef.current = null;
-    }
-    if (!mapDivRef.current) return;
-
-    const map = L.map(mapDivRef.current, {
-      minZoom: 7.4,
-      maxBounds: BD_BOUNDS,
-      inertia: false,
-    });
-    map.fitBounds(BD_BOUNDS);
-    mapRef.current = map;
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; OpenStreetMap contributors",
-    }).addTo(map);
-
-    L.rectangle(BD_BOUNDS, {
-      color: "#700000",
-      weight: 2,
-      fillOpacity: 0.03,
-    }).addTo(map);
-
-    const lg = L.layerGroup().addTo(map);
-    markersLayerRef.current = lg;
-
-    // map.whenReady(() => setTimeout(() => map.invalidateSize(), 0));
-
-    const handleResize = () =>
+    async function fetchVolunteers()
     {
-      setTimeout(() => {map.invalidateSize();}, 100);
-    };
+      try
+      {
+        const response = await fetch(`${BASE_URL}/api/volunteers/all`);
+        const data = await safeParseJson(response);
+        if (!response.ok)
+        {
+          throw new Error((data && data.error) || `HTTP error! status: ${response.status}`);
+        }
 
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      map.remove();
-      mapRef.current = null;
-      markersLayerRef.current = null;
-    };
-  }, []);
-
-  // Fetch events from backend
-  useEffect(() => {
-    axios.get("http://localhost:5000/api/events/homepage")
-      .then(res => {
-        const allEvents = res.data.map(e => {
-          const coords = areaCoordinates[e.Area_name] || { lat: 23.685, lng: 90.3563 };
-          return {
-            id: e.Event_id,
-            title: e.Event_name,
-            area: e.Area_name,
-            date: e.Date_of_occurrence,
-            status: e.Status,
-            lat: coords.lat,
-            lon: coords.lng
-          };
+        const normalize = (v) => ({
+          ...v,
+          Volunteer_Image: v.Volunteer_Image ? (v.Volunteer_Image.startsWith("http") ? v.Volunteer_Image : `${BASE_URL}${v.Volunteer_Image}`) : null,
         });
 
-        setEvents(allEvents);
+        const active = (data || []).filter((v) => v.Status === "Active").map(normalize);
+        const inactive = (data || []).filter((v) => v.Status !== "Active").map(normalize);
+        setActiveVolunteers(active);
+        setPastVolunteers(inactive);
+        setAllActiveVolunteers(active);
+        setAllPastVolunteers(inactive);
+      }
+      
+      catch (err)
+      {
+        console.error("Fetch error:", err);
+        setActiveVolunteers([]);
+        setPastVolunteers([]);
+        setAllActiveVolunteers([]);
+        setAllPastVolunteers([]);
+      }      
+    };
 
-        // Default: show only Active events
-        const activeEvents = allEvents.filter(ev => ev.status === "Active");
-        setFiltered(activeEvents);
-
-      })
-      .catch(err => console.error(err));
+    fetchVolunteers();
   }, []);
 
-  useEffect(() => {
-  if (mapRef.current && filtered.length) {
-    renderMarkers(filtered);
-  }
-}, [filtered]);
-
-
-  
-
-  // Render markers function
-  const renderMarkers = (eventsToRender) => {
-    if (!markersLayerRef.current) return;
-    markersLayerRef.current.clearLayers();
-
-    const dotIcon = L.divIcon({
-      className: "pin", 
-      html: '<span class="pin-dot"></span>',
-      iconSize: [16, 16],
-      iconAnchor: [8, 8],
-    });
-
-    eventsToRender.forEach(e =>
-    {
-      L.marker([e.lat, e.lon], { icon: dotIcon }).addTo(markersLayerRef.current)
-      .bindTooltip(`${e.title} - ${e.area} - ${formatDisplayDate(e.date)}`);
-    });
-
-  };
-
-  function applyFilter()
+  function handleAddVolunteer(newVolunteer)
   {
-    const from = fromDate ? new Date(fromDate) : null;
-    const to = toDate ? new Date(toDate) : null;
+    if (!newVolunteer)
+      return;
 
-    const next = events.filter(e =>
+    if (newVolunteer.Volunteer_Image && newVolunteer.Volunteer_Image.startsWith("/"))
     {
-      const d = new Date(e.date);
-      if (from && d < from) return false;
-      if (to && d > to) return false;
-      return true;
-    });
-
-    setFiltered(next);
-
-    if (from || to)
+      newVolunteer.Volunteer_Image = `${BASE_URL}${newVolunteer.Volunteer_Image}`;
+    }
+    if (newVolunteer.Status === "Active")
     {
-      setFilterTitle(`${formatDisplayDate(fromDate)} — ${formatDisplayDate(toDate)}`);
+      setActiveVolunteers((prev) => [newVolunteer, ...prev]);
+      setAllActiveVolunteers((prev) => [newVolunteer, ...prev]);
+    }
+    else
+    {
+      setPastVolunteers((prev) => [newVolunteer, ...prev]);
+      setAllPastVolunteers((prev) => [newVolunteer, ...prev]);
+    }
+  }
+
+  function handleSave(updatedVolunteer)
+  {
+    // normalize image path if backend returned "/uploads/..."
+    if (updatedVolunteer && updatedVolunteer.Volunteer_Image && updatedVolunteer.Volunteer_Image.startsWith("/")) {
+      updatedVolunteer.Volunteer_Image = `${BASE_URL}${updatedVolunteer.Volunteer_Image}`;
+    }
+
+    const isNowActive = updatedVolunteer.Status === "Active";
+
+    if (isNowActive)
+    {
+      setActiveVolunteers((prev) =>
+      [
+        ...prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id),
+        updatedVolunteer,
+      ]);
+      
+      setPastVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id));
+      
+      setAllActiveVolunteers((prev) =>
+      [
+        ...prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id),
+        updatedVolunteer,
+        ]);
+      
+      setAllPastVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id));
     }
     
     else
     {
-      setFilterTitle("Active Events");
+      setPastVolunteers((prev) =>
+      [
+        ...prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id),
+        updatedVolunteer,
+        ]);
+      
+      setActiveVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id));
+      
+      setAllPastVolunteers((prev) =>
+      [
+        ...prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id),
+        updatedVolunteer,
+        ]);
+      
+      setAllActiveVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id));
     }
 
-    setshowFilterModal(false);
-  };
+    setShowViewModal(false);
 
-  // Clear filter
-  function clearFilter()
-  {
-    setFromDate("");
-    setToDate("");
-    const activeEvents = events.filter(e => e.status === "Active");
-    setFiltered(activeEvents);
-    setFilterTitle("Active Events");
-    setshowFilterModal(false);
   }
 
-  function formatDisplayDate(dateStr)
+  function handleDelete(id)
   {
-    if (!dateStr)
-      return "";
-    const d = new Date(dateStr);
-    if (isNaN(d))
-      return ""; 
-    const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
-    const day = d.getDate().toString().padStart(2, "0");
-    const month = months[d.getMonth()];
-    const year = d.getFullYear();
-    
-    return `${day}-${month}-${year}`;
+    setActiveVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== id));
+    setPastVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== id));
+    setAllActiveVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== id));
+    setAllPastVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== id));
+    setShowViewModal(false);
   }
-  
-  function handleModalClose()
+
+  function handleFilterResults(filteredVolunteers)
   {
-    setshowFilterModal(false);
+    const active = filteredVolunteers.filter((v) => v.Status === "Active");
+    const inactive = filteredVolunteers.filter((v) => v.Status !== "Active");
+
+    setActiveVolunteers(active);
+    setPastVolunteers(inactive);
+    setIsFiltered(true);
   }
+
+  function resetFilters()
+  {
+    setActiveVolunteers(allActiveVolunteers);
+    setPastVolunteers(allPastVolunteers);
+    setIsFiltered(false);
+  }
+
+  const closeAddModal = () => setShowAddModal(false);
+  const closeFilterModal = () => setShowFilterModal(false);
+  const closeViewModal = () => setShowViewModal(false);
 
   return (
     <>
       <Sidebar></Sidebar>
-      <Header title={"Activities At-A-Glance"}></Header>
-      <main className="main">
-        <div className="modal-btn-position">
-        <ButtonRed btnText={"Filter By Occurrence"} onClick={() => setshowFilterModal(true)}></ButtonRed>
-        </div>
-
-        <div className="canvas-row">
-          <div className="map-box">
-            <div ref={mapDivRef} id="map" />
-          </div>
-
-          <div className="right-card">
-            <h3>{filterTitle}</h3>
-            <ul className="dot-list">
-              {filtered.map((e) => (
-                <li key={e.id}>
-                  <span className="dot red" />
-                  {e.title} - {e.area} - {formatDisplayDate(e.date)}
-                </li>
-              ))}
-
-              {filtered.length === 0 && <li>No events in this range.</li>}
-            </ul>
-
-            <h3>Volunteers</h3>
-            <p>
-              Total Volunteers : <b>52</b>
-            </p>
-            <p>
-              Active Volunteers : <b>36</b>
-            </p>
-
-            <h3>Donations</h3>
-            <p>
-              Total Received : <b>Tk.26,503</b>
-            </p>
-            <p>
-              Received in the Current Month : <b>Tk.3,600</b>
-            </p>
+      <Header title={"Volunteers"}></Header>
+      <main>
+        <section className="active-events">
+          <div className="events-subheader">
+          <SubHeader title={"Active Volunteers"}></SubHeader>
+          <div className="add-filter-div">
+            <ButtonRed btnText={"Add Volunteer"} onClick={() => setShowAddModal(true)}></ButtonRed>
+            <ButtonRed btnText={"Filter"} onClick={() => setShowFilterModal(true)}></ButtonRed>
+            {isFiltered ?
+              <ButtonWhite btnText={"Reset Filters"} onClick={resetFilters}></ButtonWhite> : null}
           </div>
         </div>
-      </main>
+          <div className="card-grid">
+          {activeVolunteers.map((v) => (
+            <Card
+              ckey={v.Volunteer_id}
+              img={v.Volunteer_Image ? v.Volunteer_Image : PLACEHOLDER}
+              title={v.Volunteer_name}
+              field1={`Gender: ${v.Gender}`}
+              field2={`Age: ${v.Volunteer_age}`} 
+              field3={`Status: ${v.Status}`}
+              onClick={() => {
+                setSelectedVolunteer(v);
+                setShowViewModal(true);
+              }}>
+            </Card>
+          ))}
+          </div>
+        </section>
 
-      {showFilterModal && (
-        <>
-          <div className="modal-backdrop">
-            <div className="modal">
-              <ModalHeader header={"Filter by Occurrence"} handleState={handleModalClose}></ModalHeader>
-              <InputWithLabel
-                labelFor={"from-date"}
-                label="From"
-                fieldType={"date"}
-                value={fromDate}
-                onChange={(e)=> setFromDate(e.target.value)}
-              ></InputWithLabel>
+        <section className="past-events">
+          <SubHeader title={"Inactive Volunteers"}></SubHeader>
+          <div className="card-grid">
+            {pastVolunteers.map((v) => (
+            <Card
+              ckey={v.Volunteer_id}
+              img={v.Volunteer_Image ? v.Volunteer_Image : PLACEHOLDER}
+              title={v.Volunteer_name}
+              field1={`Gender: ${v.Gender}`}
+              field2={`Age: ${v.Volunteer_age}`} 
+              field3={`Status: ${v.Status}`}
+              onClick={() => {
+                setSelectedVolunteer(v);
+                setShowViewModal(true);
+              }}>
+            </Card>
+            ))}
+          </div>
+        </section>
+          
 
-              <InputWithLabel
-                labelFor={"to-date"}
-                label="To"
-                fieldType={"date"}
-                value={toDate}
-                onChange={(e)=> setToDate(e.target.value)}
-              ></InputWithLabel>
-              
-              <div className="modal-btn-position">
-                <ButtonWhite btnText={"Clear"} onClick={clearFilter}>
-                </ButtonWhite>
-                <ButtonRed btnText={"Add Filter"} onClick={applyFilter}>
-                </ButtonRed>
-            </div>
+          {/* Volunteer Add Popup */}
+          {showAddModal && (
+            <div className="popup-backdrop">
+              <div className="popup-body">
+                <VolunteerAddPopup
+                  header="Volunteer"
+                  handleState={closeAddModal}
+                  onAdd={handleAddVolunteer}
+                />
               </div>
             </div>
-        </>
-      )}
-    </>
+          )}
+
+          {/* Filter Modal */}
+          {showFilterModal && (
+            <div className="popup-backdrop">
+              <div className="popup-body">
+                <FilterModal handleState={closeFilterModal} onFilter={handleFilterResults} onReset={resetFilters} />
+              </div>
+            </div>
+          )}
+
+          {/* Volunteer View Card */}
+          {showViewModal && selectedVolunteer && (
+            <div className="popup-backdrop">
+              <div className="viewcard-body">
+                <VolunteerViewCard
+                  volunteerId={selectedVolunteer.Volunteer_id}
+                  image={selectedVolunteer.Volunteer_Image}
+                  name={selectedVolunteer.Volunteer_name}
+                  gender={selectedVolunteer.Gender}
+                  age={selectedVolunteer.Volunteer_age}
+                  status={selectedVolunteer.Status}
+                  handleState={closeViewModal}
+                  onUpdate={handleSave}
+                  onDelete={handleDelete}
+                />
+              </div>
+            </div>
+          )}
+      </main>
+      </>
   );
 }

@@ -133,7 +133,7 @@ export function EventPage()
           <div className="card-grid">
             {activeEvents.map((ev) =>(
               <Card
-                key={ev.id}
+                ckey={ev.id}
                 img={assignImg(ev.Event_name)}
                 title={ev.Event_name}
                 field1={ev.area}
@@ -154,7 +154,7 @@ export function EventPage()
           <div className="card-grid">
             {pastEvents.map((ev) =>(
               <Card
-                key={ev.id}
+                ckey={ev.id}
                 img={assignImg(ev.Event_name)}
                 title={ev.Event_name}
                 field1={ev.area}

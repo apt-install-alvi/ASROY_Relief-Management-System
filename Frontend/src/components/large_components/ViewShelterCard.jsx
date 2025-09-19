@@ -1,15 +1,13 @@
 import { ModalHeader } from "../base_components/ModalHeader";
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { InputWithLabel } from "../base_components/InputWithLabel";
 import { AREA_NAMES, EVENT_TYPES } from "../../utils/constants";
 import { ButtonRed } from "../base_components/ButtonRed";
 import { ButtonWhite } from "../base_components/ButtonWhite";
 import axios from "axios";
-import { BASE_URL, safeParseJson } from "../../utils/api";
+import { BASE_URL } from "../../utils/api";
 
-const PLACEHOLDER = "/assets/images/shelter.jpg";
-
-export function ViewShelterCard({shelterId, name, area, total_capacity, current_capacity, handleState, onSave })  
+export function ViewShelterCard({shelterId, name, area, total_capacity, current_capacity, handleState, onSave})  
 {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
@@ -17,7 +15,6 @@ export function ViewShelterCard({shelterId, name, area, total_capacity, current_
     area: area || "",
     total_capacity: total_capacity || 0,
     current_capacity: current_capacity || 0,
-    image: null
   });
   const [originalData] = useState(editData);
 
@@ -45,43 +42,13 @@ export function ViewShelterCard({shelterId, name, area, total_capacity, current_
   async function handleSave()
   {
     try
-    {  
-      const formData = new FormData();
-      formData.append("name", editData.name);
-      formData.append("area", editData.area);
-      formData.append("total_capacity", editData.total_capacity);
-      formData.append("current_capacity", editData.current_capacity);
-      if (editData.image instanceof File)
-      {
-        formData.append("image", editData.image);
-      }
-      
-      const response = await axios.put(`http://localhost:5000/api/shelternew/update/${shelterId}`, formData,
-        {
-          headers:
-          {
-            'Content-Type': 'multipart/form-data'
-          }
-        }
-      );
-
-      if (response.data.success) {
-        const updatedShelter = response.data.shelter;
-        // Normalize image path
-        if (updatedShelter.Shelter_image) {
-          updatedShelter.Shelter_image = updatedShelter.Shelter_image.startsWith("http") ?
-            updatedShelter.Shelter_image : `${BASE_URL}${updatedShelter.Shelter_image}`;
-        }
-      
-        onSave(updatedShelter);
-        setIsEditing(false);
-        alert("Shelter updated successfully");
-      }
-
-      else {
-        throw new Error(response.data.error || "Failed to update shelter");
-      }
+    {        
+      await axios.put(`${BASE_URL}/api/shelternew/update/${shelterId}`, editData);
+      onSave(editData);
+      setIsEditing(false);
+      alert("Shelter updated successfully");
     }
+
     catch (err)
     {
       console.error(err);
@@ -96,10 +63,10 @@ export function ViewShelterCard({shelterId, name, area, total_capacity, current_
 
     try
     {
-      await axios.delete(`http://localhost:5000/api/shelternew/delete/${shelterId}`);
+      await axios.delete(`${BASE_URL}/api/shelternew/delete/${shelterId}`);
       alert("Shelter deleted successfully");
-      handleState(); // close modal
-      onSave(null, "delete"); // inform parent to remove from list
+      handleState();
+      onSave(null, "delete");
     }
     catch (err)
     {

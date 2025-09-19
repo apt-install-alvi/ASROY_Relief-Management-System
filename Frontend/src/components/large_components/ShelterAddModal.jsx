@@ -13,69 +13,34 @@ export function ShelterAddModal({handleState})
     current_capacity: "",
   });
 
-  const [file, setFile] = useState(null);
-
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  function handleFileChange(e) 
-  {
-    const selectedFile = e.target.files[0];
-    console.log("Selected file:", selectedFile);
-    if (selectedFile)
-    {
-      console.log("File name:", selectedFile.name);
-      console.log("File size:", selectedFile.size);
-      console.log("File type:", selectedFile.type);
-    }
-    setFile(selectedFile);
   };
 
   async function handleSubmit(e)
   {
     e.preventDefault();
 
+     if (!formData.name || !formData.area || !formData.total_capacity || !formData.current_capacity) {
+      alert("All fields are required!");
+      return;
+    }
     try
     { 
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("area", formData.area);
-      data.append("total_capacity", formData.total_capacity);
-      data.append("current_capacity", formData.current_capacity);
-      if (file) data.append("image", file);
-
       const res = await fetch(`${BASE_URL}/api/shelternew/add`,
       {
         method: "POST",
-        body: data
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
       });
 
       
       const result = await safeParseJson(res);
       if (!res.ok)
         throw new Error(result.error || "Failed to add shelter");
-
-      if (result.success && result.shelter)
-      {
-        const createdShelter = result.shelter;
-
-        // Normalize image path
-        if (createdShelter.Shelter_image)
-        {
-          createdShelter.Shelter_image = createdShelter.Shelter_image.startsWith("http") ?
-            createdShelter.Shelter_image : `${BASE_URL}${createdShelter.Shelter_image}`;
-        }
         
         alert("Shelter added successfully.");
         handleState();
-      }
-      
-      else
-      {
-        throw new Error("Invalid response from server");
-      }
-
     }
     
     catch (err)
@@ -136,13 +101,6 @@ export function ShelterAddModal({handleState})
           ></InputWithLabel>
 
         </div>
-        <InputWithLabel
-          labelFor={"shelter-img"}
-          label={"Image"}
-          fieldType={"file"}
-          onChange={handleFileChange}
-        >
-        </InputWithLabel>
         <div className="modal-btn-position"><input type="submit" value="Add" className="red-btn"/></div>
       </form>
     </div>

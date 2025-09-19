@@ -34,7 +34,7 @@ db.connect(err => {
 
 const uploadsPath = path.join(process.cwd(), "uploads");
 fs.mkdirSync(path.join(uploadsPath, "volunteers"), { recursive: true });
-fs.mkdirSync(path.join(uploadsPath, "shelters"), { recursive: true }); 
+// fs.mkdirSync(path.join(uploadsPath, "shelters"), { recursive: true }); 
 
 app.use("/uploads", express.static(uploadsPath));
 
