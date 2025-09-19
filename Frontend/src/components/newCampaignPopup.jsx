@@ -128,11 +128,13 @@ export function NewCampaignPopup({
                 required
               >
                 <option value="">Select Amount</option>
+                <option value="50">50</option>
                 <option value="100">100</option>
                 <option value="500">500</option>
                 <option value="1000">1000</option>
                 <option value="5000">5000</option>
                 <option value="10000">10000</option>
+                <option value="50000">50000</option>
               </select>
             </div>
           )}
@@ -238,7 +240,6 @@ export function NewCampaignPopup({
               </div>
             </>
           )}
-
           {donationType === "others" && (
             <>
               <div className="form-group">
@@ -265,7 +266,6 @@ export function NewCampaignPopup({
               </div>
             </>
           )}
-
           <div className="form-actions">
             <button type="button" className="cancel-btn" onClick={onClose}>
               Cancel
