@@ -26,8 +26,8 @@ export function HomePage()
   const [toDate, setToDate] = useState("");
   const [filterTitle, setFilterTitle] = useState("Active Events");
   const BD_BOUNDS = [
-    [20.375, 88.0],
-    [26.635, 92.69],
+    [20.370, 88.0],
+    [28.635, 92.69],
   ];
   // Initialize map
   useEffect(() => {
@@ -38,7 +38,7 @@ export function HomePage()
     if (!mapDivRef.current) return;
 
     const map = L.map(mapDivRef.current, {
-      minZoom: 7.4,
+      minZoom: 7.2,
       maxBounds: BD_BOUNDS,
       inertia: false,
     });
@@ -49,11 +49,11 @@ export function HomePage()
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
 
-    L.rectangle(BD_BOUNDS, {
-      color: "#700000",
-      weight: 2,
-      fillOpacity: 0.03,
-    }).addTo(map);
+    // L.rectangle(BD_BOUNDS, {
+    //   color: "#700000",
+    //   weight: 2,
+    //   fillOpacity: 0.0,
+    // }).addTo(map);
 
     const lg = L.layerGroup().addTo(map);
     markersLayerRef.current = lg;
@@ -240,21 +240,23 @@ export function HomePage()
           <div className="modal-backdrop">
             <div className="modal">
               <ModalHeader header={"Filter by Occurrence"} handleState={handleModalClose}></ModalHeader>
-              <InputWithLabel
-                labelFor={"from-date"}
-                label="From"
-                fieldType={"date"}
-                value={fromDate}
-                onChange={(e)=> setFromDate(e.target.value)}
-              ></InputWithLabel>
+              <div className="inputs-in-modal">
+                <InputWithLabel
+                  labelFor={"from-date"}
+                  label="From"
+                  fieldType={"date"}
+                  value={fromDate}
+                  onChange={(e)=> setFromDate(e.target.value)}
+                ></InputWithLabel>
 
-              <InputWithLabel
-                labelFor={"to-date"}
-                label="To"
-                fieldType={"date"}
-                value={toDate}
-                onChange={(e)=> setToDate(e.target.value)}
-              ></InputWithLabel>
+                <InputWithLabel
+                  labelFor={"to-date"}
+                  label="To"
+                  fieldType={"date"}
+                  value={toDate}
+                  onChange={(e)=> setToDate(e.target.value)}
+                ></InputWithLabel>
+              </div>
               
               <div className="modal-btn-position">
                 <ButtonWhite btnText={"Clear"} onClick={clearFilter}>

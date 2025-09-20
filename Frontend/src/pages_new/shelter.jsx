@@ -1,4 +1,5 @@
 import axios from "axios";
+import "./styles/shelter.css";
 import { Card } from "../components/base_components/Card";
 import { ButtonRed } from "../components/base_components/ButtonRed";
 import { Header } from "../components/base_components/Header";
@@ -103,7 +104,7 @@ export function ShelterPageNew()
       <Header title={"Shelters"}></Header>
       <main>
         <section className="active-events">
-          <div className="events-subheader">
+          <div className="shelter-subheader">
             <div className="modal-btn-position">
               <ButtonRed btnText={"Add Shelter"} onClick={() => setShowAddModal(true)}></ButtonRed>
               <ButtonRed btnText={"Filter"} onClick={() => setShowFilterModal(true)}></ButtonRed>

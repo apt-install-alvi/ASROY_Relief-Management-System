@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BASE_URL, safeParseJson } from "../../utils/api";
 import { ModalHeader } from "../base_components/ModalHeader";
 import { InputWithLabel } from "../base_components/InputWithLabel";
+import "../styles/large_components/VolunteerStyles.css";
 
 const PLACEHOLDER = "/assets/images/volunteer.jpeg";
 
@@ -10,8 +11,8 @@ export function VolunteerAddModal({ handleState, onAdd })
   const [volunteerId, setVolunteerId] = useState("");
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
-  const [gender, setGender] = useState("Male");
-  const [status, setStatus] = useState("Active");
+  const [gender, setGender] = useState("");
+  const [status, setStatus] = useState("");
   const [photoFile, setPhotoFile] = useState(null);
 
   const handleFileChange = (e) =>
@@ -107,7 +108,6 @@ export function VolunteerAddModal({ handleState, onAdd })
           labelFor={"gender"}
           label={"Gender"}
           listName={"gender-list"}
-          placeholderTxt={"Select gender"}
           value={gender}
           onChange={(e)=>setGender(e.target.value)}
         ></InputWithLabel>
@@ -121,7 +121,6 @@ export function VolunteerAddModal({ handleState, onAdd })
           labelFor={"status"}
           label={"Status"}
           listName={"status-list"}
-          placeholderTxt={"Select activity status"}
           value={status}
           onChange={(e)=>setStatus(e.target.value)}
         ></InputWithLabel>
@@ -138,7 +137,7 @@ export function VolunteerAddModal({ handleState, onAdd })
           onChange={handleFileChange}
         >
         </InputWithLabel>
-        <div className="modal-btn-position"><input type="submit" value="Add" className="red-btn" /></div>
+        <div className="modal-btn-position volunteer-submit-btn"><input type="submit" value="Add" className="red-btn" /></div>
         
         {/* <div className="form-row">
           <label>Name</label>

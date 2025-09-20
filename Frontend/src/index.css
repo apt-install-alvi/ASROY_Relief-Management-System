@@ -5,7 +5,7 @@
   --red: #700000;
   --bg-light-grey: #ededed;
   --bg-white: #f4f4f4;
-  --inner-shadow: #a4a4a470;
+  --inner-shadow: #a4a4a48e;
   --placeholder-txt-color: #ae8484;
   --active-btn: #e1b3b0;
   --sidebar-btn-hover: #5e0000;
@@ -31,6 +31,13 @@
 
   --header-letter-spacing: -0.3px;
 }
+
+body
+{
+  background-color: var(--bg-light-grey);
+  height: 100%;
+}
+
 
 *{
   box-sizing: border-box;

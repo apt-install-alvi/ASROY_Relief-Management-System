@@ -22,7 +22,7 @@ export function InputWithLabel({
         fieldType={fieldType}
         fieldID={labelFor}
         placeholderTxt={placeholderTxt}
-        value={value}
+        value={fieldType !== "file" ? value : undefined}
         onChange={onChange}
         min={min}
         accept={accept}>

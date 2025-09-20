@@ -24,7 +24,7 @@ export function EventPage()
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [showResetBtn, setShowResetBtn] = useState(false);
+  const [isFiltered, setIsFiltered] = useState(false);
 
   //fetch events list from db
   useEffect(() => {
@@ -89,13 +89,14 @@ export function EventPage()
     const inactive = filteredEvents.filter((ev) => ev.Status !== "Active");
     setActiveEvents(active);
     setPastEvents(inactive);
+    setIsFiltered(true);
   }
 
   function resetFilters()
   {
     setActiveEvents(allActiveEvents);
     setPastEvents(allPastEvents);
-    setShowResetBtn(false);
+    setIsFiltered(false);
   }
 
   //close modals
@@ -126,8 +127,8 @@ export function EventPage()
             <SubHeader title={"Active Events"}></SubHeader>
             <div className="add-filter-div">
               <ButtonRed btnText={"Add Event"} onClick={() => setShowAddModal(true)}></ButtonRed>
-              <ButtonRed btnText={"Filter"} onClick={() => { setShowFilterModal(true); setShowResetBtn(true); }}></ButtonRed>
-              {showResetBtn ? <ButtonWhite btnText={"Reset Filters"} onClick={resetFilters}></ButtonWhite>: null}
+              <ButtonRed btnText={"Filter"} onClick={() => { setShowFilterModal(true)}}></ButtonRed>
+              {isFiltered ? <ButtonWhite btnText={"Reset Filters"} onClick={resetFilters}></ButtonWhite>: null}
             </div>
           </div>
           <div className="card-grid">

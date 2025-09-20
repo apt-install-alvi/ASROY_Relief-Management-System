@@ -13,8 +13,6 @@ main
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 36px;
-
 }
 
 .card-grid
@@ -23,6 +21,7 @@ main
   grid-template-columns: 1fr 1fr 1fr;
   column-gap: 52px;
   row-gap: 52px;
+  padding-left: 18px;
 }
 
 .modal-backdrop

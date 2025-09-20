@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { BASE_URL, safeParseJson } from "../../utils/api";
 import { ModalHeader } from "../base_components/ModalHeader";
 import { InputWithLabel } from "../base_components/InputWithLabel";
 import { ButtonRed } from "../base_components/ButtonRed";
 import { ButtonWhite } from "../base_components/ButtonWhite";
+import "../styles/large_components/VolunteerStyles.css";
 
 const PLACEHOLDER = "/assets/images/volunteer.jpeg";
 
@@ -38,7 +39,7 @@ export function ViewVolunteerCard({
 
   function handleFileChange(e)
   {
-    const f = e.target.files && e.target.files[0];
+    const f = e.target.files?.[0];
     if (!f)
       return;
     
@@ -46,6 +47,7 @@ export function ViewVolunteerCard({
     const reader = new FileReader();
     reader.onload = () => setLocalImage(reader.result);
     reader.readAsDataURL(f);
+    console.log("Selected file:", f);
   }
 
   async function handleSave()
@@ -87,6 +89,8 @@ export function ViewVolunteerCard({
 
       onUpdate && onUpdate(updated);
       setIsEditing(false);
+      console.log([...formData.entries()]);
+
     }
     
     catch (err)
@@ -173,17 +177,19 @@ export function ViewVolunteerCard({
             label={"Change photo"}
             fieldType={"file"}
             accept={"image/*"}
-            onChange={handleFileChange}
+            onChange={(e) => handleFileChange(e)}
           ></InputWithLabel>
         </div>
         :
-        <div className="inputs-in-modal">
+        <div className="volunteer-card">
           <img src={localImage} alt={localName}></img>
-          <InputWithLabel labelFor={"name"} label={"Name"} value={localName}></InputWithLabel>
-          <InputWithLabel labelFor={"age"} label={"Age"} value={localAge}></InputWithLabel>
-          <InputWithLabel labelFor={"gender"} label={"Gender"} value={localGender}></InputWithLabel>
-          <InputWithLabel labelFor={"status"} label={"Status"} value={localStatus}></InputWithLabel>
-        </div>
+          <div className="inputs-in-modal">
+            <InputWithLabel labelFor={"name"} label={"Name"} value={localName}></InputWithLabel>
+            <InputWithLabel labelFor={"age"} label={"Age"} value={localAge}></InputWithLabel>
+            <InputWithLabel labelFor={"gender"} label={"Gender"} value={localGender}></InputWithLabel>
+            <InputWithLabel labelFor={"status"} label={"Status"} value={localStatus}></InputWithLabel>
+            </div>
+          </div>
       }
 
       <div className="modal-btn-position">
@@ -196,66 +202,6 @@ export function ViewVolunteerCard({
           </>
         }
       </div>
-             {/* <div className="form-row">
-               <label>Change Photo</label>
-               <input type="file" accept="image/*" onChange={handleFileChange} />
-            </div> */}
-       
-
-        {/* <div className="right">
-          {!isEditing ? (
-            <>
-              <div className="view-row"><strong>Name: </strong> {localName}</div>
-              <div className="view-row"><strong>Gender: </strong> {localGender}</div>
-              <div className="view-row"><strong>Age: </strong> {localAge}</div>
-              <div className="view-row"><strong>Status: </strong> {localStatus}</div>
-
-
-              <div className="actions">
-                <button className="btn" onClick={() => setIsEditing(true)}>Edit</button>
-                <button className="btn-danger" onClick={handleDelete}>Delete</button>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="form-row">
-                <label>Name</label>
-                <input value={localName} onChange={(e) => setLocalName(e.target.value)} />
-              </div>
-
-              <div className="form-row">
-                <label>Gender</label>
-                <select value={localGender} onChange={(e) => setLocalGender(e.target.value)}>
-                  <option>Male</option>
-                  <option>Female</option>
-                  <option>Better not to mention</option>
-                </select>
-              </div>
-
-              <div className="form-row">
-                <label>Age</label>
-                <input type="number" min="16" value={localAge} onChange={(e) => setLocalAge(e.target.value)} />
-              </div>
-
-              <div className="form-row">
-                <label>Status</label>
-                <select value={localStatus} onChange={(e) => setLocalStatus(e.target.value)}>
-                  <option>Active</option>
-                  <option>Inactive</option>
-                </select>
-              </div>
-
-
-              <div className="actions">
-                <button className="btn" onClick={() => setIsEditing(false)}>Cancel</button>
-                <button className="btn-primary" onClick={handleSave} disabled={submitting}>
-                  {submitting ? "Saving..." : "Save"}
-                </button>
-              </div>
-            </>
-          )}
-        </div> */}
-      
     </div>
   );
 }

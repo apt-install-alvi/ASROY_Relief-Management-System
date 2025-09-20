@@ -12,7 +12,8 @@ import { SubHeader } from "../components/base_components/SubHeader";
 
 const PLACEHOLDER = "/assets/images/volunteer_default.jpg";
 
-export function Test() {
+export function VolunteerPage()
+{
   const [activeVolunteers, setActiveVolunteers] = useState([]);
   const [pastVolunteers, setPastVolunteers] = useState([]);
   const [allActiveVolunteers, setAllActiveVolunteers] = useState([]);

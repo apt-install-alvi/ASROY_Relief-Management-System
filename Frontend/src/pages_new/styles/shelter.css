@@ -1,0 +1,8 @@
+.shelter-subheader
+{
+  margin-top: 24px;
+  margin-bottom: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

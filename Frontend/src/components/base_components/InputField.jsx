@@ -51,7 +51,7 @@ export function InputField({
       />;
   }
   else if (fieldType == "file")
-    return <input type={fieldType} id={fieldID} accept={accept}></input>;
+    return <input type={fieldType} id={fieldID} accept={accept} onChange={onChange}></input>;
   
   // else if (className=="date-time-fields")
   //       return <input className={`input-field date-time-fields`} list={listName} type={fieldType} id={fieldID} name={fieldID} value={value} onChange={onChange} />;    
