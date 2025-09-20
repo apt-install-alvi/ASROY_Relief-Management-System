@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import VolunteerAddPopup from "../components/VolunteerAddPopup";
-import VolunteerViewCard from "../components/VolunteerViewCard";
+import { VolunteerAddModal } from "../components/large_components/VolunteerAddModal";
+import { ViewVolunteerCard } from "../components/large_components/ViewVolunteerCard";
 import { FilterModal } from "../components/old/FilterPopup";
 import { BASE_URL, safeParseJson } from "../utils/api";
 import { Sidebar } from "../components/large_components/Sidebar";
@@ -170,14 +170,16 @@ export function Test() {
       <main>
         <section className="active-events">
           <div className="events-subheader">
-          <SubHeader title={"Active Volunteers"}></SubHeader>
-          <div className="add-filter-div">
-            <ButtonRed btnText={"Add Volunteer"} onClick={() => setShowAddModal(true)}></ButtonRed>
-            <ButtonRed btnText={"Filter"} onClick={() => setShowFilterModal(true)}></ButtonRed>
-            {isFiltered ?
-              <ButtonWhite btnText={"Reset Filters"} onClick={resetFilters}></ButtonWhite> : null}
+            <SubHeader title={"Active Volunteers"}></SubHeader>
+            <div className="add-filter-div">
+              <ButtonRed btnText={"Add Volunteer"} onClick={() => setShowAddModal(true)}></ButtonRed>
+              <ButtonRed btnText={"Filter"} onClick={() => setShowFilterModal(true)}></ButtonRed>
+              {isFiltered ?
+                <ButtonWhite btnText={"Reset Filters"} onClick={resetFilters}></ButtonWhite> : null
+              }
+            </div>
           </div>
-        </div>
+          
           <div className="card-grid">
           {activeVolunteers.map((v) => (
             <Card
@@ -217,11 +219,10 @@ export function Test() {
         </section>
           
 
-          {/* Volunteer Add Popup */}
           {showAddModal && (
             <div className="popup-backdrop">
               <div className="popup-body">
-                <VolunteerAddPopup
+                <VolunteerAddModal
                   header="Volunteer"
                   handleState={closeAddModal}
                   onAdd={handleAddVolunteer}
@@ -230,7 +231,6 @@ export function Test() {
             </div>
           )}
 
-          {/* Filter Modal */}
           {showFilterModal && (
             <div className="popup-backdrop">
               <div className="popup-body">
@@ -239,11 +239,10 @@ export function Test() {
             </div>
           )}
 
-          {/* Volunteer View Card */}
           {showViewModal && selectedVolunteer && (
             <div className="popup-backdrop">
               <div className="viewcard-body">
-                <VolunteerViewCard
+                <ViewVolunteerCard
                   volunteerId={selectedVolunteer.Volunteer_id}
                   image={selectedVolunteer.Volunteer_Image}
                   name={selectedVolunteer.Volunteer_name}

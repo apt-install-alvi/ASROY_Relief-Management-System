@@ -1,7 +1,17 @@
 import "../styles/base_components/InputWithLabel.css";
 import { InputField } from "./InputField";
 
-export function InputWithLabel({ labelFor, label , listName, fieldType, placeholderTxt, value, onChange, className })
+export function InputWithLabel({
+  labelFor,
+  label,
+  listName,
+  fieldType,
+  placeholderTxt,
+  value,
+  onChange,
+  className,
+  min,
+  accept})
 {
   return (
     <div className="with-label">
@@ -13,7 +23,9 @@ export function InputWithLabel({ labelFor, label , listName, fieldType, placehol
         fieldID={labelFor}
         placeholderTxt={placeholderTxt}
         value={value}
-        onChange={onChange}>
+        onChange={onChange}
+        min={min}
+        accept={accept}>
       </InputField>
     </div>
   );

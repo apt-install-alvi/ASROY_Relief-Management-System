@@ -1,7 +1,5 @@
-
-import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Homepage } from "./pages/homepage";
+// import { Homepage } from "./pages/homepage";
 import { HomePage } from "./pages_new/home";
 import { EventPage } from "./pages_new/event";
 // import { ShelterPage } from "./pages/shelters";

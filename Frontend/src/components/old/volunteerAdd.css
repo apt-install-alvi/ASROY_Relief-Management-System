@@ -1,19 +1,19 @@
-:root{
+/* :root{
   --red: #700000;
   --bg-light-grey: #ededed;
   --bg-white: #f4f4f4;
   --inner-shadow: #a4a4a470;
-  --placeholder-txt-color: #ae8484;
+  --placeholder-txt-color: #ae8484; */
 
   /*font details*/
-  --default-font: "Figtree";
+  /* --default-font: "Figtree";
   --h4: 33.18px;
   --h5: 27.65px;
   --h6: 23.04px;
   --semibold: 600;
-}
+} */
 
-.popup-body
+/* .popup-body
 {
   box-sizing: border-box;
   margin: 0px;
@@ -64,10 +64,10 @@ form
 {
   display: flex;
   flex-direction: column;
-  /* border:#700000 2px solid; */
-}
+  border:#700000 2px solid;
+} */
 
-.label-name
+/* .label-name
 {
   color: var(--red);
   font-family: var(--default-font);
@@ -134,4 +134,4 @@ div:has(>.popup-add-btn)
   width: 180px;
   box-shadow: inset 0px 0px 6px var(--inner-shadow);
   border: var(--inner-shadow) 1px solid;
-}
+} */

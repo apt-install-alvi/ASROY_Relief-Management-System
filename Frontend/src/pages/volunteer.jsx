@@ -1,11 +1,11 @@
 // src/pages/Volunteer.jsx
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import "./volunteer.css";
-import "../components/volunteerAdd.css";
-import "../components/VolunteerViewcard.css";
-import VolunteerAddPopup from "../components/VolunteerAddPopup";
-import VolunteerViewCard from "../components/VolunteerViewCard";
+// import "./volunteer.css";
+// import "../components/volunteerAdd.css";
+// import "../components/VolunteerViewcard.css";
+import { VolunteerAddModal } from "../components/large_components/VolunteerAddModal";
+import { ViewVolunteerCard } from "../components/large_components/ViewVolunteerCard";
 import { FilterModal } from "../components/old/FilterPopup";
 import { BASE_URL, safeParseJson } from "../utils/api";
 
@@ -266,7 +266,7 @@ export function VolunteerPage() {
           {showPopup && (
             <div className="popup-backdrop">
               <div className="popup-body">
-                <VolunteerAddPopup
+                <VolunteerAddModal
                   header="Volunteer"
                   handleState={(val) => {
                     setShowPopup(false);
@@ -302,7 +302,7 @@ export function VolunteerPage() {
           {showViewCardModal && selectedVolunteer && (
             <div className="popup-backdrop">
               <div className="viewcard-body">
-                <VolunteerViewCard
+                <ViewVolunteerCard
                   volunteerId={selectedVolunteer.Volunteer_id}
                   image={selectedVolunteer.Volunteer_Image}
                   name={selectedVolunteer.Volunteer_name}
