@@ -1,0 +1,18 @@
+.red-btn
+{
+  background-color: var(--red);
+  color: var(--bg-light-grey);
+  font-size: var(--regular);
+  padding: 8.8px 24px;
+  border: none;
+  border-radius: 10px;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.red-btn:hover
+{
+  background-color: #a11616;
+  /* color: var(--red); */
+}

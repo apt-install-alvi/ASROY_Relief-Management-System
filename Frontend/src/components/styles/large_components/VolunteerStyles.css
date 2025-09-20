@@ -1,0 +1,10 @@
+.volunteer-submit-btn
+{
+  margin-top: -16px;
+}
+
+.volunteer-card
+{
+  display: flex;
+  gap: 32px;
+}

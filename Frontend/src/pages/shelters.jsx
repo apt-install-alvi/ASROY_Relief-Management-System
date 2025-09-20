@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 import "./shelters.css";
-import { AddShelter } from "../components/AddShelter";
-import { FilterModal } from "../components/FilterPopup";
-import { ViewShelterCard } from "../components/ViewShelterCard";
+import shelterImg from "/assets/images/shelter.jpg";
+import { AddShelter } from "../components/old/AddShelter";
+import { FilterModal } from "../components/old/FilterPopup";
+import { ViewShelterCard_OLD } from "../components/old/ViewShelterCard_OLD";
 
 export function ShelterPage() {
   const [activeShelters, setActiveShelters] = useState([]);
@@ -160,19 +161,14 @@ export function ShelterPage() {
 
           {showViewCardModal && selectedShelter && (
             <div className="popup-backdrop">
-              <ViewShelterCard
-                shelterId={selectedShelter.Shelter_id}
-                image={
-                  selectedShelter.Shelter_image
-                    ? `http://localhost:5000/${selectedShelter.Shelter_image}`
-                    : "/assets/images/shelter.jpg"
-                }
-                name={selectedShelter.Shelter_name}
-                area={selectedShelter.Area_name}
-                total_capacity={selectedShelter.Total_capacity}
-                current_capacity={selectedShelter.Current_capacity}
-                handleState={() => setShowViewCardModal(false)}
-                onSave={handleSaveShelter}
+              <ViewShelterCard_OLD
+                image={shelterImg}
+                name={selectedEvent.name}
+                area={selectedEvent.area}
+                total_capacity={selectedEvent.total_capacity}
+                current_capacity={selectedEvent.current_capacity}
+                handleState={closeView}
+                onSave={handleSaveEvent}
               />
             </div>
           )}

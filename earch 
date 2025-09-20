@@ -1,0 +1,66 @@
+[33mcommit 65631040f7326a57e7bf869ac01099442cd8ec54[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mFrontend_Redesign[m[33m)[m
+Author: Alvi Binte Zamil <alvi.binte.zamil@gmail.com>
+Date:   Tue Aug 19 00:08:24 2025 +0600
+
+    Fixed global CSS styles
+
+[33mcommit fbca5258620ea720763b9f2a83d0fd35b590eab3[m
+Merge: bb2e6fe e493568
+Author: Amaterasu-u <yeaser.007ahmad@gmail.com>
+Date:   Sun Aug 17 11:07:45 2025 +0600
+
+    Updated Add_Popup Style
+
+[33mcommit bb2e6feeb52260cf86e2595899d1cf9d26c622cc[m[33m ([m[1;31morigin/ViewCard[m[33m, [m[1;31morigin/Ariful[m[33m, [m[1;32mViewCard[m[33m, [m[1;32mEditView[m[33m)[m
+Author: Alvi Binte Zamil <alvi.binte.zamil@gmail.com>
+Date:   Sun Aug 17 02:18:00 2025 +0600
+
+    Added Shelter Page, Completed View-Edit functionality
+
+[33mcommit e49356848249e18ca57b27fb0994dbe088d4d7d8[m
+Author: Than <thanmumu13@gmail.com>
+Date:   Sun Aug 17 02:09:50 2025 +0600
+
+    Backend of Homepage and Eventpage
+
+[33mcommit 8062895b153f2df8dbcd011a0e0293d5c56ccc16[m
+Author: arifulmist <arifulm926@gmail.com>
+Date:   Wed Aug 13 02:53:42 2025 +0600
+
+    homepage logo fix
+
+[33mcommit 27a9ebe44d590faffedb47645bad4d98f9ae72b9[m
+Author: Alvi Binte Zamil <alvi.binte.zamil@gmail.com>
+Date:   Wed Aug 13 02:03:04 2025 +0600
+
+    Added AddPopup component with frontend functionality, adjusted Event page styles
+
+[33mcommit 16a4152418f62f819e5fa5bab2ec244e509ec4f9[m
+Author: Amaterasu-u <yeaser.007ahmad@gmail.com>
+Date:   Sun Aug 10 14:26:04 2025 +0600
+
+    events page
+
+[33mcommit a482f7c0ad99bcf7b467dcc5576146f080f90958[m
+Author: arifulmist <arifulm926@gmail.com>
+Date:   Sat Aug 9 18:16:10 2025 +0600
+
+    homepage motamoti done
+
+[33mcommit e3b6735c8d463fa1f0c03c7e38bd77b66dd251e5[m
+Author: Yeaser Ahmad <yeaser.007ahmad@gmail.com>
+Date:   Tue Aug 5 08:52:11 2025 -0700
+
+    Updated homepage.jsx
+
+[33mcommit 87c663108e1af8851854ecb18cafd68fb4755aeb[m
+Author: Yeaser Ahmad <yeaser.007ahmad@gmail.com>
+Date:   Tue Aug 5 03:30:43 2025 -0700
+
+    Update homepage.jsx
+
+[33mcommit 033c2cae4a603ffd5f4fddc4e19226c14fe51bbf[m
+Author: Yeaser Ahmad <yeaser.007ahmad@gmail.com>
+Date:   Tue Aug 5 03:26:56 2025 -0700
+
+    MAP CODES PROTOTYPE

@@ -1,4 +1,3 @@
-// utils/formatDateDisplay.js
 export function formatDateForDisplay(sqlDate) {
   if (!sqlDate) return "";
 

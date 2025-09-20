@@ -1,0 +1,17 @@
+.white-btn
+{
+  background-color: var(--bg-white);
+  color: var(--red);
+  font-size: var(--regular);
+  border: var(--red) solid 1.2px;
+  padding: 8px 24px;
+  border-radius: 8px;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.white-btn:hover
+{
+  background-color: #dfcfcf;
+}

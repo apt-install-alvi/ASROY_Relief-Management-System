@@ -6,20 +6,34 @@
   font-family: var(--default-font);
 }
 
+<<<<<<< HEAD
+/* Sidebar
+.sidebar{
+  width:88px;
+  background:var(--red);
+  color:white;
+=======
 /* Sidebar */
 .sidebar {
   width: 88px;
   background: var(--red);
   color: white;
+>>>>>>> e46976180579a7d809d27a3777a82f69dc654058
   padding: 20px 12px;
   display: flex;
   flex-direction: column;
   gap: 20px;
   align-items: center;
   box-shadow: 2px 0 4px rgba(0,0,0,0.3);
+<<<<<<< HEAD
+} */
+/* 
+.brand{
+=======
 }
 
 .brand {
+>>>>>>> e46976180579a7d809d27a3777a82f69dc654058
   font-weight: var(--semibold);
   font-size: 18px;
   color: #fff;
@@ -52,7 +66,7 @@
   color: var(--red);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
   font-weight: var(--semibold);
-}
+} */
 
 /* Main content */
 .shelters-main {
@@ -80,6 +94,18 @@
   color: var(--bg-light-grey);
 }
 
+<<<<<<< HEAD
+/* .add-btn{
+  background:#fff;
+  color:var(--red);
+  padding:8px 20px;
+  border-radius:10px;
+  border:none;
+  font-size: var(--large-para);
+  font-weight:600;
+  cursor:pointer;
+} */
+=======
 .add-btn {
   background: #fff;
   color: var(--red);
@@ -95,6 +121,7 @@
   transform: scale(1.02);
   transition: 0.2s;
 }
+>>>>>>> e46976180579a7d809d27a3777a82f69dc654058
 
 /* Body */
 .shelters-body {
@@ -108,7 +135,12 @@
 .section {
   margin-bottom: 36px;
 }
+<<<<<<< HEAD
+
+.section-title{
+=======
 .section-title {
+>>>>>>> e46976180579a7d809d27a3777a82f69dc654058
   font-size: var(--h6);
   color: var(--red);
   margin: 12px 0 18px;
@@ -184,6 +216,36 @@
 .past-section {
   position: relative;
 }
+<<<<<<< HEAD
+/* .filter-btn{
+  position:absolute;
+  right:0;
+  top:-40px;
+  background:var(--red);
+  color: var(--bg-light-grey);
+  border:none;
+  padding:10px 16px;
+  border-radius:10px;
+  font-family: "Figtree";
+  font-weight:600;
+  font-size: var(--large-para);
+  cursor:pointer;
+} */
+
+/* responsive */
+@media (max-width:1200px){
+  .cards-grid{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width:740px){
+  .cards-grid{ grid-template-columns: 1fr; gap:18px; }
+  /* .sidebar{ display:none } */
+  .shelters-body{ padding:18px; }
+  .shelters-header{ padding:14px 18px }
+  .filter-area{ position:static; display:inline-block; margin-bottom:10px }
+}
+
+
+=======
 .filter-btn {
   position: absolute;
   right: 0;
@@ -203,6 +265,7 @@
 }
 
 /* Popup backdrop (modal) */
+>>>>>>> e46976180579a7d809d27a3777a82f69dc654058
 .popup-backdrop {
   position: fixed;
   top: 0;

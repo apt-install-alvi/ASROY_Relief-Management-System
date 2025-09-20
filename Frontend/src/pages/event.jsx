@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import "./event.css";
+<<<<<<< HEAD
+import eventImg from "/assets/images/Flood.jpg";
+import { AddPopup } from "../components/old/Add_Popup";
+import { FilterModal } from "../components/old/FilterPopup";
+import { ViewCard } from "../components/old/ViewCard";
+=======
 import eventImg from "/assets/images/flood.jpeg";
 import { AddPopup } from "../components/Add_Popup";
 import { FilterModal } from "../components/FilterPopup";
 import { ViewCard } from "../components/ViewCard";
 import { formatDateForDisplay } from "../utils/formatDateDisplay";
 import { formatTimeForDisplay } from "../utils/formatTimeDisplay";
+>>>>>>> e46976180579a7d809d27a3777a82f69dc654058
 
 export function EventPage() {
   const [activeEvents, setActiveEvents] = useState([]);

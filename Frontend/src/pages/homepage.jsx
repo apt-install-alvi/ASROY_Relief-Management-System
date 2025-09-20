@@ -4,7 +4,9 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./homepage.css";
 import axios from "axios"; 
-import { areaCoordinates } from "./areaCoordinates.js"; 
+import { areaCoordinates } from "../utils/areaCoordinates.js"; 
+import { ButtonWhite } from "../components/base_components/ButtonWhite.jsx";
+import { ButtonRed } from "../components/base_components/ButtonRed.jsx";
 
 export function Homepage() {
   const mapRef = useRef(null);
@@ -36,18 +38,15 @@ export function Homepage() {
     inertia: false,
   }).setView([23.685, 90.3563], 7.2);
 
-  mapRef.current = map;
+    L.rectangle(BD_BOUNDS, {
+      color: "#700000",
+      weight: 2,
+      fillOpacity: 0.03,
+    }).addTo(map);
 
   // Add tile layer
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors",
-  }).addTo(map);
-
-  // Add Bangladesh rectangle bounds
-  L.rectangle(BD_BOUNDS, {
-    color: "#7a0c0c",
-    weight: 2,
-    fillOpacity: 0.03,
   }).addTo(map);
 
   // Create a marker layer group
@@ -342,12 +341,10 @@ const clearFilter = () => {
             </div>
 
             <div className="modal-actions">
-              <button className="btn ghost" onClick={clearFilter}>
-                Clear
-              </button>
-              <button className="btn primary" onClick={applyFilter}>
-                Apply
-              </button>
+              <ButtonWhite btnText={"Clear"} onClick={clearFilter}>
+              </ButtonWhite>
+              <ButtonRed btnText={"Add Filter"} onClick={applyFilter}>
+              </ButtonRed>
             </div>
           </div>
         </>

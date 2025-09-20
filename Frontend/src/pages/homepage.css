@@ -21,7 +21,7 @@ body { margin: 0; background: var(--bg-light-grey); color: #222; font-family: "F
 /* Main area */
 .main { flex: 1; display: flex; min-height: 0; }
 
-.sidebar {
+/* .sidebar {
   width: 88px;
   background: var(--red);
   padding: 18px 12px;
@@ -31,7 +31,7 @@ body { margin: 0; background: var(--bg-light-grey); color: #222; font-family: "F
   align-items: center;
   box-shadow: 2px 0 0 rgba(0,0,0,0.2);
   z-index: 100;
-}
+} */
 
 .logo {
   font-weight: 700;
@@ -100,7 +100,7 @@ body { margin: 0; background: var(--bg-light-grey); color: #222; font-family: "F
 .pill-btn:hover { filter: brightness(.95); }
 
 /* Map + right card row */
-.canvas-row { flex: 1; display: flex; gap: 18px; min-height: 0; }
+/* .canvas-row { flex: 1; display: flex; gap: 18px; min-height: 0; }
 .map-box { flex: 1; min-width: 0; min-height: 0; }
 #map {
   height: 100%;
@@ -108,10 +108,10 @@ body { margin: 0; background: var(--bg-light-grey); color: #222; font-family: "F
   border-radius: 10px;
   box-shadow: 0 4px 14px rgba(0,0,0,.08);
   overflow: hidden;
-}
+} */
 
 /* Right info card */
-.right-card {
+/* .right-card {
   width: 360px;
   background: var(--bg-white);
   border-radius: 12px;
@@ -119,20 +119,21 @@ body { margin: 0; background: var(--bg-light-grey); color: #222; font-family: "F
   padding: 16px 18px;
   overflow: auto;
 }
-.right-card h3 { margin: 12px 0 10px; color: var(--red); }
-.right-card p { margin: 6px 0; }
+.right-card h3 { margin: 12px 0 10px; color: var(--red);}
+.right-card p { margin: 6px 0; } */
 
 /* lists with dots */
-.dot-list { list-style: none; padding: 0; margin: 8px 0 14px; display: grid; gap: 10px; }
+/* .dot-list { list-style: none; padding: 0; margin: 8px 0 14px; display: grid; gap: 10px; }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
-.dot.red { background: #b21515; }
+.dot.red { background: #b21515; } */
 
 /* Simple marker style for Leaflet divIcon */
-.pin { position: relative; }
-.pin-dot {
+/* .pin { position: relative; } */
+/* .pin-dot {
+  position: relative;
   display: inline-block; width: 12px; height: 12px; border-radius: 50%;
-  background: #b21515; box-shadow: 0 0 0 3px rgba(178,21,21,.15);
-}
+  background: #c90d0d; box-shadow: 0 0 0 3px rgba(178,21,21,.15);
+} */
 
 /* Responsive */
 @media (max-width: 920px) {
@@ -140,13 +141,13 @@ body { margin: 0; background: var(--bg-light-grey); color: #222; font-family: "F
 }
 @media (max-width: 768px) {
   .main { flex-direction: column; }
-  .sidebar { 
+  /* .sidebar { 
     width: 100%; 
     flex-direction: row; 
     align-items: center; 
     gap: 8px; 
     padding: 12px;
-  }
+  } */
   .logo {
     flex-direction: row;
     width: auto;
@@ -154,7 +155,7 @@ body { margin: 0; background: var(--bg-light-grey); color: #222; font-family: "F
     border-bottom: none;
     gap: 8px;
   }
-  .menu { 
+  /* .menu { 
     flex-direction: row; 
     flex-wrap: wrap; 
     margin-top: 0;
@@ -162,25 +163,25 @@ body { margin: 0; background: var(--bg-light-grey); color: #222; font-family: "F
   }
   .canvas-row { flex-direction: column; }
   .right-card { width: 100%; }
-  #map { min-height: 360px; }
+  #map { min-height: 360px; } */
 }
 @media (max-width: 480px) {
-  .sidebar {
+  /* .sidebar {
     flex-direction: column;
     padding: 12px;
-  }
+  } */
   .menu {
     flex-direction: column;
   }
 }
 
 /* ====== Modal for "Filter By Occurrence" ====== */
-.modal-backdrop {
+/* .modal-backdrop {
   position: fixed; inset: 0; background: rgba(0,0,0,.45);
   z-index: 9990;
-}
+} */
 
-.modal {
+/* .modal {
   position: fixed; left: 50%; top: 50%;
   transform: translate(-50%, -50%);
   width: min(640px, calc(100% - 32px));
@@ -189,9 +190,9 @@ body { margin: 0; background: var(--bg-light-grey); color: #222; font-family: "F
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
   z-index: 10000;
   padding: 18px;
-}
+} */
 
-.modal-head {
+/* .modal-head {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 12px;
 }
@@ -203,7 +204,7 @@ body { margin: 0; background: var(--bg-light-grey); color: #222; font-family: "F
 .modal-body {
   display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
   margin-top: 6px;
-}
+} */
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field label { font-weight: 600; color: var(--red); }
 .field input[type="date"] {

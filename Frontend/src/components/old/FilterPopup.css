@@ -1,0 +1,82 @@
+.filter-modal-body
+{
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 40px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  background-color: var(--bg-light-grey);
+  width: 600px;
+  border-radius: 20px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform : translate(-50%, -50%);
+}
+
+.filter-body-content
+{
+  width: 100%;
+}
+
+.filter-body-content > div
+{
+  display: flex;
+}
+
+.modal-header
+{
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.title
+{
+  color: var(--red);
+  font-family: var(--default-font);
+  font-size: var(--h5);
+  font-weight: var(--semibold);
+  margin: 0px;
+}
+
+.x-btn
+{
+  border: none;
+  cursor: pointer;
+}
+
+.x-btn > img
+{
+  width: 80%;
+  height: 80%;
+}
+
+
+.submit-div
+{
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  width: 100%;
+}
+
+/* input[type="submit"]
+{
+  background-color: var(--red);
+  border-radius: 10px;
+  margin: 12px 0px;
+  padding: 4px 12px;
+  border-style: none;
+  color: var(--bg-light-grey);
+  font-size: var(--h6);
+  transition: all 0.2s;
+}
+
+input[type="submit"]:hover
+{
+  filter: brightness(0.8);
+} */
