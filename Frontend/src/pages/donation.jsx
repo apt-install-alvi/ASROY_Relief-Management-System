@@ -6,57 +6,44 @@ import { NewCampaignPopup } from "../components/newCampaignPopup";
 /* --- Mock campaign data (replace with API calls) --- */
 const campaign = {
   event_id: 1,
-  event_name: "Flood Relief 2024",
-  description:
-    "Emergency relief for flood victims in Sylhet region. Providing food, clean water, medicine, and temporary shelter to families affected by the devastating floods.",
-  start_date: "2024-07-01",
-  end_date: "2024-08-31",
-  status: "active",
-  location_name: "Sylhet Emergency Center",
-  target_amount: 500000,
-  raised_amount: 325000,
-  beneficiaries: 1250,
-  image: "/assets/images/flood.jpeg",
+  event_name: "",
+  description: "",
+  start_date: "",
+  end_date: "",
+  status: "",
+  location_name: "",
+  target_amount: "",
+  raised_amount: "",
+  beneficiaries: "",
+  image: "",
 };
 
 const recentDonations = [
   {
     id: 1,
-    donor_name: "Bangladesh Red Crescent Society",
-    amount: 50000,
-    donation_type: "cash",
-    date: "2024-01-15T10:30:00Z",
+    donor_name: "",
+    amount: "",
+    donation_type: "",
+    date: "",
   },
   {
-    id: 2,
-    donor_name: "Anonymous Donor",
-    donated_item: "Rice, Lentils, Medicine",
-    donation_type: "goods",
-    date: "2024-01-14T14:20:00Z",
+   
   },
   {
-    id: 3,
-    donor_name: "Local Community Group",
-    amount: 25000,
-    donation_type: "cash",
-    date: "2024-01-13T09:15:00Z",
+    
   },
 ];
 
 const distributions = [
   {
     id: 1,
-    location: "Sylhet Flood Area - Zone A",
-    items: "Food packages, Clean water, Medicine",
-    beneficiaries: 150,
-    date: "2024-01-14",
+    location: "",
+    items: "",
+    beneficiaries: "",
+    date: "",
   },
   {
-    id: 2,
-    location: "Sylhet Flood Area - Zone B",
-    items: "Temporary shelters, Blankets",
-    beneficiaries: 200,
-    date: "2024-01-13",
+   
   },
 ];
 
@@ -161,7 +148,7 @@ export function Donation() {
           {/* Add Button centered */}
           <div className="add-btn-container">
             <button className="add-btn" onClick={handleAddClick}>
-              Add Campaign
+              Add Donation
             </button>
           </div>
 
@@ -170,37 +157,10 @@ export function Donation() {
             {/* Hero */}
             <div className="dn-hero-grid">
               <div className="dn-hero-left">
-                <div className="dn-hero-media">
-                  <img
-                    src={campaign.image || "/placeholder.svg"}
-                    alt={campaign.event_name}
-                  />
-                  <span className="dn-badge dn-badge-green">
-                    {campaign.status}
-                  </span>
-                </div>
-
+                
                 <div className="dn-hero-text">
                   <h2 className="dn-title">{campaign.event_name}</h2>
                   <p className="dn-desc">{campaign.description}</p>
-
-                  <div className="dn-meta">
-                    <div className="dn-meta-item">
-                      <MapPin className="dn-icon" />
-                      {campaign.location_name}
-                    </div>
-                    <div className="dn-meta-item">
-                      <Calendar className="dn-icon" />
-                      {new Date(
-                        campaign.start_date
-                      ).toLocaleDateString()} –{" "}
-                      {new Date(campaign.end_date).toLocaleDateString()}
-                    </div>
-                    <div className="dn-meta-item">
-                      <Users className="dn-icon" />
-                      {campaign.beneficiaries.toLocaleString()} beneficiaries
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -208,7 +168,7 @@ export function Donation() {
             {/* Tabs */}
             <div className="dn-tabs">
               <div className="dn-tabs-list">
-                {["overview", "donations", "distributions", "updates"].map(
+                {["overview", "donations", "distributions"].map(
                   (t) => (
                     <button
                       key={t}
@@ -268,7 +228,7 @@ export function Donation() {
                         <Package className="dn-icon muted" />
                       </div>
                       <div className="dn-card-content">
-                        <div className="dn-stat-value">2,450</div>
+                        <div className="dn-stat-value"></div>
                         <p className="dn-hint">Relief packages delivered</p>
                       </div>
                     </div>
@@ -278,29 +238,11 @@ export function Donation() {
                     <div className="dn-card-header">
                       <h3 className="dn-card-title">Campaign Goals</h3>
                     </div>
-                    <div className="dn-card-content dn-goals">
-                      <div className="dn-goal">
-                        <h4>Immediate Relief</h4>
-                        <p>
-                          Provide emergency food, clean water, and medical
-                          supplies to flood-affected families.
-                        </p>
-                      </div>
-                      <div className="dn-goal">
-                        <h4>Temporary Shelter</h4>
-                        <p>
-                          Set up temporary shelters and provide blankets and
-                          basic necessities.
-                        </p>
-                      </div>
-                      <div className="dn-goal">
-                        <h4>Long-term Recovery</h4>
-                        <p>
-                          Support families in rebuilding their homes and
-                          livelihoods after the disaster.
-                        </p>
-                      </div>
-                    </div>
+
+
+                    <div>hi alvi than </div>
+                   
+                    
                   </div>
                 </div>
               )}
@@ -384,46 +326,7 @@ export function Donation() {
                 </div>
               )}
 
-              {/* Updates */}
-              {tab === "updates" && (
-                <div className="dn-stack">
-                  <div className="dn-card">
-                    <div className="dn-card-header">
-                      <h3 className="dn-card-title">Campaign Updates</h3>
-                      <p className="dn-hint">
-                        Latest news and progress reports
-                      </p>
-                    </div>
-                    <div className="dn-card-content dn-updates">
-                      <div className="dn-update red">
-                        <div className="dn-update-head">
-                          <h4>Distribution Complete in Zone A</h4>
-                          <span className="dn-badge dn-badge-outline">
-                            Jan 14, 2024
-                          </span>
-                        </div>
-                        <p>
-                          Successfully distributed food packages and medical
-                          supplies to 150 families in the most affected area.
-                        </p>
-                      </div>
-
-                      <div className="dn-update blue">
-                        <div className="dn-update-head">
-                          <h4>New Shelter Setup</h4>
-                          <span className="dn-badge dn-badge-outline">
-                            Jan 12, 2024
-                          </span>
-                        </div>
-                        <p>
-                          Temporary shelters have been set up for 200 displaced
-                          families with basic amenities.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+              
             </div>
             {/* New Campaign Popup */}
             {showPopup && (
