@@ -1,0 +1,166 @@
+:root{
+  --red: #700000;
+  --bg-light-grey: #ededed;
+  --bg-white: #f4f4f4;
+  --inner-shadow: #a4a4a470;
+  --placeholder-txt-color: #ae8484;
+
+  /*font details*/
+  --default-font: "Figtree";
+  --h4: 33.18px;
+  --h5: 27.65px;
+  --h6: 23.04px;
+  --semibold: 600;
+}
+
+.popup-body
+{
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 40px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-light-grey);
+  width: fit-content;
+  border-radius: 20px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform : translate(-50%, -50%);
+}
+
+.popup-header
+{
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.title
+{
+  color: var(--red);
+  font-family: var(--default-font);
+  font-size: var(--h5);
+  font-weight: var(--semibold);
+  margin: 0px;
+}
+
+.x-btn
+{
+  border: none;
+  cursor: pointer;
+}
+
+.x-btn > img
+{
+  width: 80%;
+  height: 80%;
+}
+
+form
+{
+  display: flex;
+  flex-direction: column;
+  /* border:#700000 2px solid; */
+}
+
+.label-name
+{
+  color: var(--red);
+  font-family: var(--default-font);
+  font-size: var(--h6);
+  font-weight: var(--semibold);
+}
+
+div:has(>.popup-add-btn)
+{
+  display: flex;
+  justify-content: end;
+}
+
+.dropdown
+{
+  background-color: var(--bg-white);
+  border-radius: 8px;
+  padding: 12px 12px;
+  margin: 8px 0px;
+  width: 400px;
+  box-shadow: inset 0px 0px 6px var(--inner-shadow);
+  border: var(--inner-shadow) 1px solid;
+}
+
+.popup-add-btn
+{
+  background-color: var(--red);
+  border-radius: 10px;
+  margin: 12px 0px;
+  padding: 4px 0px;
+  width: 30%;
+  border-style: none;
+  color: var(--bg-light-grey);
+  font-size: var(--h6);
+  font-family: var(--default-font);
+  transition: all 0.2s;
+}
+
+.popup-add-btn:hover
+{
+  filter: brightness(0.8);
+}
+
+.date-time-field
+{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+.date-time-field > div
+{
+  display: flex;
+  flex-direction: column;
+}
+
+.date-field, .time-field
+{
+  background-color: var(--bg-white);
+  border-radius: 8px;
+  padding: 12px 12px;
+  margin: 8px 0px;
+  width: 180px;
+  box-shadow: inset 0px 0px 6px var(--inner-shadow);
+  border: var(--inner-shadow) 1px solid;
+}
+.area-dropdown {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  background: #fff;
+  z-index: 10;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-radius: 8px;
+}
+
+.dropdown-list li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.dropdown-list li:hover {
+  background: #f0f0f0;
+}

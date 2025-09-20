@@ -1,0 +1,47 @@
+/* 
+main
+{
+  margin-left: 20%;
+  margin-top: 8vh;
+  padding: 32px 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.events-subheader
+{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 36px;
+
+}
+
+.card-grid
+{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  column-gap: 52px;
+  row-gap: 52px;
+}
+
+.modal-backdrop
+{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); 
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-filter-div
+{
+  display: flex;
+  gap: 8px;
+} */

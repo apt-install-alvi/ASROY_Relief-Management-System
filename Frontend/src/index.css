@@ -1,94 +1,47 @@
-/* src/index.css
-   Neutral, safe global defaults that respect component-level CSS.
-   - keeps your font choices
-   - supports dark mode without forcing it globally
-   - avoids 100vw/100vh pitfalls
-*/
+:root
+{
+  /*colours*/
+  --black: #1e1e1e;
+  --red: #700000;
+  --bg-light-grey: #ededed;
+  --bg-white: #f4f4f4;
+  --inner-shadow: #a4a4a48e;
+  --placeholder-txt-color: #ae8484;
+  --active-btn: #e1b3b0;
+  --sidebar-btn-hover: #5e0000;
 
-:root {
-  /* typography */
-  --app-font: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  --line-height: 1.5;
-  --base-weight: 400;
+  /*fonts*/
+  --default-font: "Figtree";
+  --fallback-font: sans-serif;
+  /*font sizes*/
+  --h1: 57.33px;
+  --h2: 47.78px;
+  --h3: 39.81px;
+  --h4: 33.18px;
+  --h5: 27.65px;
+  --h6: 23.04px;
+  --large-para: 19.2px;
+  --regular: 16px;
+  --small-para: 13.33px;
+  /*font weights*/
+  --light: 300;
+  --medium: 500;
+  --semibold: 600;
+  --bold: 700;
 
-  /* color tokens (default = light theme) */
-  --bg: #ffffff;
-  --text: #222222;
-  --muted: #6b7280;
-  --link: #646cff;
-  --link-hover: #535bf2;
-  --button-bg: #0786c1;
-  --button-text: #fff;
-
-  /* accessible focus color */
-  --focus-ring: -webkit-focus-ring-color;
+  --header-letter-spacing: -0.3px;
 }
 
-/* Basic reset and layout safety */
-* { box-sizing: border-box; }
-html, body, #root { height: 100%; margin: 0; padding: 0; }
-body {
-  min-height: 100vh;              /* safer than 100vh */
-  font-family: var(--app-font);
-  line-height: var(--line-height);
-  font-weight: var(--base-weight);
-  background: var(--bg);
-  color: var(--text);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+body
+{
+  background-color: var(--bg-light-grey);
+  height: 100%;
 }
 
-/* Links */
-a { color: var(--link); font-weight: 500; text-decoration: none; }
-a:hover { color: var(--link-hover); }
 
-/* Headings (light default) */
-h1 { font-size: 3.2em; line-height: 1.1; margin: 0; }
-
-/* Buttons — neutral defaults, components can override */
-button {
-  font-family: inherit;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  cursor: pointer;
-  transition: border-color 0.25s, transform 0.05s;
-}
-button:hover { border-color: rgba(0,0,0,0.06); }
-button:active { transform: translateY(1px); }
-button:focus,
-button:focus-visible {
-  outline: 4px auto var(--focus-ring);
-}
-
-/* Forms & images */
-input, select, textarea { font-family: inherit; font-size: 1rem; }
-img { max-width: 100%; display: block; }
-
-/* Small helpers */
-.hidden { display: none !important; }
-
-/* Dark mode: only applied when user's system requests dark */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #242424;
-    --text: rgba(255,255,255,0.87);
-    --muted: #9aa4b2;
-    --link: #8fa1ff;
-    --link-hover: #aab8ff;
-    --button-bg: #0786c1;
-    --button-text: #fff;
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-  }
-
-  a { color: var(--link); }
-  a:hover { color: var(--link-hover); }
+*{
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+  font-family: var(--default-font), var(--fallback-font);
 }

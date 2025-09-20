@@ -1,9 +1,15 @@
-export function formatTimeForInput(timeStr)
-{
+export function formatTimeForInput(timeStr) {
+  if (!timeStr) return "";
   const [time, period] = timeStr.split(' ');
-  if (period === 'pm' && time.split(':')[0] !== '12') {
-    const [hours, minutes] = time.split(':');
-    return `${String(Number(hours) + 12).padStart(2, '0')}:${minutes}`;
+  if (!period) return time; // already in 24h format
+  let [hours, minutes] = time.split(':');
+  hours = parseInt(hours, 10);
+
+  if (period.toLowerCase() === 'pm' && hours !== 12) {
+    hours += 12;
+  } else if (period.toLowerCase() === 'am' && hours === 12) {
+    hours = 0;
   }
-  return time;
+
+  return `${String(hours).padStart(2, '0')}:${minutes}`;
 }

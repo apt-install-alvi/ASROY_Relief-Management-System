@@ -4,15 +4,17 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./homepage.css";
 import axios from "axios"; 
-import { areaCoordinates } from "./areaCoordinates.js"; 
+import { areaCoordinates } from "../utils/areaCoordinates.js"; 
+import { ButtonWhite } from "../components/base_components/ButtonWhite.jsx";
+import { ButtonRed } from "../components/base_components/ButtonRed.jsx";
 
 export function Homepage() {
   const mapRef = useRef(null);
   const mapDivRef = useRef(null);
   const markersLayerRef = useRef(null);
 
-  const [events, setEvents] = useState([]);       // all events from backend
-  const [filtered, setFiltered] = useState([]);   // filtered events
+  const [events, setEvents] = useState([]);       
+  const [filtered, setFiltered] = useState([]);   
   const [showFilter, setShowFilter] = useState(false);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -23,40 +25,44 @@ export function Homepage() {
   ];
   // Initialize map
   useEffect(() => {
-    if (mapRef.current) {
-      mapRef.current.remove();
-      mapRef.current = null;
-    }
-    if (!mapDivRef.current) return;
+  // Exit if the div isn't mounted yet
+  if (!mapDivRef.current) return;
 
-    const map = L.map(mapDivRef.current, {
-      minZoom: 7.4,
-      maxBounds: BD_BOUNDS,
-      inertia: false,
-    }).setView([23.685, 90.3563], 7.2);
-    mapRef.current = map;
+  // Exit if map already exists
+  if (mapRef.current) return;
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; OpenStreetMap contributors",
-    }).addTo(map);
+  // Create map
+  const map = L.map(mapDivRef.current, {
+    minZoom: 7.4,
+    maxBounds: BD_BOUNDS,
+    inertia: false,
+  }).setView([23.685, 90.3563], 7.2);
 
     L.rectangle(BD_BOUNDS, {
-      color: "#7a0c0c",
+      color: "#700000",
       weight: 2,
       fillOpacity: 0.03,
     }).addTo(map);
 
-    const lg = L.layerGroup().addTo(map);
-    markersLayerRef.current = lg;
+  // Add tile layer
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors",
+  }).addTo(map);
 
-    map.whenReady(() => setTimeout(() => map.invalidateSize(), 0));
+  // Create a marker layer group
+  markersLayerRef.current = L.layerGroup().addTo(map);
 
-    return () => {
-      map.remove();
-      mapRef.current = null;
-      markersLayerRef.current = null;
-    };
-  }, []);
+  // Fix for rendering inside hidden containers
+  map.whenReady(() => setTimeout(() => map.invalidateSize(), 0));
+
+  // Cleanup function on unmount
+  return () => {
+    map.remove();
+    mapRef.current = null;
+    markersLayerRef.current = null;
+  };
+}, []); // Empty dependency ensures this runs only once
+
 
   // Fetch events from backend
   useEffect(() => {
@@ -83,12 +89,12 @@ export function Homepage() {
 
       })
       .catch(err => console.error(err));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+ 
   }, []);
 
-  useEffect(() => {
-  if (mapRef.current && filtered.length) {
-    renderMarkers(filtered);
+useEffect(() => {
+  if (mapRef.current) {
+    renderMarkers(filtered); 
   }
 }, [filtered]);
 
@@ -113,37 +119,60 @@ eventsToRender.forEach(e => {
 });
   };
 
-  const applyFilter = () => {
-  const from = fromDate ? new Date(fromDate) : null;
-  const to = toDate ? new Date(toDate) : null;
+// Apply filter
+const applyFilter = () => {
+  axios.get("http://localhost:5000/api/events/homepage", {
+    params: { fromDate, toDate }
+  })
+  .then(res => {
+    const filteredEvents = res.data.map(e => {
+      const coords = areaCoordinates[e.Area_name] || { lat: 23.685, lng: 90.3563 };
+      return {
+        id: e.Event_id,
+        title: e.Event_name,
+        area: e.Area_name,
+        date: e.Date_of_occurrence,
+        status: e.Status,
+        lat: coords.lat,
+        lon: coords.lng
+      };
+    });
 
-  const next = events.filter(e => {
-    const d = new Date(e.date);
-    if (from && d < from) return false;
-    if (to && d > to) return false;
-    return true;
-  });
-
-  setFiltered(next);
-
-  if (from || to) {
-    setFilterTitle(`${formatDisplayDate(fromDate)} — ${formatDisplayDate(toDate)}`);
-  } else {
-    setFilterTitle("Active Events");
-  }
-
-  setShowFilter(false);
+    setFiltered(filteredEvents);
+    setFilterTitle(fromDate || toDate ? `${formatDisplayDate(fromDate)} — ${formatDisplayDate(toDate)}` : "All Events");
+    setShowFilter(false);
+  })
+  .catch(err => console.error(err));
 };
 
-  // Clear filter
-  const clearFilter = () => {
-    setFromDate("");
-    setToDate("");
-    const activeEvents = events.filter(e => e.status === "Active");
-    setFiltered(activeEvents);
-    setFilterTitle("Active Events");
-    setShowFilter(false);
-  };
+// Clear filter (show all events)
+const clearFilter = () => {
+  setFromDate("");
+  setToDate("");
+
+  axios.get("http://localhost:5000/api/events/homepage")
+    .then(res => {
+      const allEvents = res.data.map(e => {
+        const coords = areaCoordinates[e.Area_name] || { lat: 23.685, lng: 90.3563 };
+        return {
+          id: e.Event_id,
+          title: e.Event_name,
+          area: e.Area_name,
+          date: e.Date_of_occurrence,
+          status: e.Status,
+          lat: coords.lat,
+          lon: coords.lng
+        };
+      });
+
+      setFiltered(allEvents);
+      setFilterTitle("All Events");
+      setShowFilter(false);
+    })
+    .catch(err => console.error(err));
+};
+
+
   const formatDisplayDate = (dateStr) => {
   if (!dateStr) return "";
   const d = new Date(dateStr);
@@ -169,52 +198,65 @@ eventsToRender.forEach(e => {
       </header>
 
       <main className="main">
-        <aside className="sidebar">
-          <nav className="menu">
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) =>
-                isActive ? "menu-item active" : "menu-item"
-              }
-            >
-              <i className="fa-solid fa-house" />
-              Home
-            </NavLink>
-
-            <NavLink
-              to="/events"
-              className={({ isActive }) =>
-                isActive ? "menu-item active" : "menu-item"
-              }
-            >
-              <i className="fa-solid fa-bell" />
-              Events
-            </NavLink>
-
-            <NavLink to="/shelters" className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
-              }>
-            <i className="fa-solid fa-house-chimney" />
-            Shelters
-          </NavLink>
-
-            <a className="menu-item" href="#">
-              <i className="fa-solid fa-users" />
-              Volunteers
-            </a>
-
-            <a className="menu-item" href="#">
-              <i className="fa-solid fa-dollar-sign" />
-              Donations
-            </a>
-
-            <a className="menu-item" href="#">
-              <i className="fa-solid fa-boxes-stacked" />
-              Inventory
-            </a>
-          </nav>
-        </aside>
+         <aside className="sidebar">
+                       <nav className="menu">
+                         <NavLink
+                           to="/"
+                           end
+                           className={({ isActive }) =>
+                             isActive ? "menu-item active" : "menu-item"
+                           }
+                         >
+                           <i className="fa-solid fa-house" />
+                           <span>Home</span>
+                         </NavLink>
+                         <NavLink
+                           to="/events"
+                           className={({ isActive }) =>
+                             isActive ? "menu-item active" : "menu-item"
+                           }
+                         >
+                           <i className="fa-solid fa-bell" />
+                           <span>Events</span>
+                         </NavLink>
+                         <NavLink
+                           to="/shelters"
+                           className={({ isActive }) =>
+                             isActive ? "menu-item active" : "menu-item"
+                           }
+                         >
+                           <i className="fa-solid fa-house-chimney" />
+                           <span>Shelters</span>
+                         </NavLink>
+                         <NavLink
+                           to="/volunteer"
+                           className={({ isActive }) =>
+                             isActive ? "menu-item active" : "menu-item"
+                           }
+                         >
+                           <i className="fa-solid fa-users" />
+                           <span>Volunteers</span>
+                         </NavLink>
+                         <NavLink
+                           to="/donation"
+                           className={({ isActive }) =>
+                             isActive ? "menu-item active" : "menu-item"
+                           }
+                         >
+                           <i className="fa-solid fa-dollar-sign" />
+                           <span>Donations</span>
+                         </NavLink>
+                         <NavLink
+                           to="/inventory"
+                           className={({ isActive }) =>
+                             isActive ? "menu-item active" : "menu-item"
+                           }
+                         >
+                           <i className="fa-solid fa-box" />
+                           <span>Inventory</span>
+                         </NavLink>
+                       </nav>
+                     </aside>
 
         <section className="content">
           <div className="content-head">
@@ -299,16 +341,14 @@ eventsToRender.forEach(e => {
             </div>
 
             <div className="modal-actions">
-              <button className="btn ghost" onClick={clearFilter}>
-                Clear
-              </button>
-              <button className="btn primary" onClick={applyFilter}>
-                Apply
-              </button>
+              <ButtonWhite btnText={"Clear"} onClick={clearFilter}>
+              </ButtonWhite>
+              <ButtonRed btnText={"Add Filter"} onClick={applyFilter}>
+              </ButtonRed>
             </div>
           </div>
         </>
       )}
     </div>
   );
-}
+} 

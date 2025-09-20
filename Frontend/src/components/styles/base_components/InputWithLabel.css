@@ -1,0 +1,14 @@
+.with-label
+{
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 8px;
+}
+
+.with-label label
+{
+  color: var(--red);
+  font-size: var(--large-para);
+  font-weight: var(--semibold);
+}
