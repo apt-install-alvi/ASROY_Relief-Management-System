@@ -111,6 +111,30 @@ body,html,#root{height:100%}
   cursor:pointer;
 }
 
+/* New header filter button style (placed beside Add) */
+.volunteers-header .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Filter button when placed in header (distinct from .filter-btn) */
+.header-filter-btn {
+  background: var(--red);
+  color: var(--bg-light-grey);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-family: "Figtree";
+  font-weight: 600;
+  font-size: var(--large-para);
+  cursor: pointer;
+}
+
+.header-filter-btn:hover {
+  filter: brightness(0.9);
+}
+
 /* Body */
 .volunteers-body{
   padding:28px 36px;
@@ -196,7 +220,7 @@ body,html,#root{height:100%}
   font-weight:600;
 }
 
-/* Past section extra: filter button on right */
+/* Past section extra: (old .filter-btn positioning left untouched in case used elsewhere) */
 .past-section{
   position:relative;
 }

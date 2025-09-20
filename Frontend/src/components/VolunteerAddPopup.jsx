@@ -10,6 +10,7 @@ export default function VolunteerAddPopup({ header = "Volunteer", handleState, o
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("Male");
   const [status, setStatus] = useState("Active");
+  const [workAssigned, setWorkAssigned] = useState("Rescue Mission");
   const [photoFile, setPhotoFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -31,6 +32,7 @@ export default function VolunteerAddPopup({ header = "Volunteer", handleState, o
       formData.append("age", age);
       formData.append("gender", gender);
       formData.append("status", status);
+      formData.append("workAssigned", workAssigned);
       if (photoFile) formData.append("photo", photoFile);
 
       const res = await fetch(`${BASE_URL}/api/volunteers/add`, {
@@ -53,6 +55,8 @@ export default function VolunteerAddPopup({ header = "Volunteer", handleState, o
         } else {
           created.Volunteer_Image = PLACEHOLDER;
         }
+        // ensure Work_Assigned present
+        if (!created.Work_Assigned) created.Work_Assigned = workAssigned || "Rescue Mission";
       }
 
       onAdd && onAdd(created);
@@ -106,6 +110,16 @@ export default function VolunteerAddPopup({ header = "Volunteer", handleState, o
           <select value={status} onChange={(e) => setStatus(e.target.value)}>
             <option>Active</option>
             <option>Inactive</option>
+          </select>
+        </div>
+
+        <div className="form-row">
+          <label>Work Assigned</label>
+          <select value={workAssigned} onChange={(e) => setWorkAssigned(e.target.value)}>
+            <option>Rescue Mission</option>
+            <option>Rehabilitation mission</option>
+            <option>Reconstruction Mission</option>
+            <option>Management</option>
           </select>
         </div>
 

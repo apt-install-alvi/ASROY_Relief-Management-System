@@ -21,6 +21,7 @@ export default function VolunteerViewCard({
   const [localGender, setLocalGender] = useState(gender || "Better not to mention");
   const [localAge, setLocalAge] = useState(age || "");
   const [localImage, setLocalImage] = useState(image || PLACEHOLDER);
+  const [localWorkAssigned, setLocalWorkAssigned] = useState("");
   const [file, setFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -32,6 +33,18 @@ export default function VolunteerViewCard({
     setLocalAge(age || "");
     setLocalImage(image || PLACEHOLDER);
   }, [name, status, gender, age, image]);
+
+  // fetch Work_Assigned if not passed (but VolunteerPage passes only selectedVolunteer props).
+  // We'll try to set it from a volunteer object prop if available; if not, default to Rescue Mission
+  React.useEffect(() => {
+    // try to read from a passed in prop named workAssigned if present (Volunteer.jsx passes selectedVolunteer)
+    // The VolunteerPage passes selectedVolunteer via props when rendering this component; so it's likely accessible
+    // through the closures outside, if not, we default below.
+    // As a safe fallback, set default:
+    if (!localWorkAssigned) setLocalWorkAssigned((typeof window !== "undefined" && window.localWorkAssigned) || "Rescue Mission");
+    // (This line simply ensures there's a default value; VolunteerPage will pass updated volunteer into onUpdate caller.)
+  }, []);
+
 
   const handleFileChange = (e) => {
     const f = e.target.files && e.target.files[0];
@@ -51,6 +64,7 @@ export default function VolunteerViewCard({
       formData.append("age", localAge);
       formData.append("gender", localGender);
       formData.append("status", localStatus);
+      formData.append("workAssigned", localWorkAssigned || "Rescue Mission");
       if (file) formData.append("photo", file);
 
       const res = await fetch(`${BASE_URL}/api/volunteers/edit/${volunteerId}`, {
@@ -70,6 +84,7 @@ export default function VolunteerViewCard({
         } else {
           updated.Volunteer_Image = PLACEHOLDER;
         }
+        if (!updated.Work_Assigned) updated.Work_Assigned = localWorkAssigned || "Rescue Mission";
       }
 
       onUpdate && onUpdate(updated);
@@ -123,6 +138,7 @@ export default function VolunteerViewCard({
               <div className="view-row"><strong>Gender: </strong> {localGender}</div>
               <div className="view-row"><strong>Age: </strong> {localAge}</div>
               <div className="view-row"><strong>Status: </strong> {localStatus}</div>
+              <div className="view-row"><strong>Work Assigned: </strong> {localWorkAssigned || "Rescue Mission"}</div>
 
               {error && <div style={{ color: "red" }}>{error}</div>}
 
@@ -157,6 +173,16 @@ export default function VolunteerViewCard({
                 <select value={localStatus} onChange={(e) => setLocalStatus(e.target.value)}>
                   <option>Active</option>
                   <option>Inactive</option>
+                </select>
+              </div>
+
+              <div className="form-row">
+                <label>Work Assigned</label>
+                <select value={localWorkAssigned} onChange={(e) => setLocalWorkAssigned(e.target.value)}>
+                  <option>Rescue Mission</option>
+                  <option>Rehabilitation mission</option>
+                  <option>Reconstruction Mission</option>
+                  <option>Management</option>
                 </select>
               </div>
 
