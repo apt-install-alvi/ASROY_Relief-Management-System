@@ -1,3 +1,4 @@
+// src/components/large_components/ViewVolunteerCard.jsx
 import { useState, useEffect } from "react";
 import { BASE_URL, safeParseJson } from "../../utils/api";
 import { ModalHeader } from "../base_components/ModalHeader";
@@ -15,6 +16,7 @@ export function ViewVolunteerCard({
   status,
   gender,
   age,
+  workAssigned,
   handleState,
   onUpdate,
   onDelete,
@@ -27,6 +29,7 @@ export function ViewVolunteerCard({
   const [localGender, setLocalGender] = useState(gender || "Better not to mention");
   const [localAge, setLocalAge] = useState(age || "");
   const [localImage, setLocalImage] = useState(image || PLACEHOLDER);
+  const [localWorkAssigned, setLocalWorkAssigned] = useState(workAssigned || "Rescue Mission");
   const [file, setFile] = useState(null);
 
   useEffect(() => {
@@ -35,7 +38,8 @@ export function ViewVolunteerCard({
     setLocalGender(gender || "Better not to mention");
     setLocalAge(age || "");
     setLocalImage(image || PLACEHOLDER);
-  }, [name, status, gender, age, image]);
+    setLocalWorkAssigned(workAssigned || "Rescue Mission");
+  }, [name, status, gender, age, image, workAssigned]);
 
   function handleFileChange(e)
   {
@@ -59,6 +63,7 @@ export function ViewVolunteerCard({
       formData.append("age", localAge);
       formData.append("gender", localGender);
       formData.append("status", localStatus);
+      formData.append("workAssigned", localWorkAssigned);
       if (file) formData.append("photo", file);
 
       const res = await fetch(`${BASE_URL}/api/volunteers/edit/${volunteerId}`,
@@ -80,11 +85,16 @@ export function ViewVolunteerCard({
             ? updated.Volunteer_Image
             : `${BASE_URL}${updated.Volunteer_Image}`;
         }
-        
         else
         {
           updated.Volunteer_Image = PLACEHOLDER;
         }
+
+        // normalize field name if backend used different column name
+        if (!updated.Work_Assigned && updated.Volunteer_WorkAssigned) {
+          updated.Work_Assigned = updated.Volunteer_WorkAssigned;
+        }
+        if (!updated.Work_Assigned) updated.Work_Assigned = localWorkAssigned || "Rescue Mission";
       }
 
       onUpdate && onUpdate(updated);
@@ -172,6 +182,22 @@ export function ViewVolunteerCard({
             <option key={"inactive"}>Inactive</option>
           </datalist>
 
+          {/* Work Assigned edit */}
+          <InputWithLabel
+            labelFor={"work_assigned"}
+            label={"Work Assigned"}
+            listName={"work-list"}
+            placeholderTxt={"Select work assigned"}
+            value={localWorkAssigned}
+            onChange={(e) => setLocalWorkAssigned(e.target.value)}
+          ></InputWithLabel>
+          <datalist id="work-list">
+            <option key={"rescue"}>Rescue Mission</option>
+            <option key={"rehab"}>Rehabilitation mission</option>
+            <option key={"recon"}>Reconstruction Mission</option>
+            <option key={"mgmt"}>Management</option>
+          </datalist>
+
           <InputWithLabel
             labelFor={"volunteer-img"}
             label={"Change photo"}
@@ -184,12 +210,14 @@ export function ViewVolunteerCard({
         <div className="volunteer-card">
           <img src={localImage} alt={localName}></img>
           <div className="inputs-in-modal">
-            <InputWithLabel labelFor={"name"} label={"Name"} value={localName}></InputWithLabel>
-            <InputWithLabel labelFor={"age"} label={"Age"} value={localAge}></InputWithLabel>
-            <InputWithLabel labelFor={"gender"} label={"Gender"} value={localGender}></InputWithLabel>
-            <InputWithLabel labelFor={"status"} label={"Status"} value={localStatus}></InputWithLabel>
-            </div>
+            {/* Display-mode inputs: mark readOnly to avoid React controlled-input warning */}
+            <InputWithLabel labelFor={"name"} label={"Name"} value={localName} readOnly></InputWithLabel>
+            <InputWithLabel labelFor={"age"} label={"Age"} value={localAge} readOnly></InputWithLabel>
+            <InputWithLabel labelFor={"gender"} label={"Gender"} value={localGender} readOnly></InputWithLabel>
+            <InputWithLabel labelFor={"status"} label={"Status"} value={localStatus} readOnly></InputWithLabel>
+            <InputWithLabel labelFor={"work_assigned_display"} label={"Work Assigned"} value={localWorkAssigned} readOnly></InputWithLabel>
           </div>
+        </div>
       }
 
       <div className="modal-btn-position">

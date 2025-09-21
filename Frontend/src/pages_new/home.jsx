@@ -30,49 +30,51 @@ export function HomePage()
     [28.635, 92.69],
   ];
   // Initialize map
-  useEffect(() => {
+// Initialize map - updated useEffect
+useEffect(() => {
+  if (mapRef.current) {
+    mapRef.current.remove();
+    mapRef.current = null;
+  }
+  if (!mapDivRef.current) return;
+
+  const map = L.map(mapDivRef.current, {
+    minZoom: 7.2,
+    maxBounds: BD_BOUNDS,
+    inertia: false,
+  }).fitBounds(BD_BOUNDS);
+  mapRef.current = map;
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors",
+  }).addTo(map);
+
+  const lg = L.layerGroup().addTo(map);
+  markersLayerRef.current = lg;
+
+  // Force map to resize after a short delay to ensure container is rendered
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 100);
+
+  const handleResize = () => {
+    setTimeout(() => {
+      if (mapRef.current) {
+        mapRef.current.invalidateSize();
+      }
+    }, 100);
+  };
+
+  window.addEventListener('resize', handleResize);
+  return () => {
+    window.removeEventListener('resize', handleResize);
     if (mapRef.current) {
       mapRef.current.remove();
       mapRef.current = null;
     }
-    if (!mapDivRef.current) return;
-
-    const map = L.map(mapDivRef.current, {
-      minZoom: 7.2,
-      maxBounds: BD_BOUNDS,
-      inertia: false,
-    });
-    map.fitBounds(BD_BOUNDS);
-    mapRef.current = map;
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; OpenStreetMap contributors",
-    }).addTo(map);
-
-    // L.rectangle(BD_BOUNDS, {
-    //   color: "#700000",
-    //   weight: 2,
-    //   fillOpacity: 0.0,
-    // }).addTo(map);
-
-    const lg = L.layerGroup().addTo(map);
-    markersLayerRef.current = lg;
-
-    // map.whenReady(() => setTimeout(() => map.invalidateSize(), 0));
-
-    const handleResize = () =>
-    {
-      setTimeout(() => {map.invalidateSize();}, 100);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      map.remove();
-      mapRef.current = null;
-      markersLayerRef.current = null;
-    };
-  }, []);
+    markersLayerRef.current = null;
+  };
+}, []);
 
   // Fetch events from backend
   useEffect(() => {
