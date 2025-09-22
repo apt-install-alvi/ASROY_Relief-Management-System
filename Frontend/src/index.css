@@ -9,6 +9,7 @@
   --placeholder-txt-color: #ae8484;
   --active-btn: #e1b3b0;
   --sidebar-btn-hover: #5e0000;
+  --pale-pink: #ead8d6;
 
   /*fonts*/
   --default-font: "Figtree";
@@ -30,6 +31,8 @@
   --bold: 700;
 
   --header-letter-spacing: -0.3px;
+
+  --test-border-red: 2px solid red;
 }
 
 body

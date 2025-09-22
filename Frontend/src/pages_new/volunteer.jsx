@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { VolunteerAddModal } from "../components/large_components/VolunteerAddModal";
 import { ViewVolunteerCard } from "../components/large_components/ViewVolunteerCard";
-import { FilterModal } from "../components/old/FilterPopup";
 import { BASE_URL, safeParseJson } from "../utils/api";
 import { Sidebar } from "../components/large_components/Sidebar";
 import { Header } from "../components/base_components/Header";
@@ -9,8 +8,14 @@ import { ButtonRed } from "../components/base_components/ButtonRed";
 import { ButtonWhite } from "../components/base_components/ButtonWhite";
 import { Card } from "../components/base_components/Card";
 import { SubHeader } from "../components/base_components/SubHeader";
+import { VolunteerFilterModal } from "../components/large_components/VolunteerFilterModal";
 
 const PLACEHOLDER = "/assets/images/volunteer_default.jpg";
+const MISSIONS = [
+  "Relief Distribution Team",
+  "Rescue Team",
+  "Reconstruction Team",
+];
 
 export function VolunteerPage()
 {
@@ -23,7 +28,8 @@ export function VolunteerPage()
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [isFiltered, setIsFiltered] = useState(false);
-
+  const allVolunteersCombined = [...allActiveVolunteers, ...allPastVolunteers];
+  
   useEffect(() => {
     async function fetchVolunteers()
     {
@@ -39,6 +45,8 @@ export function VolunteerPage()
         const normalize = (v) => ({
           ...v,
           Volunteer_Image: v.Volunteer_Image ? (v.Volunteer_Image.startsWith("http") ? v.Volunteer_Image : `${BASE_URL}${v.Volunteer_Image}`) : null,
+
+          Work_Assigned: v.Work_Assigned || v.Volunteer_WorkAssigned || "Relief Distribution Team"
         });
 
         const active = (data || []).filter((v) => v.Status === "Active").map(normalize);
@@ -71,11 +79,20 @@ export function VolunteerPage()
     {
       newVolunteer.Volunteer_Image = `${BASE_URL}${newVolunteer.Volunteer_Image}`;
     }
+
+    if (!newVolunteer.Work_Assigned && newVolunteer.Volunteer_WorkAssigned)
+    {
+      newVolunteer.Work_Assigned = newVolunteer.Volunteer_WorkAssigned;
+    }
+
+    if (!newVolunteer.Work_Assigned) newVolunteer.Work_Assigned = "Relief Distribution Team";
+
     if (newVolunteer.Status === "Active")
     {
       setActiveVolunteers((prev) => [newVolunteer, ...prev]);
       setAllActiveVolunteers((prev) => [newVolunteer, ...prev]);
     }
+
     else
     {
       setPastVolunteers((prev) => [newVolunteer, ...prev]);
@@ -89,6 +106,14 @@ export function VolunteerPage()
     if (updatedVolunteer && updatedVolunteer.Volunteer_Image && updatedVolunteer.Volunteer_Image.startsWith("/")) {
       updatedVolunteer.Volunteer_Image = `${BASE_URL}${updatedVolunteer.Volunteer_Image}`;
     }
+
+    if (!updatedVolunteer.Work_Assigned && updatedVolunteer.Volunteer_WorkAssigned)
+    {
+      updatedVolunteer.Work_Assigned = updatedVolunteer.Volunteer_WorkAssigned;
+    }
+
+    if (!updatedVolunteer.Work_Assigned)
+      updatedVolunteer.Work_Assigned = "Relief Distribution Team";
 
     const isNowActive = updatedVolunteer.Status === "Active";
 
@@ -164,6 +189,14 @@ export function VolunteerPage()
   const closeFilterModal = () => setShowFilterModal(false);
   const closeViewModal = () => setShowViewModal(false);
 
+  const displayedCombined = [...activeVolunteers, ...pastVolunteers];
+  const missionGroups = MISSIONS.map((mission) => {
+    const list = displayedCombined.filter((v) => v.Work_Assigned === mission);
+    return { mission, volunteers: list, count: list.length };
+  });
+
+  
+
   return (
     <>
       <Sidebar></Sidebar>
@@ -190,6 +223,7 @@ export function VolunteerPage()
               field1={`Gender: ${v.Gender}`}
               field2={`Age: ${v.Volunteer_age}`} 
               field3={`Status: ${v.Status}`}
+              field4={`Work: ${v.Work_Assigned}`}
               onClick={() => {
                 setSelectedVolunteer(v);
                 setShowViewModal(true);
@@ -210,6 +244,7 @@ export function VolunteerPage()
               field1={`Gender: ${v.Gender}`}
               field2={`Age: ${v.Volunteer_age}`} 
               field3={`Status: ${v.Status}`}
+              field4={`Work: ${v.Work_Assigned}`}                
               onClick={() => {
                 setSelectedVolunteer(v);
                 setShowViewModal(true);
@@ -219,6 +254,34 @@ export function VolunteerPage()
           </div>
         </section>
           
+        {missionGroups.map((grp) =>
+          <section key={grp.mission} className="past-events">
+            <SubHeader title={`${grp.mission} (${grp.count})`}></SubHeader>
+            <div className="card-grid">
+              {grp.volunteers.length === 0 ?
+                <p className="no-volunteer">No volunteers assigned</p>
+                : 
+                grp.volunteers.map((v) => (
+                  <Card
+                    ckey={v.Volunteer_id}
+                    img={v.Volunteer_Image ? v.Volunteer_Image : PLACEHOLDER}
+                    title={v.Volunteer_name}
+                    field1={`Gender: ${v.Gender}`}
+                    field2={`Age: ${v.Volunteer_age}`} 
+                    field3={`Status: ${v.Status}`}
+                    onClick={() => {
+                      setSelectedVolunteer(v);
+                      setShowViewModal(true);
+                    }}>
+                  </Card>
+                )
+              )}
+            </div>
+          </section>          
+      
+          )
+        }
+
 
           {showAddModal && (
             <div className="popup-backdrop">
@@ -235,7 +298,12 @@ export function VolunteerPage()
           {showFilterModal && (
             <div className="popup-backdrop">
               <div className="popup-body">
-                <FilterModal handleState={closeFilterModal} onFilter={handleFilterResults} onReset={resetFilters} />
+              <VolunteerFilterModal
+                handleState={closeFilterModal}
+                onFilter={handleFilterResults}
+                onReset={resetFilters}
+                volunteers={allVolunteersCombined}
+                missions={MISSIONS}/>
               </div>
             </div>
           )}

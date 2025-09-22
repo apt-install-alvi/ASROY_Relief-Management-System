@@ -13,6 +13,7 @@ export function VolunteerAddModal({ handleState, onAdd })
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [status, setStatus] = useState("");
+  const [workAssigned, setWorkAssigned] = useState("");
   const [photoFile, setPhotoFile] = useState(null);
 
   const handleFileChange = (e) =>
@@ -32,6 +33,7 @@ export function VolunteerAddModal({ handleState, onAdd })
       formData.append("age", age);
       formData.append("gender", gender);
       formData.append("status", status);
+      formData.append("workAssigned", workAssigned);
       if (photoFile) formData.append("photo", photoFile);
 
       const res = await fetch(`${BASE_URL}/api/volunteers/add`,
@@ -94,29 +96,32 @@ export function VolunteerAddModal({ handleState, onAdd })
           value={name}
           onChange={(e)=>setName(e.target.value)}
         ></InputWithLabel>
- 
-        <InputWithLabel
-          labelFor={"age"}
-          label={"Age"}
-          fieldType="number"
-          value={age}
-          min={16}
-          onChange={(e)=>setAge(e.target.value)}
-        ></InputWithLabel>
+        <div className="add-date-time-inputs">
+          <InputWithLabel
+            className={"volunteer-age-gender"}
+            labelFor={"age"}
+            label={"Age"}
+            fieldType="number"
+            value={age}
+            min={16}
+            onChange={(e)=>setAge(e.target.value)}
+          ></InputWithLabel>
 
-        <InputWithLabel
-          labelFor={"gender"}
-          label={"Gender"}
-          listName={"gender-list"}
-          value={gender}
-          onChange={(e)=>setGender(e.target.value)}
-        ></InputWithLabel>
-        <datalist id="gender-list">
-          <option key={"male"}>Male</option>
-          <option key={"female"}>Female</option>
-          <option key={"no-mention"}>Better not to mention</option>
-        </datalist>
-
+          <InputWithLabel
+            className={"volunteer-age-gender"}
+            labelFor={"gender"}
+            label={"Gender"}
+            listName={"gender-list"}
+            value={gender}
+            onChange={(e)=>setGender(e.target.value)}
+          ></InputWithLabel>
+          <datalist id="gender-list">
+            <option key={"male"}>Male</option>
+            <option key={"female"}>Female</option>
+            <option key={"no-mention"}>Better not to mention</option>
+          </datalist>
+        </div>
+        
         <InputWithLabel
           labelFor={"status"}
           label={"Status"}
@@ -130,6 +135,19 @@ export function VolunteerAddModal({ handleState, onAdd })
         </datalist>
 
         <InputWithLabel
+          labelFor={"work_assigned"}
+          label={"Work Assigned"}
+          listName={"work-list"}
+          value={workAssigned}
+          onChange={(e)=>setWorkAssigned(e.target.value)}
+        ></InputWithLabel>
+        <datalist id="work-list">
+          <option key={"relief"}>Relief Distribution Team</option>
+          <option key={"rescue"}>Rescue Team</option>
+          <option key={"recon"}>Reconstruction Team</option>
+        </datalist>
+
+        <InputWithLabel
           labelFor={"volunteer-img"}
           label={"Photo"}
           fieldType={"file"}
@@ -138,49 +156,6 @@ export function VolunteerAddModal({ handleState, onAdd })
         >
         </InputWithLabel>
         <div className="modal-btn-position volunteer-submit-btn"><input type="submit" value="Add" className="red-btn" /></div>
-        
-        {/* <div className="form-row">
-          <label>Name</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
-        </div>
-
-        <div className="form-row">
-          <label>Age</label>
-          <input type="number" min="16" value={age} onChange={(e) => setAge(e.target.value)} required />
-        </div>
-
-        <div className="form-row">
-          <label>Gender</label>
-          <select value={gender} onChange={(e) => setGender(e.target.value)}>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Better not to mention</option>
-          </select>
-        </div>
-
-        <div className="form-row">
-          <label>Status</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option>Active</option>
-            <option>Inactive</option>
-          </select>
-        </div>
-
-        <div className="form-row">
-          <label>Photo</label>
-          <input type="file" accept="image/*" onChange={handleFileChange} />
-        </div>
-
-        {error && <div style={{ color: "red", marginBottom: 8 }}>{error}</div>}
-
-        <div className="modal-actions">
-          <button type="button" className="btn" onClick={() => handleState && handleState(false)}>
-            Cancel
-          </button>
-          <button type="submit" className="btn-primary" disabled={submitting || !name}>
-            {submitting ? "Adding..." : "Add Volunteer"}
-          </button> 
-        </div> */}
       </form>
     </div>
   );

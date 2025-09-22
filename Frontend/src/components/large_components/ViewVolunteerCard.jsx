@@ -27,6 +27,7 @@ export function ViewVolunteerCard({
   const [localGender, setLocalGender] = useState(gender || "Better not to mention");
   const [localAge, setLocalAge] = useState(age || "");
   const [localImage, setLocalImage] = useState(image || PLACEHOLDER);
+   const [localWorkAssigned, setLocalWorkAssigned] = useState("");
   const [file, setFile] = useState(null);
 
   useEffect(() => {
@@ -36,6 +37,11 @@ export function ViewVolunteerCard({
     setLocalAge(age || "");
     setLocalImage(image || PLACEHOLDER);
   }, [name, status, gender, age, image]);
+
+  useEffect(() => {
+    if (!localWorkAssigned)
+      setLocalWorkAssigned((typeof window !== "undefined" && window.localWorkAssigned) || "Relief Distribution Team");
+  }, []);
 
   function handleFileChange(e)
   {
@@ -59,6 +65,7 @@ export function ViewVolunteerCard({
       formData.append("age", localAge);
       formData.append("gender", localGender);
       formData.append("status", localStatus);
+      formData.append("workAssigned", localWorkAssigned || "Relief Distribution Team");
       if (file) formData.append("photo", file);
 
       const res = await fetch(`${BASE_URL}/api/volunteers/edit/${volunteerId}`,
@@ -85,6 +92,9 @@ export function ViewVolunteerCard({
         {
           updated.Volunteer_Image = PLACEHOLDER;
         }
+
+        if (!updated.Work_Assigned)
+          updated.Work_Assigned = localWorkAssigned || "Relief Distribution Team";
       }
 
       onUpdate && onUpdate(updated);
@@ -149,7 +159,6 @@ export function ViewVolunteerCard({
             labelFor={"gender"}
             label={"Gender"}
             listName={"gender-list"}
-            placeholderTxt={"Select gender"}
             value={localGender}
             onChange={(e) => setLocalGender(e.target.value)}
           ></InputWithLabel>
@@ -163,13 +172,25 @@ export function ViewVolunteerCard({
             labelFor={"status"}
             label={"Status"}
             listName={"status-list"}
-            placeholderTxt={"Select activity status"}
             value={localStatus}
             onChange={(e) => setLocalStatus(e.target.value)}
           ></InputWithLabel>
           <datalist id="status-list">
             <option key={"active"}>Active</option>
             <option key={"inactive"}>Inactive</option>
+          </datalist>
+
+          <InputWithLabel
+            labelFor={"work-assigned"}
+            label={"Work Assigned"}
+            listName={"work-list"}
+            value={localWorkAssigned}
+            onChange={(e) => setLocalWorkAssigned(e.target.value)}
+          ></InputWithLabel>
+          <datalist id="work-list">
+            <option key={"relief"}>Relief Distribution Team</option>
+            <option key={"rescue"}>Rescue Team</option>
+            <option key={"reconstruction"}>Reconstruction Team</option>
           </datalist>
 
           <InputWithLabel
@@ -188,6 +209,7 @@ export function ViewVolunteerCard({
             <InputWithLabel labelFor={"age"} label={"Age"} value={localAge}></InputWithLabel>
             <InputWithLabel labelFor={"gender"} label={"Gender"} value={localGender}></InputWithLabel>
             <InputWithLabel labelFor={"status"} label={"Status"} value={localStatus}></InputWithLabel>
+            <InputWithLabel labelFor={"work-assigned"} label={"Work Assigned"} value={localWorkAssigned}></InputWithLabel>
             </div>
           </div>
       }
