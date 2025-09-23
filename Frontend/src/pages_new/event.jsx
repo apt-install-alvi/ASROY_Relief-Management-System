@@ -1,4 +1,5 @@
 import "./styles/event.css";
+import { EventDashboard } from "../components/large_components/EventDashboard";
 import { Card } from "../components/base_components/Card";
 import { ButtonRed } from "../components/base_components/ButtonRed";
 import { ButtonWhite } from "../components/base_components/ButtonWhite";
@@ -122,86 +123,96 @@ export function EventPage()
       <Sidebar></Sidebar>
       <Header title={"Events"}></Header>
       <main>
-        <section className="active-events">
-          <div className="events-subheader">
-            <SubHeader title={"Active Events"}></SubHeader>
-            <div className="add-filter-div">
-              <ButtonRed btnText={"Add Event"} onClick={() => setShowAddModal(true)}></ButtonRed>
-              <ButtonRed btnText={"Filter"} onClick={() => { setShowFilterModal(true)}}></ButtonRed>
-              {isFiltered ? <ButtonWhite btnText={"Reset Filters"} onClick={resetFilters}></ButtonWhite>: null}
-            </div>
-          </div>
-          <div className="card-grid">
-            {activeEvents.map((ev) =>(
-              <Card
-                ckey={ev.id}
-                img={assignImg(ev.Event_name)}
-                title={ev.Event_name}
-                field1={ev.area}
-                field2={`Date of Occurrence: ${formatDateForDisplay(ev.Date_of_occurrence)}`} 
-                field3={`Time of Occurrence: ${formatTimeForDisplay(ev.Time_of_occurrence)}`}
-                onClick={() => {
-                  setSelectedEvent(ev);
-                  setShowViewModal(true);
-                }}>
-              </Card>))}
-          </div>
-        </section>
-        
-        <section className="past-events">
-          <div className="events-subheader">
-            <SubHeader title={"Past Events"}></SubHeader>
-          </div>
-          <div className="card-grid">
-            {pastEvents.map((ev) =>(
-              <Card
-                ckey={ev.id}
-                img={assignImg(ev.Event_name)}
-                title={ev.Event_name}
-                field1={ev.area}
-                field2={`Date of Occurrence: ${formatDateForDisplay(ev.Date_of_occurrence)}`} 
-                field3={`Time of Occurrence: ${formatTimeForDisplay(ev.Time_of_occurrence)}`}
-                onClick={() => {
-                  setSelectedEvent(ev);
-                  setShowViewModal(true);
-                }}>
-              </Card>))}
-          </div>
-        </section>
-        
-        {showAddModal ? 
-          <div className="modal-backdrop">
-            <EventAddModal handleState={closeAddModal} onAdd={addNewEvent}></EventAddModal>
-          </div> : null}
-        
-        {showFilterModal ? 
-          <div className="modal-backdrop">
-            <EventFilterModal handleState={closeFilterModal} onFilter={handleFilterResults}></EventFilterModal>
-          </div> : null}
-        
-        {(showViewModal && selectedEvent) ?
-          <div className="modal-backdrop">
-            <ViewEventCard
-                eventId={selectedEvent.Event_id}
-                type={selectedEvent.Event_name}
-                area={selectedEvent.area}
-                date={selectedEvent.Date_of_occurrence}
-                time={selectedEvent.Time_of_occurrence}
-                status={selectedEvent.Status}
-                handleState={closeViewModal}
-                onUpdate={handleSaveEvent}
-                onDelete={(id) => {
-                  setActiveEvents(prev => prev.filter(ev => ev.Event_id !== id));
-                  setPastEvents(prev => prev.filter(ev => ev.Event_id !== id));
-                  setAllActiveEvents(prev => prev.filter(ev => ev.Event_id !== id));
-                  setAllPastEvents(prev => prev.filter(ev => ev.Event_id !== id));
-                  closeViewModal();
-                }}
-            ></ViewEventCard>
-          </div>
-          : null}
-        
-      </main>
+  {/* Dashboard at the top */}
+  <EventDashboard events={[...activeEvents, ...pastEvents]} />
+
+  {/* Active Events Section */}
+  <section className="active-events">
+    <div className="events-subheader">
+      <SubHeader title={"Active Events"} />
+      <div className="add-filter-div">
+        <ButtonRed btnText={"Add Event"} onClick={() => setShowAddModal(true)} />
+        <ButtonRed btnText={"Filter"} onClick={() => setShowFilterModal(true)} />
+        {isFiltered && (
+          <ButtonWhite btnText={"Reset Filters"} onClick={resetFilters} />
+        )}
+      </div>
+    </div>
+    <div className="card-grid">
+      {activeEvents.map((ev) => (
+        <Card
+          key={ev.Event_id}
+          img={assignImg(ev.Event_name)}
+          title={ev.Event_name}
+          field1={ev.area}
+          field2={`Date of Occurrence: ${formatDateForDisplay(ev.Date_of_occurrence)}`} 
+          field3={`Time of Occurrence: ${formatTimeForDisplay(ev.Time_of_occurrence)}`}
+          onClick={() => {
+            setSelectedEvent(ev);
+            setShowViewModal(true);
+          }}
+        />
+      ))}
+    </div>
+  </section>
+
+  {/* Past Events Section */}
+  <section className="past-events">
+    <div className="events-subheader">
+      <SubHeader title={"Past Events"} />
+    </div>
+    <div className="card-grid">
+      {pastEvents.map((ev) => (
+        <Card
+          key={ev.Event_id}
+          img={assignImg(ev.Event_name)}
+          title={ev.Event_name}
+          field1={ev.area}
+          field2={`Date of Occurrence: ${formatDateForDisplay(ev.Date_of_occurrence)}`} 
+          field3={`Time of Occurrence: ${formatTimeForDisplay(ev.Time_of_occurrence)}`}
+          onClick={() => {
+            setSelectedEvent(ev);
+            setShowViewModal(true);
+          }}
+        />
+      ))}
+    </div>
+  </section>
+
+  {/* Modals */}
+  {showAddModal && (
+    <div className="modal-backdrop">
+      <EventAddModal handleState={closeAddModal} onAdd={addNewEvent} />
+    </div>
+  )}
+  {showFilterModal && (
+    <div className="modal-backdrop">
+      <EventFilterModal handleState={closeFilterModal} onFilter={handleFilterResults} />
+    </div>
+  )}
+  {showViewModal && selectedEvent && (
+    <div className="modal-backdrop">
+      <ViewEventCard
+        eventId={selectedEvent.Event_id}
+        type={selectedEvent.Event_name}
+        area={selectedEvent.area}
+        date={selectedEvent.Date_of_occurrence}
+        time={selectedEvent.Time_of_occurrence}
+        status={selectedEvent.Status}
+        handleState={closeViewModal}
+        onUpdate={handleSaveEvent}
+        onDelete={(id) => {
+          setActiveEvents(prev => prev.filter(ev => ev.Event_id !== id));
+          setPastEvents(prev => prev.filter(ev => ev.Event_id !== id));
+          setAllActiveEvents(prev => prev.filter(ev => ev.Event_id !== id));
+          setAllPastEvents(prev => prev.filter(ev => ev.Event_id !== id));
+          closeViewModal();
+        }}
+      />
+    </div>
+  )}
+</main>
+
     </>
   );
 }
