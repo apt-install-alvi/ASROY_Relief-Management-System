@@ -1,3 +1,4 @@
+// src/components/large_components/VolunteerAddModal.jsx
 import { useState } from "react";
 import { BASE_URL, safeParseJson } from "../../utils/api";
 import { ModalHeader } from "../base_components/ModalHeader";
@@ -57,17 +58,22 @@ export function VolunteerAddModal({ handleState, onAdd })
             ? created.Volunteer_Image
             : `${BASE_URL}${created.Volunteer_Image}`;
         }
-        
         else
         {
           created.Volunteer_Image = PLACEHOLDER;
         }
+
+        // ensure Work_Assigned present (backend might return Work_Assigned or Volunteer_WorkAssigned)
+        if (!created.Work_Assigned && created.Volunteer_WorkAssigned) {
+          created.Work_Assigned = created.Volunteer_WorkAssigned;
+        }
+        if (!created.Work_Assigned) created.Work_Assigned = workAssigned || "Relief Distribution";
       }
 
       onAdd && onAdd(created);
       handleState && handleState(false);
     }
-    
+
     catch (err)
     {
       console.error(err);
@@ -85,7 +91,6 @@ export function VolunteerAddModal({ handleState, onAdd })
           label={"Volunteer ID"}
           fieldType="text"
           value={volunteerId}
-          placeholderTxt={"Optional, leave empty to auto-generate an ID"}
           onChange={(e)=>setVolunteerId(e.target.value)}
         ></InputWithLabel>
 

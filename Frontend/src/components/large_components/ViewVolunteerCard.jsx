@@ -1,3 +1,4 @@
+// src/components/large_components/ViewVolunteerCard.jsx
 import { useState, useEffect } from "react";
 import { BASE_URL, safeParseJson } from "../../utils/api";
 import { ModalHeader } from "../base_components/ModalHeader";
@@ -15,6 +16,7 @@ export function ViewVolunteerCard({
   status,
   gender,
   age,
+  workAssigned,
   handleState,
   onUpdate,
   onDelete,
@@ -36,7 +38,8 @@ export function ViewVolunteerCard({
     setLocalGender(gender || "Better not to mention");
     setLocalAge(age || "");
     setLocalImage(image || PLACEHOLDER);
-  }, [name, status, gender, age, image]);
+    setLocalWorkAssigned(workAssigned || "Rescue Mission");
+  }, [name, status, gender, age, image, workAssigned]);
 
   useEffect(() => {
     if (!localWorkAssigned)
@@ -65,6 +68,7 @@ export function ViewVolunteerCard({
       formData.append("age", localAge);
       formData.append("gender", localGender);
       formData.append("status", localStatus);
+      formData.append("workAssigned", localWorkAssigned);
       formData.append("workAssigned", localWorkAssigned || "Relief Distribution");
       if (file) formData.append("photo", file);
 
@@ -87,7 +91,6 @@ export function ViewVolunteerCard({
             ? updated.Volunteer_Image
             : `${BASE_URL}${updated.Volunteer_Image}`;
         }
-        
         else
         {
           updated.Volunteer_Image = PLACEHOLDER;
@@ -209,7 +212,7 @@ export function ViewVolunteerCard({
             <InputWithLabel labelFor={"age"} label={"Age"} value={localAge}></InputWithLabel>
             <InputWithLabel labelFor={"gender"} label={"Gender"} value={localGender}></InputWithLabel>
             <InputWithLabel labelFor={"status"} label={"Status"} value={localStatus}></InputWithLabel>
-            <InputWithLabel labelFor={"work-assigned"} label={"Work Assigned"} value={localWorkAssigned}></InputWithLabel>
+            <InputWithLabel labelFor={"work-assigned"} label={"Assigned Work"} value={localWorkAssigned}></InputWithLabel>
             </div>
           </div>
       }

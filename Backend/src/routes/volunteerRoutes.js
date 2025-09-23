@@ -130,7 +130,7 @@ router.post("/add", upload.single("photo"), async (req, res) => {
           Gender: gender || "Better not to mention",
           Volunteer_age: age,
           Volunteer_Image: imagePath,
-          Volunteer_WorkAssigned: workAssigned || "Relief Distribution",
+          Work_Assigned: workAssigned || "Rescue Mission",
           Status: status || "Active"
         };
 

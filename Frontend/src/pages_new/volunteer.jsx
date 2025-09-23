@@ -17,6 +17,7 @@ const MISSIONS = [
   "Reconstruction",
 ];
 
+
 export function VolunteerPage()
 {
   const [activeVolunteers, setActiveVolunteers] = useState([]);
@@ -31,14 +32,11 @@ export function VolunteerPage()
   const allVolunteersCombined = [...allActiveVolunteers, ...allPastVolunteers];
   
   useEffect(() => {
-    async function fetchVolunteers()
-    {
-      try
-      {
+    async function fetchVolunteers() {
+      try {
         const response = await fetch(`${BASE_URL}/api/volunteers/all`);
         const data = await safeParseJson(response);
-        if (!response.ok)
-        {
+        if (!response.ok) {
           throw new Error((data && data.error) || `HTTP error! status: ${response.status}`);
         }
 
@@ -59,24 +57,23 @@ export function VolunteerPage()
         
       }
       
-      catch (err)
-      {
+      catch (err) {
         console.error("Fetch error:", err);
         setActiveVolunteers([]);
         setPastVolunteers([]);
         setAllActiveVolunteers([]);
         setAllPastVolunteers([]);
-      }      
-    };
+      };
 
-    fetchVolunteers();
+      fetchVolunteers();
+    }
   }, []);
 
   function handleAddVolunteer(newVolunteer)
   {
-    if (!newVolunteer)
-      return;
+    if (!newVolunteer) return;
 
+    // normalize fields returned by backend
     if (newVolunteer.Volunteer_Image && newVolunteer.Volunteer_Image.startsWith("/"))
     {
       newVolunteer.Volunteer_Image = `${BASE_URL}${newVolunteer.Volunteer_Image}`;
@@ -104,8 +101,10 @@ export function VolunteerPage()
 
   function handleSave(updatedVolunteer)
   {
+    if (!updatedVolunteer) return;
+
     // normalize image path if backend returned "/uploads/..."
-    if (updatedVolunteer && updatedVolunteer.Volunteer_Image && updatedVolunteer.Volunteer_Image.startsWith("/")) {
+    if (updatedVolunteer.Volunteer_Image && updatedVolunteer.Volunteer_Image.startsWith("/")) {
       updatedVolunteer.Volunteer_Image = `${BASE_URL}${updatedVolunteer.Volunteer_Image}`;
     }
 
@@ -133,7 +132,7 @@ export function VolunteerPage()
       [
         ...prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id),
         updatedVolunteer,
-        ]);
+      ]);
       
       setAllPastVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id));
     }
@@ -144,7 +143,7 @@ export function VolunteerPage()
       [
         ...prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id),
         updatedVolunteer,
-        ]);
+      ]);
       
       setActiveVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id));
       
@@ -152,13 +151,12 @@ export function VolunteerPage()
       [
         ...prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id),
         updatedVolunteer,
-        ]);
+      ]);
       
       setAllActiveVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id));
     }
 
     setShowViewModal(false);
-
   }
 
   function handleDelete(id)
@@ -207,18 +205,19 @@ export function VolunteerPage()
         <section className="active-events">
           <div className="events-subheader">
             <SubHeader title={"Active Volunteers"}></SubHeader>
-            <div className="add-filter-div">
+
+            <div className="add-filter-div" style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <ButtonRed btnText={"Add Volunteer"} onClick={() => setShowAddModal(true)}></ButtonRed>
               <ButtonRed btnText={"Filter"} onClick={() => setShowFilterModal(true)}></ButtonRed>
-              {isFiltered ?
-                <ButtonWhite btnText={"Reset Filters"} onClick={resetFilters}></ButtonWhite> : null
-              }
-            </div>
+              {isFiltered ? <ButtonWhite btnText={"Reset Filters"} onClick={resetFilters}></ButtonWhite> : null}
+            </div>  
           </div>
           
+
           <div className="card-grid">
-          {activeVolunteers.map((v) => (
+          {activeVolunteers.map((v, idx) => (
             <Card
+              key={v.Volunteer_id || `${v.Volunteer_name}-${idx}`}
               ckey={v.Volunteer_id}
               img={v.Volunteer_Image && v.Volunteer_Image.trim()!== "" ? v.Volunteer_Image : PLACEHOLDER}
               title={v.Volunteer_name}
@@ -235,11 +234,12 @@ export function VolunteerPage()
           </div>
         </section>
 
-        <section className="past-events">
+        <section className="past-events" style={{ marginTop: 28 }}>
           <SubHeader title={"Inactive Volunteers"}></SubHeader>
-          <div className="card-grid">
-            {pastVolunteers.map((v) => (
+          <div className="card-grid" style={{ marginTop: 12 }}>
+            {pastVolunteers.map((v, idx) => (
             <Card
+              key={v.Volunteer_id || `${v.Volunteer_name}-${idx}`}
               ckey={v.Volunteer_id}
               img={v.Volunteer_Image ? v.Volunteer_Image : PLACEHOLDER}
               title={v.Volunteer_name}
@@ -288,7 +288,6 @@ export function VolunteerPage()
           {showAddModal && (
             <div className="modal-backdrop">
                 <VolunteerAddModal
-                  header="Volunteer"
                   handleState={closeAddModal}
                   onAdd={handleAddVolunteer}
                 />
@@ -315,6 +314,7 @@ export function VolunteerPage()
                   gender={selectedVolunteer.Gender}
                   age={selectedVolunteer.Volunteer_age}
                   status={selectedVolunteer.Status}
+                  workAssigned={selectedVolunteer.Work_Assigned}
                   handleState={closeViewModal}
                   onUpdate={handleSave}
                   onDelete={handleDelete}
@@ -322,6 +322,6 @@ export function VolunteerPage()
             </div>
           )}
       </main>
-      </>
+    </>
   );
 }
