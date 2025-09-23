@@ -7,6 +7,7 @@ import { Test } from "./pages/test";
 import { ShelterPageNew } from "./pages_new/shelter";
 import { Donation } from "./pages/donation";
 import { VolunteerPage } from "./pages_new/volunteer"
+import { InventoryPage } from "./pages_new/inventory";
 function App() {
   return (
     <Router>
@@ -17,7 +18,8 @@ function App() {
         <Route path="/test" element={<Test />}></Route>
         <Route path="/shelternew" element={<ShelterPageNew />}></Route>
         <Route path="/donation" element={<Donation />} />
-        <Route path="/volunteer" element={ <VolunteerPage/>} />
+        <Route path="/volunteer" element={<VolunteerPage />} />
+        <Route path="/inventory" element={<InventoryPage/>} />
       </Routes>
     </Router>
   );

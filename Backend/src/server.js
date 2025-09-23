@@ -7,6 +7,7 @@ import fs from "fs";
 import eventRoutes from "./routes/eventRoutes.js";
 import volunteerRoutes from "./routes/volunteerRoutes.js";
 import shelterRoutes from "./routes/shelterRoutes.js"; 
+import inventoryRoutes from "./routes/inventoryRoutes.js";
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use("/uploads", express.static(uploadsPath));
 app.use("/api/events", eventRoutes);
 app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/shelternew", shelterRoutes); 
+app.use("/api/inventory", inventoryRoutes); 
 
 const PORT = process.env.PORT || 5000;
 

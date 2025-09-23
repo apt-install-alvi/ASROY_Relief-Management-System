@@ -11,110 +11,92 @@ import { Card } from "../components/base_components/Card";
 import { SubHeader } from "../components/base_components/SubHeader";
 import "../pages_new/styles/inventory.css";
 import { InventoryTypeCard } from "../components/large_components/InventoryTypeCard";
+import { addInventoryItem } from "../utils/InventoryAPI";
+import { ModalHeader } from "../components/base_components/ModalHeader";
+import { InputWithLabel } from "../components/base_components/InputWithLabel";
 
 const PLACEHOLDER = "/assets/images/volunteer_default.jpg";
 
-export function Test() {
-  const thresholdStock = 20;
-  const quantity = 30;
+export function Test({ handleState, onItemAdded })
+{
+  const [formData, setFormData] = useState({
+    name: "",
+    type: "",
+    quantity: 0,
+    status: "In Stock"
+  });
+
+  async function handleSubmit(e)
+  {
+    e.preventDefault();
+    
+    try
+    {
+      await addInventoryItem(formData);
+      onItemAdded();
+      handleState();
+      setFormData({ name: "", type: "Food", quantity: 0, status: "In Stock" });
+    }
+    
+    catch (error)
+    {
+      console.error("Error adding item:", error);
+      alert("Failed to add item. Please try again.");
+    }
+  };
+
+  const handleChange = (e) =>
+  {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   return (
     <>
-      <Sidebar></Sidebar>
-      <Header title={"Inventory"}></Header>
-      <main>
-        <div className="warning">
-          <div className="warning-title">
-            <img src="/assets/icons/alert-triangle.svg"></img>
-            <p>Warning! Stock low for the following items: </p>
-            {/*Take input from db for low stock table*/}
-          </div>
-            <div className="warning-items">
-              <p className="warning-item">Test</p>
-              <p className="warning-item">Test</p>
-            </div>
-        </div>
+      <div className="modal">
+        <ModalHeader header="Add Event" handleState={handleState}></ModalHeader>
+        <form className="inputs-in-modal" onSubmit={handleSubmit}>
+          <InputWithLabel
+            labelFor={"name"}
+            label={"Name"}
+            fieldType={"text"}
+            placeholderTxt={"E.g - Rice (kg)"}
+            value={formData.name}
+            onChange={(e)=>handleChange("name", e.target.value)}
+          >
+          </InputWithLabel>
+  
+          <InputWithLabel
+            labelFor={"category"} 
+            label={"Category"} 
+            listName={"type-list"}
+            value={formData.type}
+            onChange={(e)=>handleChange("category", e.target.value)}
+          >
+          </InputWithLabel>
+          <datalist id="type-list">
+            <option>Food</option>
+            <option>Medicine</option>
+            <option>Clothes</option>
+            <option>Others</option>
+          </datalist>
         
-        <div className="inv-stock-overview">
-          <InventoryTypeCard
-            stockValue={150}
-            label={"Food"}
-            icon={"/assets/icons/food.png"}
-          ></InventoryTypeCard>
- 
-          <InventoryTypeCard
-            stockValue={150}
-            label={"Medicine"}
-            icon={"/assets/icons/medicine.png"}
-          ></InventoryTypeCard>
- 
-          <InventoryTypeCard
-            stockValue={150}
-            label={"Clothes"}
-            icon={"/assets/icons/clothes.png"}
-          ></InventoryTypeCard>
- 
-          <InventoryTypeCard
-            stockValue={150}
-            label={"Others"}
-            icon={"/assets/icons/others.png"}
-          ></InventoryTypeCard>
-        </div>
-
-        <div>
-          <div className="inv-subheader">
-            <SubHeader title={"Current Inventory"}></SubHeader>
-            <div className="inv-add-btn-div">
-              <ButtonRed btnText={"Add Item"}></ButtonRed>
-              <input list="filter-inv" placeholder="Filter" className="inv-filter"></input>
-              <datalist id="filter-inv">
-                <option>Food</option>
-                <option>Medicine</option>
-                <option>Clothes</option>
-                <option>Others</option>
-                <option>None</option>
-              </datalist>
-            </div>
-          </div>
-          <div className="table-container">
-            <table>
-              <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Stock</th>
-                <th>Status</th>
-              </tr>
-
-              <tr>
-                <td>Rice</td>
-                <td>Food</td>
-                <td>{quantity}</td>
-                <div>
-                  {quantity > thresholdStock ?
-                    <td className="in-stock">   In Stock</td>
-                    :
-                    <td className="low-stock">Low Stock</td>
-                  }
-                </div>
-
-              </tr>
-
-              <tr>
-                <td>Paracetamol</td>
-                <td>Medicine</td>
-                <td>{quantity}</td>
-                <div>
-                  {quantity > thresholdStock ?
-                    <td className="in-stock"> In Stock</td>
-                    :
-                    <td className="low-stock">Low Stock</td>
-                  }
-                </div>
-              </tr>
-            </table>
-           </div>
-        </div>
-      </main>
+          {/* <div className="add-date-time-inputs"> */}
+            <InputWithLabel
+              // className={"date-time-fields"}
+              labelFor={"stock"}
+              label={"Stock"}
+              fieldType={"text"}
+              placeholderTxt={"E.g - 50"}
+              value={formData.stock}
+              onChange={(e)=>handleChange("stock", e.target.value)}
+            ></InputWithLabel>
+      
+          <div className="modal-btn-position"><input type="submit" value="Add" className="red-btn"/></div>
+        </form>
+      </div>
     </>
   );
 }

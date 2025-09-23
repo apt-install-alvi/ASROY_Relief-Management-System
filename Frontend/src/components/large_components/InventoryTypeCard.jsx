@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/large_components/InventoryTypeCard.css";
 
-export function InventoryTypeCard({ stockValue, icon, label })
+export function InventoryTypeCard({ icon, label, totalItems, maxCapacity })
 {
-  const [percentage, setPercentage] = useState(10);
-
-
+  const [percentage, setPercentage] = useState(0);
+  useEffect(() =>
+  {
+    const calculatedPercentage = Math.min((totalItems / maxCapacity) * 100, 100);
+    setPercentage(calculatedPercentage);
+  }, [totalItems, maxCapacity]);
 
   return (
     <div className="inv-cnt">
@@ -17,7 +20,7 @@ export function InventoryTypeCard({ stockValue, icon, label })
         <div className="progress-bar-container">
           <div className="progress-bar" style={{ width: `${percentage}%` }}></div>
         </div>
-        <div className="inv-stock">{stockValue}</div>
+        <div className="inv-stock">{totalItems}</div>
       </div>
     </div>
   );

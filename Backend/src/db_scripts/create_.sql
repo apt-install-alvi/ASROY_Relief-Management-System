@@ -56,40 +56,50 @@ REFERENCES Donor(Donor_id) on delete cascade on update cascade
 create table Goods(
 Goods_id varchar(4) primary key,
 Goods_name varchar(20) not null,
-Goods_type  ENUM('Food' , 'Medicine' , 'Clothes'  , 'Others')
+Goods_type  ENUM('Food' , 'Medicine' , 'Clothes'  , 'Others'),
+Goods_quantity NUMERIC DEFAULT 0,
+Goods_status ENUM('In Stock', 'Low Stock') DEFAULT 'In Stock'
 );
 
 create table Food (
-  Goods_Food VARCHAR(4) NOT NULL,
+  Food_id VARCHAR(4) primary key,
   Stock      NUMERIC check(Stock>=0),
-  CONSTRAINT g_f_k
-    FOREIGN KEY (Goods_Food)
+  CONSTRAINT food_goods_fk
+    FOREIGN KEY (Food_id)
     REFERENCES Goods (Goods_id) on delete cascade  on update cascade
 );
 
 create table Medicine (
-  Goods_Food VARCHAR(4) NOT NULL,
+  Medicine_id VARCHAR(4) primary key,
   Stock      NUMERIC check(Stock>=0),
-  CONSTRAINT m_f_k
-    FOREIGN KEY (Goods_Food)
+  CONSTRAINT med_goods_fk
+    FOREIGN KEY (Medicine_id)
     REFERENCES Goods (Goods_id) on delete cascade  on update cascade
 );
 
 create table Clothes (
-  Goods_Food VARCHAR(4) NOT NULL,
+  Clothes_id VARCHAR(4) primary key,
   Stock      NUMERIC check(Stock>=0),
-  CONSTRAINT c_f_k
-    FOREIGN KEY (Goods_Food)
+  CONSTRAINT clothes_goods_fk
+    FOREIGN KEY (Clothes_id)
     REFERENCES Goods (Goods_id) on delete cascade  on update cascade
 );
 
 create table Others (
-  Goods_Food VARCHAR(4) NOT NULL,
+  Others_id VARCHAR(4) primary key,
   Stock      NUMERIC check(Stock>=0),
-  CONSTRAINT o_f_k
-    FOREIGN KEY (Goods_Food)
+  CONSTRAINT other_goods_fk
+    FOREIGN KEY (Others_id)
     REFERENCES Goods (Goods_id) on delete cascade  on update cascade
 );
+
+CREATE TABLE Low_Stock (
+  Low_stock_id INT AUTO_INCREMENT PRIMARY KEY,
+  Goods_id VARCHAR(4) NOT NULL,
+  Current_quantity NUMERIC,
+  CONSTRAINT low_Stock_fk FOREIGN KEY (Goods_id) REFERENCES Goods(Goods_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 
 create table Donation_Distribution(
 Distribution_id varchar(5) primary key,
@@ -120,7 +130,8 @@ CREATE TABLE Volunteer (
     Volunteer_gender ENUM('Male', 'Female' ,'Better not to mention') DEFAULT 'Better not to mention',
     Volunteer_age NUMERIC NOT NULL CHECK (Volunteer_age > 15),
     Volunteer_Image VARCHAR(255) DEFAULT NULL,
-    Status VARCHAR(20) DEFAULT 'Active'
+    Status VARCHAR(20) DEFAULT 'Active',
+    Assigned_Work ENUM('Relief Distribution', 'Rescue' ,'Reconstruction') DEFAULT 'Relief Distribution'
 );
 
 
