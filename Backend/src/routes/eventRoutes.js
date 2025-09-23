@@ -139,8 +139,6 @@ router.get("/dashboard", (req, res) => {
   });
 });
 
-
-
 // ---------------------- Delete Event ----------------------
 router.delete("/delete/:id", (req, res) => {
   const eventId = req.params.id;

@@ -8,3 +8,10 @@
   display: flex;
   gap: 32px;
 }
+
+.no-volunteer
+{
+  color: var(--red);
+  font-size: var(--large-para);
+  margin-left: -18px;
+}

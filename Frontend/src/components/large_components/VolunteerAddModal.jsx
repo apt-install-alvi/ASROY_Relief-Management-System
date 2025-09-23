@@ -12,9 +12,9 @@ export function VolunteerAddModal({ handleState, onAdd })
   const [volunteerId, setVolunteerId] = useState("");
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
-  const [gender, setGender] = useState("Male");
-  const [status, setStatus] = useState("Active");
-  const [workAssigned, setWorkAssigned] = useState("Rescue Mission");
+  const [gender, setGender] = useState("");
+  const [status, setStatus] = useState("");
+  const [workAssigned, setWorkAssigned] = useState("");
   const [photoFile, setPhotoFile] = useState(null);
 
   const handleFileChange = (e) =>
@@ -67,7 +67,7 @@ export function VolunteerAddModal({ handleState, onAdd })
         if (!created.Work_Assigned && created.Volunteer_WorkAssigned) {
           created.Work_Assigned = created.Volunteer_WorkAssigned;
         }
-        if (!created.Work_Assigned) created.Work_Assigned = workAssigned || "Rescue Mission";
+        if (!created.Work_Assigned) created.Work_Assigned = workAssigned || "Relief Distribution";
       }
 
       onAdd && onAdd(created);
@@ -91,7 +91,6 @@ export function VolunteerAddModal({ handleState, onAdd })
           label={"Volunteer ID"}
           fieldType="text"
           value={volunteerId}
-          placeholderTxt={"Optional, leave empty to auto-generate an ID"}
           onChange={(e)=>setVolunteerId(e.target.value)}
         ></InputWithLabel>
 
@@ -102,29 +101,32 @@ export function VolunteerAddModal({ handleState, onAdd })
           value={name}
           onChange={(e)=>setName(e.target.value)}
         ></InputWithLabel>
+        <div className="add-date-time-inputs">
+          <InputWithLabel
+            className={"volunteer-age-gender"}
+            labelFor={"age"}
+            label={"Age"}
+            fieldType="number"
+            value={age}
+            min={16}
+            onChange={(e)=>setAge(e.target.value)}
+          ></InputWithLabel>
 
-        <InputWithLabel
-          labelFor={"age"}
-          label={"Age"}
-          fieldType="number"
-          value={age}
-          min={16}
-          onChange={(e)=>setAge(e.target.value)}
-        ></InputWithLabel>
-
-        <InputWithLabel
-          labelFor={"gender"}
-          label={"Gender"}
-          listName={"gender-list"}
-          value={gender}
-          onChange={(e)=>setGender(e.target.value)}
-        ></InputWithLabel>
-        <datalist id="gender-list">
-          <option key={"male"}>Male</option>
-          <option key={"female"}>Female</option>
-          <option key={"no-mention"}>Better not to mention</option>
-        </datalist>
-
+          <InputWithLabel
+            className={"volunteer-age-gender"}
+            labelFor={"gender"}
+            label={"Gender"}
+            listName={"gender-list"}
+            value={gender}
+            onChange={(e)=>setGender(e.target.value)}
+          ></InputWithLabel>
+          <datalist id="gender-list">
+            <option key={"male"}>Male</option>
+            <option key={"female"}>Female</option>
+            <option key={"no-mention"}>Better not to mention</option>
+          </datalist>
+        </div>
+        
         <InputWithLabel
           labelFor={"status"}
           label={"Status"}
@@ -137,7 +139,6 @@ export function VolunteerAddModal({ handleState, onAdd })
           <option key={"inactive"}>Inactive</option>
         </datalist>
 
-        {/* Work Assigned */}
         <InputWithLabel
           labelFor={"work_assigned"}
           label={"Work Assigned"}
@@ -146,10 +147,9 @@ export function VolunteerAddModal({ handleState, onAdd })
           onChange={(e)=>setWorkAssigned(e.target.value)}
         ></InputWithLabel>
         <datalist id="work-list">
-          <option key={"rescue"}>Rescue Mission</option>
-          <option key={"rehab"}>Rehabilitation mission</option>
-          <option key={"recon"}>Reconstruction Mission</option>
-          <option key={"mgmt"}>Management</option>
+          <option key={"relief"}>Relief Distribution</option>
+          <option key={"rescue"}>Rescue</option>
+          <option key={"recon"}>Reconstruction</option>
         </datalist>
 
         <InputWithLabel
@@ -160,10 +160,7 @@ export function VolunteerAddModal({ handleState, onAdd })
           onChange={handleFileChange}
         >
         </InputWithLabel>
-
-        <div className="modal-btn-position volunteer-submit-btn">
-          <input type="submit" value="Add" className="red-btn" />
-        </div>
+        <div className="modal-btn-position volunteer-submit-btn"><input type="submit" value="Add" className="red-btn" /></div>
       </form>
     </div>
   );

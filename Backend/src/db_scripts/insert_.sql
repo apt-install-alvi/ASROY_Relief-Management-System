@@ -497,49 +497,22 @@ VALUES
   ('V009', 'Nasima Begum', DEFAULT, 33, NULL);
 
 
+INSERT INTO Goods (Goods_id, Goods_name, Goods_type, Goods_quantity, Goods_status) VALUES
+('G001', 'Rice', 'Food', 50, 'In Stock'),
+('G002', 'Paracetamol', 'Medicine', 18, 'In Stock'),
+('G003', 'Jacket', 'Clothes', 10, 'Low Stock'),
+('G004', 'Blanket', 'Others', 30, 'In Stock'),
+('G005', 'Pulse', 'Food', 50, 'In Stock'),
+('G006', 'Amoxilin', 'Medicine', 20, 'In Stock');
 
-insert into  Goods 
-values
-  ('G001', 'Rice',        'Food'),
-  ('G002', 'Paracetamol', 'Medicine'),
-  ('G003', 'Jacket',      'Clothes'),
-  ('G021', 'Amoxicillin','Medicine'),
-  ('G103', 'Ibuprofen',   'Medicine'),
-  ('G512', 'Cetirizine',  'Medicine'),
-  ('G801', 'Wheat Flour','Food'),
-  ('G053', 'Pulses Mix', 'Food'),
-  ('G562', 'Cooking Oil','Food'),
-  ('G423', 'Sugar',      'Food'),
-  ('G852', 'Cornflakes', 'Food');
+INSERT INTO Food VALUES ('G001', 50), ('G005', 50);
+INSERT INTO Medicine VALUES ('G002', 18), ('G006', 20);
+INSERT INTO Clothes VALUES ('G003', 10);
+INSERT INTO Others VALUES ('G004', 30);
 
-
-insert into Food
-values
-('G001' , 4),
-('G002' , 2),
-('G003' , 1);
-
-
-insert into Medicine
-values
-('G021' , 9),
-('G103' , 2),
-('G512' , 7);
-
-
-insert into Clothes
-values
-('G801' , 15),
-('G053' , 25),
-('G562' , 12);
-
-
-insert into Others
-values
-('G423' , 42),
-('G423' , 212),
-('G852' , 56);
-
+INSERT INTO Low_Stock VALUES
+(2, 'G002', 18),
+(3, 'G003', 10);
 
 insert into Rescue_team
 values

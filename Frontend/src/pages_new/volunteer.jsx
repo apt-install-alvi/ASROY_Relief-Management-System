@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { VolunteerAddModal } from "../components/large_components/VolunteerAddModal";
 import { ViewVolunteerCard } from "../components/large_components/ViewVolunteerCard";
-// use the new mission filter modal
-import MissionFilterModal from "../components/MissionFilterModal";
 import { BASE_URL, safeParseJson } from "../utils/api";
 import { Sidebar } from "../components/large_components/Sidebar";
 import { Header } from "../components/base_components/Header";
@@ -10,15 +8,15 @@ import { ButtonRed } from "../components/base_components/ButtonRed";
 import { ButtonWhite } from "../components/base_components/ButtonWhite";
 import { Card } from "../components/base_components/Card";
 import { SubHeader } from "../components/base_components/SubHeader";
+import { VolunteerFilterModal } from "../components/large_components/VolunteerFilterModal";
 
 const PLACEHOLDER = "/assets/images/volunteer_default.jpg";
-
 const MISSIONS = [
-  "Rescue Mission",
-  "Rehabilitation mission",
-  "Reconstruction Mission",
-  "Management",
+  "Relief Distribution",
+  "Rescue",
+  "Reconstruction",
 ];
+
 
 export function VolunteerPage()
 {
@@ -31,32 +29,22 @@ export function VolunteerPage()
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [isFiltered, setIsFiltered] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // combined source-of-truth for filter modal
   const allVolunteersCombined = [...allActiveVolunteers, ...allPastVolunteers];
-
+  
   useEffect(() => {
-    async function fetchVolunteers()
-    {
-      try
-      {
-        setLoading(true);
+    async function fetchVolunteers() {
+      try {
         const response = await fetch(`${BASE_URL}/api/volunteers/all`);
         const data = await safeParseJson(response);
-        if (!response.ok)
-        {
+        if (!response.ok) {
           throw new Error((data && data.error) || `HTTP error! status: ${response.status}`);
         }
 
         const normalize = (v) => ({
           ...v,
-          Volunteer_Image: v.Volunteer_Image
-            ? (v.Volunteer_Image.startsWith("http") ? v.Volunteer_Image : `${BASE_URL}${v.Volunteer_Image}`)
-            : null,
-          // normalize mission field name and provide default
-          Work_Assigned: v.Work_Assigned || v.Volunteer_WorkAssigned || "Rescue Mission",
+          Volunteer_Image: v.Volunteer_Image ? (v.Volunteer_Image.startsWith("http") ? v.Volunteer_Image : `${BASE_URL}${v.Volunteer_Image}`) : null,
+
+          Work_Assigned: v.Work_Assigned || v.Volunteer_WorkAssigned || "Relief Distribution"
         });
 
         const active = (data || []).filter((v) => v.Status === "Active").map(normalize);
@@ -65,23 +53,20 @@ export function VolunteerPage()
         setPastVolunteers(inactive);
         setAllActiveVolunteers(active);
         setAllPastVolunteers(inactive);
-        setError(null);
+
+        
       }
       
-      catch (err)
-      {
+      catch (err) {
         console.error("Fetch error:", err);
         setActiveVolunteers([]);
         setPastVolunteers([]);
         setAllActiveVolunteers([]);
         setAllPastVolunteers([]);
-        setError(err.message || "Failed to load volunteers");
-      } finally {
-        setLoading(false);
-      }      
-    };
-
-    fetchVolunteers();
+      };
+    }
+    
+  fetchVolunteers();
   }, []);
 
   function handleAddVolunteer(newVolunteer)
@@ -93,16 +78,20 @@ export function VolunteerPage()
     {
       newVolunteer.Volunteer_Image = `${BASE_URL}${newVolunteer.Volunteer_Image}`;
     }
-    if (!newVolunteer.Work_Assigned && newVolunteer.Volunteer_WorkAssigned) {
+
+    if (!newVolunteer.Work_Assigned && newVolunteer.Volunteer_WorkAssigned)
+    {
       newVolunteer.Work_Assigned = newVolunteer.Volunteer_WorkAssigned;
     }
-    if (!newVolunteer.Work_Assigned) newVolunteer.Work_Assigned = "Rescue Mission";
+
+    if (!newVolunteer.Work_Assigned) newVolunteer.Work_Assigned = "Relief Distribution";
 
     if (newVolunteer.Status === "Active")
     {
       setActiveVolunteers((prev) => [newVolunteer, ...prev]);
       setAllActiveVolunteers((prev) => [newVolunteer, ...prev]);
     }
+
     else
     {
       setPastVolunteers((prev) => [newVolunteer, ...prev]);
@@ -119,10 +108,13 @@ export function VolunteerPage()
       updatedVolunteer.Volunteer_Image = `${BASE_URL}${updatedVolunteer.Volunteer_Image}`;
     }
 
-    if (!updatedVolunteer.Work_Assigned && updatedVolunteer.Volunteer_WorkAssigned) {
+    if (!updatedVolunteer.Work_Assigned && updatedVolunteer.Volunteer_WorkAssigned)
+    {
       updatedVolunteer.Work_Assigned = updatedVolunteer.Volunteer_WorkAssigned;
     }
-    if (!updatedVolunteer.Work_Assigned) updatedVolunteer.Work_Assigned = "Rescue Mission";
+
+    if (!updatedVolunteer.Work_Assigned)
+      updatedVolunteer.Work_Assigned = "Relief Distribution Team";
 
     const isNowActive = updatedVolunteer.Status === "Active";
 
@@ -197,15 +189,13 @@ export function VolunteerPage()
   const closeFilterModal = () => setShowFilterModal(false);
   const closeViewModal = () => setShowViewModal(false);
 
-  // compute mission groups from currently displayed volunteers
   const displayedCombined = [...activeVolunteers, ...pastVolunteers];
   const missionGroups = MISSIONS.map((mission) => {
     const list = displayedCombined.filter((v) => v.Work_Assigned === mission);
     return { mission, volunteers: list, count: list.length };
   });
 
-  const activeCount = activeVolunteers.length;
-  const inactiveCount = pastVolunteers.length;
+  
 
   return (
     <>
@@ -213,27 +203,18 @@ export function VolunteerPage()
       <Header title={"Volunteers"}></Header>
       <main>
         <section className="active-events">
-          <div className="events-subheader" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <SubHeader title={"Active Volunteers"}></SubHeader>
-              {/* counts in header corner */}
-              <div style={{ color: "#6b6b6b", fontSize: 14 }}>
-                <div>Active: <strong>{activeCount}</strong></div>
-                <div>Inactive: <strong>{inactiveCount}</strong></div>
-              </div>
-            </div>
+          <div className="events-subheader">
+            <SubHeader title={"Active Volunteers"}></SubHeader>
 
             <div className="add-filter-div" style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <ButtonRed btnText={"Add Volunteer"} onClick={() => setShowAddModal(true)}></ButtonRed>
               <ButtonRed btnText={"Filter"} onClick={() => setShowFilterModal(true)}></ButtonRed>
               {isFiltered ? <ButtonWhite btnText={"Reset Filters"} onClick={resetFilters}></ButtonWhite> : null}
-            </div>
+            </div>  
           </div>
           
-          {loading && <div style={{ padding: 16 }}>Loading volunteers...</div>}
-          {error && <div style={{ padding: 16, color: "red" }}>Error: {error}</div>}
 
-          <div className="card-grid" style={{ marginTop: 12 }}>
+          <div className="card-grid">
           {activeVolunteers.map((v, idx) => (
             <Card
               key={v.Volunteer_id || `${v.Volunteer_name}-${idx}`}
@@ -243,6 +224,7 @@ export function VolunteerPage()
               field1={`Gender: ${v.Gender}`}
               field2={`Age: ${v.Volunteer_age}`} 
               field3={`Status: ${v.Status}`}
+              field4={`Work: ${v.Work_Assigned}`}
               onClick={() => {
                 setSelectedVolunteer(v);
                 setShowViewModal(true);
@@ -264,6 +246,7 @@ export function VolunteerPage()
               field1={`Gender: ${v.Gender}`}
               field2={`Age: ${v.Volunteer_age}`} 
               field3={`Status: ${v.Status}`}
+              field4={`Work: ${v.Work_Assigned}`}                
               onClick={() => {
                 setSelectedVolunteer(v);
                 setShowViewModal(true);
@@ -272,18 +255,16 @@ export function VolunteerPage()
             ))}
           </div>
         </section>
-
-        {/* Mission blocks */}
-        {missionGroups.map((grp) => (
-          <section key={grp.mission} style={{ marginTop: 28 }}>
+          
+        {missionGroups.map((grp) =>
+          <section key={grp.mission} className="past-events">
             <SubHeader title={`${grp.mission} (${grp.count})`}></SubHeader>
-            <div className="card-grid" style={{ marginTop: 12 }}>
-              {grp.volunteers.length === 0 ? (
-                <div style={{ padding: 12, color: "#666" }}>No volunteers assigned</div>
-              ) : (
-                grp.volunteers.map((v, idx) => (
+            <div className="card-grid">
+              {grp.volunteers.length === 0 ?
+                <p className="no-volunteer">No volunteers assigned</p>
+                : 
+                grp.volunteers.map((v) => (
                   <Card
-                    key={v.Volunteer_id ? `${v.Volunteer_id}-${grp.mission}` : `${v.Volunteer_name}-${grp.mission}-${idx}`}
                     ckey={v.Volunteer_id}
                     img={v.Volunteer_Image ? v.Volunteer_Image : PLACEHOLDER}
                     title={v.Volunteer_name}
@@ -293,42 +274,39 @@ export function VolunteerPage()
                     onClick={() => {
                       setSelectedVolunteer(v);
                       setShowViewModal(true);
-                    }}
-                  />
-                ))
+                    }}>
+                  </Card>
+                )
               )}
             </div>
-          </section>
-        ))}
+          </section>          
+      
+          )
+        }
+
 
           {showAddModal && (
-            <div className="popup-backdrop">
-              <div className="popup-body">
+            <div className="modal-backdrop">
                 <VolunteerAddModal
                   handleState={closeAddModal}
                   onAdd={handleAddVolunteer}
                 />
-              </div>
             </div>
           )}
 
           {showFilterModal && (
-            <div className="popup-backdrop">
-              <div className="popup-body">
-                <MissionFilterModal
-                  handleState={closeFilterModal}
-                  onFilter={handleFilterResults}
-                  onReset={resetFilters}
-                  volunteers={allVolunteersCombined}
-                  missions={MISSIONS}
-                />
+            <div className="modal-backdrop">
+              <VolunteerFilterModal
+                handleState={closeFilterModal}
+                onFilter={handleFilterResults}
+                onReset={resetFilters}
+                volunteers={allVolunteersCombined}
+                missions={MISSIONS}/>
               </div>
-            </div>
           )}
 
           {showViewModal && selectedVolunteer && (
-            <div className="popup-backdrop">
-              <div className="viewcard-body">
+            <div className="modal-backdrop">
                 <ViewVolunteerCard
                   volunteerId={selectedVolunteer.Volunteer_id}
                   image={selectedVolunteer.Volunteer_Image}
@@ -341,12 +319,9 @@ export function VolunteerPage()
                   onUpdate={handleSave}
                   onDelete={handleDelete}
                 />
-              </div>
             </div>
           )}
       </main>
-      </>
+    </>
   );
 }
-
-export default VolunteerPage;

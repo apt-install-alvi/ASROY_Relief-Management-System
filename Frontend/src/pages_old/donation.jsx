@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { MapPin, Calendar, Users, Package, DollarSign } from "lucide-react";
 import "./donation.css";
-import { NewCampaignPopup } from "../components/newCampaignPopup";
+import { NewCampaignPopup } from "../components/old/newCampaignPopup";
 /* --- Mock campaign data (replace with API calls) --- */
 const campaign = {
   event_id: 1,

@@ -1,6 +1,6 @@
 import "../styles/base_components/Card.css";
 
-export function Card({ img, title, field1, field2, field3, onClick, ckey})
+export function Card({ img, title, field1, field2, field3, field4, onClick, ckey})
 {
   return (
     <div className="card-body" onClick={onClick} key={ckey}>
@@ -10,6 +10,7 @@ export function Card({ img, title, field1, field2, field3, onClick, ckey})
         <p className="card-field1">{field1}</p>
         <p className="card-field2">{field2}</p>
         <p className="card-field3">{field3}</p>
+        <p className="card-field4">{field4}</p>
       </div>
     </div>
  )
