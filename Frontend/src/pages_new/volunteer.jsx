@@ -64,9 +64,9 @@ export function VolunteerPage()
         setAllActiveVolunteers([]);
         setAllPastVolunteers([]);
       };
-
-      fetchVolunteers();
     }
+    
+    fetchVolunteers();
   }, []);
 
   function handleAddVolunteer(newVolunteer)
