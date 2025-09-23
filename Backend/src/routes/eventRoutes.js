@@ -127,6 +127,19 @@ router.put("/edit/:id", (req, res) => {
   });
 });
 
+// ---------------------- Dashboard Data ----------------------
+router.get("/dashboard", (req, res) => {
+  db.query("CALL GetEventDashboard()", (err, results) => {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+
+    const stats = results[0][0];  // first SELECT result
+    const alerts = results[1];     // second SELECT result
+
+    res.json({ success: true, dashboard: { ...stats, alerts } });
+  });
+});
+
+
 
 // ---------------------- Delete Event ----------------------
 router.delete("/delete/:id", (req, res) => {
