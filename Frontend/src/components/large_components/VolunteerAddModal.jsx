@@ -142,9 +142,9 @@ export function VolunteerAddModal({ handleState, onAdd })
           onChange={(e)=>setWorkAssigned(e.target.value)}
         ></InputWithLabel>
         <datalist id="work-list">
-          <option key={"relief"}>Relief Distribution Team</option>
-          <option key={"rescue"}>Rescue Team</option>
-          <option key={"recon"}>Reconstruction Team</option>
+          <option key={"relief"}>Relief Distribution</option>
+          <option key={"rescue"}>Rescue</option>
+          <option key={"recon"}>Reconstruction</option>
         </datalist>
 
         <InputWithLabel

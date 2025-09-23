@@ -77,7 +77,7 @@ th
   padding: 20px 0px 8px 20px; 
 }
 
-tr
+tr, th
 {
   border-bottom: 1px solid var(--active-btn);
   text-align: left;

@@ -25,6 +25,8 @@ export function HomePage()
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [filterTitle, setFilterTitle] = useState("Active Events");
+  const [volCounts, setVolCounts] = useState({ total: null, active: null, inactive: null });
+
   const BD_BOUNDS = [
     [20.370, 88.0],
     [28.635, 92.69],
@@ -107,7 +109,45 @@ export function HomePage()
   }
 }, [filtered]);
 
+  // Read counts from localStorage on mount and subscribe to updates
+  useEffect(() => {
+    const readStored = () => {
+      try {
+        const raw = localStorage.getItem("volunteerCounts");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          setVolCounts({
+            total: parsed.total ?? null,
+            active: parsed.activeCount ?? null,
+            inactive: parsed.inactiveCount ?? null,
+          });
+        } else {
+          setVolCounts({ total: null, active: null, inactive: null });
+        }
+      } catch (err) {
+        console.error("Error reading volunteerCounts from localStorage", err);
+      }
+    };
 
+    // initial read
+    readStored();
+
+    // listener for updates from VolunteerPage
+    const handler = (e) => {
+      const d = e && e.detail ? e.detail : null;
+      if (d) {
+        setVolCounts({ total: d.total, active: d.activeCount, inactive: d.inactiveCount });
+      } else {
+        // fallback: re-read localStorage
+        readStored();
+      }
+    };
+
+    window.addEventListener("volunteerCountsUpdated", handler);
+    return () => {
+      window.removeEventListener("volunteerCountsUpdated", handler);
+    };
+  }, []);
   
 
   // Render markers function
@@ -216,13 +256,15 @@ export function HomePage()
               {filtered.length === 0 && <li>No events in this range.</li>}
             </ul>
 
-            <h3>Volunteers</h3>
-            <p>
-              Total Volunteers : <b>52</b>
-            </p>
-            <p>
-              Active Volunteers : <b>36</b>
-            </p>
+             <h3>Volunteers</h3>
+              {volCounts.total === null ? (
+                <p>Loading volunteers...</p>
+              ) : (
+              <>
+                <p>Total Volunteers : <b>{volCounts.total}</b></p>
+                <p>Active Volunteers : <b>{volCounts.active}</b></p>
+              </>
+            )}
 
             <h3>Donations</h3>
             <p>

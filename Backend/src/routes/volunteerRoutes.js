@@ -53,21 +53,22 @@ router.get("/all", (req, res) => {
       Volunteer_gender AS Gender, 
       Volunteer_age, 
       Volunteer_Image,
+      Volunteer_WorkAssigned AS Work_Assigned,
       Status
     FROM Volunteer
     ORDER BY Volunteer_id;
   `;
-  
+
   db.query(query, (err, results) => {
     if (err) {
       console.error("Database error:", err);
-      return res.status(500).json({ 
-        success: false, 
+      return res.status(500).json({
+        success: false,
         error: err.message,
         message: "Failed to fetch volunteers"
       });
     }
-    
+
     res.json(results || []);
   });
 });
@@ -75,13 +76,13 @@ router.get("/all", (req, res) => {
 // ---------------------- Add Volunteer ----------------------
 router.post("/add", upload.single("photo"), async (req, res) => {
   try {
-    const { name, age, gender, status } = req.body;
+    const { name, age, gender, status, workAssigned } = req.body;
 
     // Basic validation
     if (!name || !age) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Name and age are required" 
+      return res.status(400).json({
+        success: false,
+        error: "Name and age are required"
       });
     }
 
@@ -112,11 +113,11 @@ router.post("/add", upload.single("photo"), async (req, res) => {
       }
 
       const insertQuery = `
-        INSERT INTO Volunteer (Volunteer_id, Volunteer_name, Volunteer_gender, Volunteer_age, Volunteer_Image, Status)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO Volunteer (Volunteer_id, Volunteer_name, Volunteer_gender, Volunteer_age, Volunteer_Image, Volunteer_WorkAssigned, Status)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
-      
-      db.query(insertQuery, [newId, name, gender || "Better not to mention", age, imagePath, status || "Active"], (err2) => {
+
+      db.query(insertQuery, [newId, name, gender || "Better not to mention", age, imagePath, workAssigned || "Rescue Mission", status || "Active"], (err2) => {
         if (err2) {
           console.error("Error inserting volunteer:", err2);
           return res.status(500).json({ success: false, error: err2.message });
@@ -129,9 +130,10 @@ router.post("/add", upload.single("photo"), async (req, res) => {
           Gender: gender || "Better not to mention",
           Volunteer_age: age,
           Volunteer_Image: imagePath,
+          Volunteer_WorkAssigned: workAssigned || "Relief Distribution",
           Status: status || "Active"
         };
-        
+
         res.json({ success: true, volunteer: created });
       });
     });
@@ -145,7 +147,7 @@ router.post("/add", upload.single("photo"), async (req, res) => {
 router.put("/edit/:id", upload.single("photo"), (req, res) => {
   try {
     const volunteerId = req.params.id;
-    const { name, age, gender, status } = req.body;
+    const { name, age, gender, status, workAssigned } = req.body;
 
     if (!name || !age) {
       return res.status(400).json({ success: false, error: "Name and age are required" });
@@ -166,11 +168,11 @@ router.put("/edit/:id", upload.single("photo"), (req, res) => {
       // Build update query
       let updateQuery, params;
       if (newImagePath) {
-        updateQuery = `UPDATE Volunteer SET Volunteer_name = ?, Volunteer_gender = ?, Volunteer_age = ?, Volunteer_Image = ?, Status = ? WHERE Volunteer_id = ?`;
-        params = [name, gender || "Better not to mention", age, newImagePath, status || "Active", volunteerId];
+        updateQuery = `UPDATE Volunteer SET Volunteer_name = ?, Volunteer_gender = ?, Volunteer_age = ?, Volunteer_Image = ?, Volunteer_WorkAssigned = ?, Status = ? WHERE Volunteer_id = ?`;
+        params = [name, gender || "Better not to mention", age, newImagePath, workAssigned || "Rescue Mission", status || "Active", volunteerId];
       } else {
-        updateQuery = `UPDATE Volunteer SET Volunteer_name = ?, Volunteer_gender = ?, Volunteer_age = ?, Status = ? WHERE Volunteer_id = ?`;
-        params = [name, gender || "Better not to mention", age, status || "Active", volunteerId];
+        updateQuery = `UPDATE Volunteer SET Volunteer_name = ?, Volunteer_gender = ?, Volunteer_age = ?, Volunteer_WorkAssigned = ?, Status = ? WHERE Volunteer_id = ?`;
+        params = [name, gender || "Better not to mention", age, workAssigned || "Rescue Mission", status || "Active", volunteerId];
       }
 
       // Get old image path first so we can delete if replaced
@@ -193,7 +195,7 @@ router.put("/edit/:id", upload.single("photo"), (req, res) => {
           }
 
           // Return updated volunteer
-          const q = `SELECT Volunteer_id, Volunteer_name, Volunteer_gender AS Gender, Volunteer_age, Volunteer_Image, Status FROM Volunteer WHERE Volunteer_id = ?`;
+          const q = `SELECT Volunteer_id, Volunteer_name, Volunteer_gender AS Gender, Volunteer_age, Volunteer_Image, Volunteer_WorkAssigned AS Work_Assigned, Status FROM Volunteer WHERE Volunteer_id = ?`;
           db.query(q, [volunteerId], (err2, rows) => {
             if (err2) {
               console.error("Error fetching updated volunteer:", err2);
@@ -235,7 +237,7 @@ router.delete("/delete/:id", (req, res) => {
         console.error("Error fetching volunteer image:", err);
         return res.status(500).json({ success: false, error: err.message });
       }
-      
+
       const img = rows[0] && rows[0].Volunteer_Image;
 
       db.query("DELETE FROM Volunteer WHERE Volunteer_id = ?", [volunteerId], (err2) => {
@@ -253,7 +255,7 @@ router.delete("/delete/:id", (req, res) => {
             }
           });
         }
-        
+
         res.json({ success: true, message: "Volunteer deleted successfully" });
       });
     });

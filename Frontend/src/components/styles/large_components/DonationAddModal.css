@@ -1,0 +1,30 @@
+.iconholder-container
+{
+  display: flex;
+  align-items: center;
+  width: 60%;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.p-iconholder
+{
+  justify-content: center;
+  align-items: start;
+  margin: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.p-iconholder > p
+{
+  color: var(--red);
+  font-size: var(--large-para);
+  font-weight: var(--semibold);
+}
+
+.inputs-in-modal-donation
+{
+  display: flex;
+}

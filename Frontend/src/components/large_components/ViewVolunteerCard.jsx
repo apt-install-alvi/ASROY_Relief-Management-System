@@ -40,7 +40,7 @@ export function ViewVolunteerCard({
 
   useEffect(() => {
     if (!localWorkAssigned)
-      setLocalWorkAssigned((typeof window !== "undefined" && window.localWorkAssigned) || "Relief Distribution Team");
+      setLocalWorkAssigned((typeof window !== "undefined" && window.localWorkAssigned) || "Relief Distribution");
   }, []);
 
   function handleFileChange(e)
@@ -65,7 +65,7 @@ export function ViewVolunteerCard({
       formData.append("age", localAge);
       formData.append("gender", localGender);
       formData.append("status", localStatus);
-      formData.append("workAssigned", localWorkAssigned || "Relief Distribution Team");
+      formData.append("workAssigned", localWorkAssigned || "Relief Distribution");
       if (file) formData.append("photo", file);
 
       const res = await fetch(`${BASE_URL}/api/volunteers/edit/${volunteerId}`,
@@ -94,7 +94,7 @@ export function ViewVolunteerCard({
         }
 
         if (!updated.Work_Assigned)
-          updated.Work_Assigned = localWorkAssigned || "Relief Distribution Team";
+          updated.Work_Assigned = localWorkAssigned || "Relief Distribution";
       }
 
       onUpdate && onUpdate(updated);
@@ -188,9 +188,9 @@ export function ViewVolunteerCard({
             onChange={(e) => setLocalWorkAssigned(e.target.value)}
           ></InputWithLabel>
           <datalist id="work-list">
-            <option key={"relief"}>Relief Distribution Team</option>
-            <option key={"rescue"}>Rescue Team</option>
-            <option key={"reconstruction"}>Reconstruction Team</option>
+            <option key={"relief"}>Relief Distribution</option>
+            <option key={"rescue"}>Rescue</option>
+            <option key={"reconstruction"}>Reconstruction</option>
           </datalist>
 
           <InputWithLabel

@@ -131,7 +131,7 @@ CREATE TABLE Volunteer (
     Volunteer_age NUMERIC NOT NULL CHECK (Volunteer_age > 15),
     Volunteer_Image VARCHAR(255) DEFAULT NULL,
     Status VARCHAR(20) DEFAULT 'Active',
-    Assigned_Work ENUM('Relief Distribution', 'Rescue' ,'Reconstruction') DEFAULT 'Relief Distribution'
+    Volunteer_WorkAssigned ENUM('Relief Distribution', 'Rescue' ,'Reconstruction') DEFAULT 'Relief Distribution'
 );
 
 

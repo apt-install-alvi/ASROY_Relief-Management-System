@@ -299,29 +299,6 @@ export function InventoryPage()
                   );
                 })}
               </tbody>
-
-              {/* <tbody>
-                {inventory.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.Goods_name}</td>
-                    <td>{item.Goods_type}</td>
-                    <td>{item.Goods_quantity}</td>
-                    <td>
-                      <span className={getStatusClass(item.Goods_quantity, item.Goods_status)}>
-                        {getStatusText(item.Goods_quantity, item.Goods_status)}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-                }
-                {inventory.length === 0 && (
-                  <tr>
-                    <td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>
-                      No inventory items found
-                    </td>
-                  </tr>
-                )}
-              </tbody> */}
             </table>
           </div>
         </div>

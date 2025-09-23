@@ -12,9 +12,9 @@ import { VolunteerFilterModal } from "../components/large_components/VolunteerFi
 
 const PLACEHOLDER = "/assets/images/volunteer_default.jpg";
 const MISSIONS = [
-  "Relief Distribution Team",
-  "Rescue Team",
-  "Reconstruction Team",
+  "Relief Distribution",
+  "Rescue",
+  "Reconstruction",
 ];
 
 export function VolunteerPage()
@@ -46,7 +46,7 @@ export function VolunteerPage()
           ...v,
           Volunteer_Image: v.Volunteer_Image ? (v.Volunteer_Image.startsWith("http") ? v.Volunteer_Image : `${BASE_URL}${v.Volunteer_Image}`) : null,
 
-          Work_Assigned: v.Work_Assigned || v.Volunteer_WorkAssigned || "Relief Distribution Team"
+          Work_Assigned: v.Work_Assigned || v.Volunteer_WorkAssigned || "Relief Distribution"
         });
 
         const active = (data || []).filter((v) => v.Status === "Active").map(normalize);
@@ -55,6 +55,8 @@ export function VolunteerPage()
         setPastVolunteers(inactive);
         setAllActiveVolunteers(active);
         setAllPastVolunteers(inactive);
+
+        
       }
       
       catch (err)
@@ -85,7 +87,7 @@ export function VolunteerPage()
       newVolunteer.Work_Assigned = newVolunteer.Volunteer_WorkAssigned;
     }
 
-    if (!newVolunteer.Work_Assigned) newVolunteer.Work_Assigned = "Relief Distribution Team";
+    if (!newVolunteer.Work_Assigned) newVolunteer.Work_Assigned = "Relief Distribution";
 
     if (newVolunteer.Status === "Active")
     {
@@ -284,20 +286,17 @@ export function VolunteerPage()
 
 
           {showAddModal && (
-            <div className="popup-backdrop">
-              <div className="popup-body">
+            <div className="modal-backdrop">
                 <VolunteerAddModal
                   header="Volunteer"
                   handleState={closeAddModal}
                   onAdd={handleAddVolunteer}
                 />
-              </div>
             </div>
           )}
 
           {showFilterModal && (
-            <div className="popup-backdrop">
-              <div className="popup-body">
+            <div className="modal-backdrop">
               <VolunteerFilterModal
                 handleState={closeFilterModal}
                 onFilter={handleFilterResults}
@@ -305,12 +304,10 @@ export function VolunteerPage()
                 volunteers={allVolunteersCombined}
                 missions={MISSIONS}/>
               </div>
-            </div>
           )}
 
           {showViewModal && selectedVolunteer && (
-            <div className="popup-backdrop">
-              <div className="viewcard-body">
+            <div className="modal-backdrop">
                 <ViewVolunteerCard
                   volunteerId={selectedVolunteer.Volunteer_id}
                   image={selectedVolunteer.Volunteer_Image}
@@ -322,7 +319,6 @@ export function VolunteerPage()
                   onUpdate={handleSave}
                   onDelete={handleDelete}
                 />
-              </div>
             </div>
           )}
       </main>
