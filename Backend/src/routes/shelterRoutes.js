@@ -151,4 +151,24 @@ router.get("/filter/area/:area", (req, res) => {
   });
 });
 
+
+// Get Overcapacity Shelters
+router.get("/overcapacity", (req, res) => {
+  db.query("SELECT * FROM OvercapacityShelters", (err, results) => {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+    res.json({ success: true, alerts: results });
+  });
+});
+
+// Get Deleted Shelters
+router.get("/deleted", (req, res) => {
+  const sql = "SELECT Del_id, Shelter_name, Area_name, Deleted_at FROM Deleted_Shelters ORDER BY Deleted_at DESC";
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+
+    res.json({ success: true, deleted: results });
+  });
+});
+
+
 export default router;

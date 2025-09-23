@@ -66,7 +66,7 @@ export function VolunteerPage()
       };
     }
     
-    fetchVolunteers();
+  fetchVolunteers();
   }, []);
 
   function handleAddVolunteer(newVolunteer)
