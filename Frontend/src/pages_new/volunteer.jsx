@@ -16,311 +16,339 @@ const MISSIONS = [
   "Rescue",
   "Reconstruction",
 ];
+const STATUS_OPTIONS = ["Active", "Inactive"]; // ✅ Keep this one
+const DEFAULT_WORK_ASSIGNED = "Relief Distribution";
 
-
-export function VolunteerPage()
-{
-  const [activeVolunteers, setActiveVolunteers] = useState([]);
-  const [pastVolunteers, setPastVolunteers] = useState([]);
-  const [allActiveVolunteers, setAllActiveVolunteers] = useState([]);
-  const [allPastVolunteers, setAllPastVolunteers] = useState([]);
+export function VolunteerPage() {
+  const [volunteers, setVolunteers] = useState([]);
+  const [filteredVolunteers, setFilteredVolunteers] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [isFiltered, setIsFiltered] = useState(false);
-  const allVolunteersCombined = [...allActiveVolunteers, ...allPastVolunteers];
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [currentFilter, setCurrentFilter] = useState({ mission: "", status: "" });
   
+
+  // Normalize volunteer data
+  const normalizeVolunteer = (v) => ({
+    ...v,
+    Volunteer_Image: v.Volunteer_Image 
+      ? (v.Volunteer_Image.startsWith("http") 
+          ? v.Volunteer_Image 
+          : `${BASE_URL}${v.Volunteer_Image}`)
+      : PLACEHOLDER,
+    Work_Assigned: v.Work_Assigned || v.Volunteer_WorkAssigned || DEFAULT_WORK_ASSIGNED,
+    Volunteer_name: v.Volunteer_name || "Unnamed Volunteer",
+    Volunteer_age: v.Volunteer_age || "N/A",
+    Gender: v.Gender || "Not specified",
+    Status: v.Status || "Active"
+  });
+  // Add this useEffect to VolunteerPage.jsx
+useEffect(() => {
+  // Emit volunteer counts whenever volunteers change
+  const total = volunteers.length;
+  const activeCount = volunteers.filter(v => v.Status === "Active").length;
+  const inactiveCount = volunteers.filter(v => v.Status !== "Active").length;
+
+  // Store in localStorage
+  localStorage.setItem("volunteerCounts", JSON.stringify({
+    total,
+    activeCount,
+    inactiveCount
+  }));
+
+  // Emit custom event
+  window.dispatchEvent(new CustomEvent("volunteerCountsUpdated", {
+    detail: { total, activeCount, inactiveCount }
+  }));
+}, [volunteers]); // This will run whenever volunteers array changes
   useEffect(() => {
     async function fetchVolunteers() {
       try {
+        setIsLoading(true);
+        setError("");
         const response = await fetch(`${BASE_URL}/api/volunteers/all`);
-        const data = await safeParseJson(response);
+        
         if (!response.ok) {
-          throw new Error((data && data.error) || `HTTP error! status: ${response.status}`);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const normalize = (v) => ({
-          ...v,
-          Volunteer_Image: v.Volunteer_Image ? (v.Volunteer_Image.startsWith("http") ? v.Volunteer_Image : `${BASE_URL}${v.Volunteer_Image}`) : null,
-
-          Work_Assigned: v.Work_Assigned || v.Volunteer_WorkAssigned || "Relief Distribution"
-        });
-
-        const active = (data || []).filter((v) => v.Status === "Active").map(normalize);
-        const inactive = (data || []).filter((v) => v.Status !== "Active").map(normalize);
-        setActiveVolunteers(active);
-        setPastVolunteers(inactive);
-        setAllActiveVolunteers(active);
-        setAllPastVolunteers(inactive);
-
+        const data = await safeParseJson(response);
+        const normalizedVolunteers = (data || []).map(normalizeVolunteer);
         
-      }
-      
-      catch (err) {
+        setVolunteers(normalizedVolunteers);
+        setFilteredVolunteers(normalizedVolunteers);
+      } catch (err) {
         console.error("Fetch error:", err);
-        setActiveVolunteers([]);
-        setPastVolunteers([]);
-        setAllActiveVolunteers([]);
-        setAllPastVolunteers([]);
-      };
+        setError("Failed to load volunteers. Please try again later.");
+        setVolunteers([]);
+        setFilteredVolunteers([]);
+      } finally {
+        setIsLoading(false);
+      }
     }
     
-  fetchVolunteers();
+    fetchVolunteers();
   }, []);
 
-  function handleAddVolunteer(newVolunteer)
-  {
+  function handleAddVolunteer(newVolunteer) {
     if (!newVolunteer) return;
 
-    // normalize fields returned by backend
-    if (newVolunteer.Volunteer_Image && newVolunteer.Volunteer_Image.startsWith("/"))
-    {
-      newVolunteer.Volunteer_Image = `${BASE_URL}${newVolunteer.Volunteer_Image}`;
-    }
-
-    if (!newVolunteer.Work_Assigned && newVolunteer.Volunteer_WorkAssigned)
-    {
-      newVolunteer.Work_Assigned = newVolunteer.Volunteer_WorkAssigned;
-    }
-
-    if (!newVolunteer.Work_Assigned) newVolunteer.Work_Assigned = "Relief Distribution";
-
-    if (newVolunteer.Status === "Active")
-    {
-      setActiveVolunteers((prev) => [newVolunteer, ...prev]);
-      setAllActiveVolunteers((prev) => [newVolunteer, ...prev]);
-    }
-
-    else
-    {
-      setPastVolunteers((prev) => [newVolunteer, ...prev]);
-      setAllPastVolunteers((prev) => [newVolunteer, ...prev]);
+    const normalized = normalizeVolunteer(newVolunteer);
+    setVolunteers(prev => [normalized, ...prev]);
+    
+    if (!isFiltered) {
+      setFilteredVolunteers(prev => [normalized, ...prev]);
     }
   }
 
-  function handleSave(updatedVolunteer)
-  {
+  function handleSave(updatedVolunteer) {
     if (!updatedVolunteer) return;
 
-    // normalize image path if backend returned "/uploads/..."
-    if (updatedVolunteer.Volunteer_Image && updatedVolunteer.Volunteer_Image.startsWith("/")) {
-      updatedVolunteer.Volunteer_Image = `${BASE_URL}${updatedVolunteer.Volunteer_Image}`;
-    }
-
-    if (!updatedVolunteer.Work_Assigned && updatedVolunteer.Volunteer_WorkAssigned)
-    {
-      updatedVolunteer.Work_Assigned = updatedVolunteer.Volunteer_WorkAssigned;
-    }
-
-    if (!updatedVolunteer.Work_Assigned)
-      updatedVolunteer.Work_Assigned = "Relief Distribution Team";
-
-    const isNowActive = updatedVolunteer.Status === "Active";
-
-    if (isNowActive)
-    {
-      setActiveVolunteers((prev) =>
-      [
-        ...prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id),
-        updatedVolunteer,
-      ]);
-      
-      setPastVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id));
-      
-      setAllActiveVolunteers((prev) =>
-      [
-        ...prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id),
-        updatedVolunteer,
-      ]);
-      
-      setAllPastVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id));
-    }
+    const normalized = normalizeVolunteer(updatedVolunteer);
     
-    else
-    {
-      setPastVolunteers((prev) =>
-      [
-        ...prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id),
-        updatedVolunteer,
-      ]);
-      
-      setActiveVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id));
-      
-      setAllPastVolunteers((prev) =>
-      [
-        ...prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id),
-        updatedVolunteer,
-      ]);
-      
-      setAllActiveVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== updatedVolunteer.Volunteer_id));
-    }
+    setVolunteers(prev => 
+      prev.map(v => v.Volunteer_id === normalized.Volunteer_id ? normalized : v)
+    );
+    
+    setFilteredVolunteers(prev => 
+      prev.map(v => v.Volunteer_id === normalized.Volunteer_id ? normalized : v)
+    );
 
     setShowViewModal(false);
   }
 
-  function handleDelete(id)
-  {
-    setActiveVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== id));
-    setPastVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== id));
-    setAllActiveVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== id));
-    setAllPastVolunteers((prev) => prev.filter((v) => v.Volunteer_id !== id));
+  function handleDelete(id) {
+    setVolunteers(prev => prev.filter(v => v.Volunteer_id !== id));
+    setFilteredVolunteers(prev => prev.filter(v => v.Volunteer_id !== id));
     setShowViewModal(false);
   }
 
-  function handleFilterResults(filteredVolunteers)
-  {
-    const active = filteredVolunteers.filter((v) => v.Status === "Active");
-    const inactive = filteredVolunteers.filter((v) => v.Status !== "Active");
-
-    setActiveVolunteers(active);
-    setPastVolunteers(inactive);
+  function handleFilterResults(filteredVolunteers, filterCriteria) {
+    setFilteredVolunteers(filteredVolunteers);
     setIsFiltered(true);
+    setCurrentFilter(filterCriteria);
   }
 
-  function resetFilters()
-  {
-    setActiveVolunteers(allActiveVolunteers);
-    setPastVolunteers(allPastVolunteers);
+  function resetFilters() {
+    setFilteredVolunteers(volunteers);
     setIsFiltered(false);
+    setCurrentFilter({ mission: "", status: "" });
   }
 
   const closeAddModal = () => setShowAddModal(false);
   const closeFilterModal = () => setShowFilterModal(false);
-  const closeViewModal = () => setShowViewModal(false);
+  const closeViewModal = () => {
+    setShowViewModal(false);
+    setSelectedVolunteer(null);
+  };
 
-  const displayedCombined = [...activeVolunteers, ...pastVolunteers];
-  const missionGroups = MISSIONS.map((mission) => {
-    const list = displayedCombined.filter((v) => v.Work_Assigned === mission);
-    return { mission, volunteers: list, count: list.length };
-  });
+  const VolunteerCard = ({ volunteer, index }) => (
+    <Card
+      key={volunteer.Volunteer_id || `volunteer-${index}`}
+      ckey={volunteer.Volunteer_id}
+      img={volunteer.Volunteer_Image}
+      title={volunteer.Volunteer_name}
+      field1={`Gender: ${volunteer.Gender}`}
+      field2={`Age: ${volunteer.Volunteer_age}`}
+      field3={`Status: ${volunteer.Status}`}
+      field4={`Work: ${volunteer.Work_Assigned}`}
+      onClick={() => {
+        setSelectedVolunteer(volunteer);
+        setShowViewModal(true);
+      }}
+    />
+  );
 
-  
+  // Determine what to display based on current filter
+  const getDisplaySections = () => {
+    if (!isFiltered) {
+      // Show all sections when not filtered
+      const activeVolunteers = filteredVolunteers.filter(v => v.Status === "Active");
+      const pastVolunteers = filteredVolunteers.filter(v => v.Status !== "Active");
+      
+      const missionGroups = MISSIONS.map(mission => {
+        const activeVolunteersInMission = activeVolunteers.filter(v => v.Work_Assigned === mission);
+        return {
+          mission,
+          volunteers: activeVolunteersInMission,
+          count: activeVolunteersInMission.length
+        };
+      });
+
+      return (
+        <>
+          <section className="active-volunteers">
+            <SubHeader title={`Active Volunteers (${activeVolunteers.length})`} />
+            <div className="card-grid">
+              {activeVolunteers.length === 0 ? (
+                <p className="no-volunteers">No active volunteers found</p>
+              ) : (
+                activeVolunteers.map((v, idx) => (
+                  <VolunteerCard key={v.Volunteer_id} volunteer={v} index={idx} />
+                ))
+              )}
+            </div>
+          </section>
+
+          <section className="inactive-volunteers" style={{ marginTop: '2rem' }}>
+            <SubHeader title={`Inactive Volunteers (${pastVolunteers.length})`} />
+            <div className="card-grid">
+              {pastVolunteers.length === 0 ? (
+                <p className="no-volunteers">No inactive volunteers found</p>
+              ) : (
+                pastVolunteers.map((v, idx) => (
+                  <VolunteerCard key={v.Volunteer_id} volunteer={v} index={idx} />
+                ))
+              )}
+            </div>
+          </section>
+
+          <section className="mission-groups" style={{ marginTop: '2rem' }}>
+            {missionGroups.map((grp) => (
+              <section key={grp.mission} className="mission-group" style={{ marginBottom: '2rem' }}>
+                <SubHeader title={`${grp.mission} (${grp.count} Active Volunteers)`} />
+                <div className="card-grid">
+                  {grp.volunteers.length === 0 ? (
+                    <p className="no-volunteers">No active volunteers assigned to {grp.mission}</p>
+                  ) : (
+                    grp.volunteers.map((v, idx) => (
+                      <VolunteerCard key={v.Volunteer_id} volunteer={v} index={idx} />
+                    ))
+                  )}
+                </div>
+              </section>
+            ))}
+          </section>
+        </>
+      );
+    } else {
+      // When filtered, show only the filtered results with appropriate title
+      let title = "Filtered Volunteers";
+      
+      if (currentFilter.mission && currentFilter.status) {
+        title = `${currentFilter.mission} - ${currentFilter.status} Volunteers`;
+      } else if (currentFilter.mission) {
+        title = `${currentFilter.mission} Volunteers`;
+      } else if (currentFilter.status) {
+        title = `${currentFilter.status} Volunteers`;
+      }
+
+      return (
+        <section className="filtered-volunteers">
+          <SubHeader title={`${title} (${filteredVolunteers.length})`} />
+          <div className="card-grid">
+            {filteredVolunteers.length === 0 ? (
+              <p className="no-volunteers">No volunteers match the current filters</p>
+            ) : (
+              filteredVolunteers.map((v, idx) => (
+                <VolunteerCard key={v.Volunteer_id} volunteer={v} index={idx} />
+              ))
+            )}
+          </div>
+        </section>
+      );
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <>
+        <Sidebar />
+        <Header title={"Volunteers"} />
+        <main style={{ padding: '2rem', textAlign: 'center' }}>
+          <div>Loading volunteers...</div>
+        </main>
+      </>
+    );
+  }
 
   return (
     <>
-      <Sidebar></Sidebar>
-      <Header title={"Volunteers"}></Header>
+      <Sidebar />
+      <Header title={"Volunteers"} />
       <main>
-        <section className="active-events">
-          <div className="events-subheader">
-            <SubHeader title={"Active Volunteers"}></SubHeader>
+        {error && (
+          <div style={{ 
+            color: 'red', 
+            textAlign: 'center', 
+            padding: '1rem',
+            margin: '1rem',
+            border: '1px solid red',
+            borderRadius: '4px'
+          }}>
+            {error}
+          </div>
+        )}
 
+        {/* Controls Section */}
+        <section className="volunteer-controls" style={{ marginBottom: '2rem' }}>
+          <div className="events-subheader">
+            <SubHeader title={"Volunteer Management"} />
             <div className="add-filter-div" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <ButtonRed btnText={"Add Volunteer"} onClick={() => setShowAddModal(true)}></ButtonRed>
-              <ButtonRed btnText={"Filter"} onClick={() => setShowFilterModal(true)}></ButtonRed>
-              {isFiltered ? <ButtonWhite btnText={"Reset Filters"} onClick={resetFilters}></ButtonWhite> : null}
+              <ButtonRed 
+                btnText={"Add Volunteer"} 
+                onClick={() => setShowAddModal(true)} 
+              />
+              <ButtonRed 
+                btnText={"Filter"} 
+                onClick={() => setShowFilterModal(true)} 
+              />
+              {isFiltered && (
+                <ButtonWhite 
+                  btnText={"Reset Filters"} 
+                  onClick={resetFilters} 
+                />
+              )}
             </div>  
           </div>
-          
-
-          <div className="card-grid">
-          {activeVolunteers.map((v, idx) => (
-            <Card
-              key={v.Volunteer_id || `${v.Volunteer_name}-${idx}`}
-              ckey={v.Volunteer_id}
-              img={v.Volunteer_Image && v.Volunteer_Image.trim()!== "" ? v.Volunteer_Image : PLACEHOLDER}
-              title={v.Volunteer_name}
-              field1={`Gender: ${v.Gender}`}
-              field2={`Age: ${v.Volunteer_age}`} 
-              field3={`Status: ${v.Status}`}
-              field4={`Work: ${v.Work_Assigned}`}
-              onClick={() => {
-                setSelectedVolunteer(v);
-                setShowViewModal(true);
-              }}>
-            </Card>
-          ))}
-          </div>
         </section>
 
-        <section className="past-events" style={{ marginTop: 28 }}>
-          <SubHeader title={"Inactive Volunteers"}></SubHeader>
-          <div className="card-grid" style={{ marginTop: 12 }}>
-            {pastVolunteers.map((v, idx) => (
-            <Card
-              key={v.Volunteer_id || `${v.Volunteer_name}-${idx}`}
-              ckey={v.Volunteer_id}
-              img={v.Volunteer_Image ? v.Volunteer_Image : PLACEHOLDER}
-              title={v.Volunteer_name}
-              field1={`Gender: ${v.Gender}`}
-              field2={`Age: ${v.Volunteer_age}`} 
-              field3={`Status: ${v.Status}`}
-              field4={`Work: ${v.Work_Assigned}`}                
-              onClick={() => {
-                setSelectedVolunteer(v);
-                setShowViewModal(true);
-              }}>
-            </Card>
-            ))}
+        {/* Dynamic Sections based on filter state */}
+        {getDisplaySections()}
+
+        {/* Modals */}
+        {showAddModal && (
+          <div className="modal-backdrop">
+            <VolunteerAddModal
+              handleState={closeAddModal}
+              onAdd={handleAddVolunteer}
+            />
           </div>
-        </section>
-          
-        {missionGroups.map((grp) =>
-          <section key={grp.mission} className="past-events">
-            <SubHeader title={`${grp.mission} (${grp.count})`}></SubHeader>
-            <div className="card-grid">
-              {grp.volunteers.length === 0 ?
-                <p className="no-volunteer">No volunteers assigned</p>
-                : 
-                grp.volunteers.map((v) => (
-                  <Card
-                    ckey={v.Volunteer_id}
-                    img={v.Volunteer_Image ? v.Volunteer_Image : PLACEHOLDER}
-                    title={v.Volunteer_name}
-                    field1={`Gender: ${v.Gender}`}
-                    field2={`Age: ${v.Volunteer_age}`} 
-                    field3={`Status: ${v.Status}`}
-                    onClick={() => {
-                      setSelectedVolunteer(v);
-                      setShowViewModal(true);
-                    }}>
-                  </Card>
-                )
-              )}
-            </div>
-          </section>          
-      
-          )
-        }
+        )}
 
+        {showFilterModal && (
+          <div className="modal-backdrop">
+            <VolunteerFilterModal
+              handleState={closeFilterModal}
+              onFilter={handleFilterResults}
+              onReset={resetFilters}
+              volunteers={volunteers}
+              missions={MISSIONS}
+              statusOptions={STATUS_OPTIONS}
+            />
+          </div>
+        )}
 
-          {showAddModal && (
-            <div className="modal-backdrop">
-                <VolunteerAddModal
-                  handleState={closeAddModal}
-                  onAdd={handleAddVolunteer}
-                />
-            </div>
-          )}
-
-          {showFilterModal && (
-            <div className="modal-backdrop">
-              <VolunteerFilterModal
-                handleState={closeFilterModal}
-                onFilter={handleFilterResults}
-                onReset={resetFilters}
-                volunteers={allVolunteersCombined}
-                missions={MISSIONS}/>
-              </div>
-          )}
-
-          {showViewModal && selectedVolunteer && (
-            <div className="modal-backdrop">
-                <ViewVolunteerCard
-                  volunteerId={selectedVolunteer.Volunteer_id}
-                  image={selectedVolunteer.Volunteer_Image}
-                  name={selectedVolunteer.Volunteer_name}
-                  gender={selectedVolunteer.Gender}
-                  age={selectedVolunteer.Volunteer_age}
-                  status={selectedVolunteer.Status}
-                  workAssigned={selectedVolunteer.Work_Assigned}
-                  handleState={closeViewModal}
-                  onUpdate={handleSave}
-                  onDelete={handleDelete}
-                />
-            </div>
-          )}
+        {showViewModal && selectedVolunteer && (
+          <div className="modal-backdrop">
+            <ViewVolunteerCard
+              volunteerId={selectedVolunteer.Volunteer_id}
+              image={selectedVolunteer.Volunteer_Image}
+              name={selectedVolunteer.Volunteer_name}
+              gender={selectedVolunteer.Gender}
+              age={selectedVolunteer.Volunteer_age}
+              status={selectedVolunteer.Status}
+              workAssigned={selectedVolunteer.Work_Assigned}
+              handleState={closeViewModal}
+              onUpdate={handleSave}
+              onDelete={handleDelete}
+            />
+          </div>
+        )}
       </main>
     </>
   );

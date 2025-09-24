@@ -143,29 +143,43 @@ router.post("/add", upload.single("photo"), async (req, res) => {
   }
 });
 
-// ---------------------- Edit Volunteer ----------------------
-router.put("/edit/:id", upload.single("photo"), (req, res) => {
+//---------------------- Edit Volunteer ----------------------
+router.put("/edit/:id", upload.single("photo"), async (req, res) => {
   try {
     const volunteerId = req.params.id;
     const { name, age, gender, status, workAssigned } = req.body;
+
+    console.log("Edit volunteer request:", { volunteerId, name, age, gender, status, workAssigned });
 
     if (!name || !age) {
       return res.status(400).json({ success: false, error: "Name and age are required" });
     }
 
-    // If new file uploaded, process & save it, and delete old image afterwards
-    const handleUpdate = async () => {
-      let newImagePath = null;
-      if (req.file && req.file.buffer) {
-        try {
-          newImagePath = await processAndSaveImage(req.file.buffer);
-        } catch (procErr) {
-          console.error("Error processing image:", procErr);
-          return res.status(500).json({ success: false, error: "Failed to process uploaded image" });
-        }
+    // If new file uploaded, process & save it
+    let newImagePath = null;
+    if (req.file && req.file.buffer) {
+      try {
+        newImagePath = await processAndSaveImage(req.file.buffer);
+      } catch (procErr) {
+        console.error("Error processing image:", procErr);
+        return res.status(500).json({ success: false, error: "Failed to process uploaded image" });
+      }
+    }
+
+    // Get old image path first so we can delete if replaced
+    db.query("SELECT Volunteer_Image FROM Volunteer WHERE Volunteer_id = ?", [volunteerId], (qErr, qRows) => {
+      if (qErr) {
+        console.error("Error fetching old image path:", qErr);
+        return res.status(500).json({ success: false, error: qErr.message });
       }
 
-      // Build update query
+      if (qRows.length === 0) {
+        return res.status(404).json({ success: false, error: "Volunteer not found" });
+      }
+
+      const oldImage = qRows[0].Volunteer_Image;
+
+      // Build update query - FIXED: Proper field names
       let updateQuery, params;
       if (newImagePath) {
         updateQuery = `UPDATE Volunteer SET Volunteer_name = ?, Volunteer_gender = ?, Volunteer_age = ?, Volunteer_Image = ?, Volunteer_WorkAssigned = ?, Status = ? WHERE Volunteer_id = ?`;
@@ -175,57 +189,49 @@ router.put("/edit/:id", upload.single("photo"), (req, res) => {
         params = [name, gender || "Better not to mention", age, workAssigned || "Rescue Mission", status || "Active", volunteerId];
       }
 
-      // Get old image path first so we can delete if replaced
-      db.query("SELECT Volunteer_Image FROM Volunteer WHERE Volunteer_id = ?", [volunteerId], (qErr, qRows) => {
-        if (qErr) {
-          console.error("Error fetching old image path:", qErr);
-          return res.status(500).json({ success: false, error: qErr.message });
+      console.log("Executing SQL:", updateQuery);
+      console.log("With params:", params);
+
+      db.query(updateQuery, params, (err, result) => {
+        if (err) {
+          console.error("Error updating volunteer:", err);
+          // If we saved a new image, attempt to delete it to avoid orphan files
+          if (newImagePath && newImagePath.startsWith("/uploads/volunteers/")) {
+            fs.unlink(path.join(process.cwd(), newImagePath), () => {});
+          }
+          return res.status(500).json({ success: false, error: err.message });
         }
 
-        const oldImage = qRows && qRows[0] && qRows[0].Volunteer_Image;
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ success: false, error: "Volunteer not found" });
+        }
 
-        db.query(updateQuery, params, (err, result) => {
-          if (err) {
-            console.error("Error updating volunteer:", err);
-            // If we saved a new image, attempt to delete it to avoid orphan files
-            if (newImagePath && newImagePath.startsWith("/uploads/volunteers/")) {
-              fs.unlink(path.join(process.cwd(), newImagePath), () => {});
-            }
-            return res.status(500).json({ success: false, error: err.message });
+        // Return updated volunteer
+        const q = `SELECT Volunteer_id, Volunteer_name, Volunteer_gender AS Gender, Volunteer_age, Volunteer_Image, Volunteer_WorkAssigned AS Work_Assigned, Status FROM Volunteer WHERE Volunteer_id = ?`;
+        db.query(q, [volunteerId], (err2, rows) => {
+          if (err2) {
+            console.error("Error fetching updated volunteer:", err2);
+            return res.status(500).json({ success: false, error: err2.message });
           }
 
-          // Return updated volunteer
-          const q = `SELECT Volunteer_id, Volunteer_name, Volunteer_gender AS Gender, Volunteer_age, Volunteer_Image, Volunteer_WorkAssigned AS Work_Assigned, Status FROM Volunteer WHERE Volunteer_id = ?`;
-          db.query(q, [volunteerId], (err2, rows) => {
-            if (err2) {
-              console.error("Error fetching updated volunteer:", err2);
-              return res.status(500).json({ success: false, error: err2.message });
-            }
+          // If new image was saved and old exists and is different, delete old file
+          if (newImagePath && oldImage && oldImage !== newImagePath && oldImage.startsWith("/uploads/volunteers/")) {
+            const oldFilePath = path.join(process.cwd(), oldImage);
+            fs.unlink(oldFilePath, (unlinkErr) => {
+              if (unlinkErr) console.warn("Failed to delete old image file:", unlinkErr.message);
+            });
+          }
 
-            // If new image was saved and old exists and is different, delete old file
-            if (newImagePath && oldImage && oldImage !== newImagePath && oldImage.startsWith("/uploads/volunteers/")) {
-              const oldFilePath = path.join(process.cwd(), oldImage);
-              fs.unlink(oldFilePath, (unlinkErr) => {
-                if (unlinkErr) console.warn("Failed to delete old image file:", unlinkErr.message);
-              });
-            }
-
-            res.json({ success: true, volunteer: rows[0] });
-          });
+          res.json({ success: true, volunteer: rows[0] });
         });
       });
-    };
-
-    handleUpdate().catch((e) => {
-      console.error("Unexpected async error in edit route:", e);
-      res.status(500).json({ success: false, error: "Internal server error" });
     });
+
   } catch (error) {
     console.error("Unexpected error in edit volunteer:", error);
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 });
-
 // ---------------------- Delete Volunteer ----------------------
 router.delete("/delete/:id", (req, res) => {
   try {

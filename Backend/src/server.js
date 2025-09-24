@@ -7,6 +7,7 @@ import fs from "fs";
 import eventRoutes from "./routes/eventRoutes.js";
 import volunteerRoutes from "./routes/volunteerRoutes.js";
 import shelterRoutes from "./routes/shelterRoutes.js"; 
+import donationsRouter from "./routes/donations.js";
 import inventoryRoutes from "./routes/inventoryRoutes.js";
 
 const app = express();
@@ -43,6 +44,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/shelternew", shelterRoutes); 
 app.use("/api/inventory", inventoryRoutes); 
+app.use("/api/donations", donationsRouter);
 
 const PORT = process.env.PORT || 5000;
 

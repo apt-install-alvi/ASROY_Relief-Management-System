@@ -11,72 +11,74 @@ import "leaflet/dist/leaflet.css";
 import axios from "axios"; 
 import { areaCoordinates } from "../utils/areaCoordinates.js"; 
 
-
-
-export function HomePage()
-{
+export function HomePage() {
   const mapRef = useRef(null);
   const mapDivRef = useRef(null);
   const markersLayerRef = useRef(null);
 
-  const [events, setEvents] = useState([]);       // all events from backend
-  const [filtered, setFiltered] = useState([]);   // filtered events
+  const [events, setEvents] = useState([]);
+  const [filtered, setFiltered] = useState([]);
   const [showFilterModal, setshowFilterModal] = useState(false);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [filterTitle, setFilterTitle] = useState("Active Events");
-  const [volCounts, setVolCounts] = useState({ total: null, active: null, inactive: null });
+  const [volCounts, setVolCounts] = useState({ total: 0, active: 0, inactive: 0 });
+  const [donationStats, setDonationStats] = useState({ 
+    totalMoney: 0, 
+    totalItems: 0 
+  });
+  const [isLoadingVolunteers, setIsLoadingVolunteers] = useState(true);
+  const [isLoadingDonations, setIsLoadingDonations] = useState(true);
 
   const BD_BOUNDS = [
     [20.370, 88.0],
     [28.635, 92.69],
   ];
+
   // Initialize map
-// Initialize map - updated useEffect
-useEffect(() => {
-  if (mapRef.current) {
-    mapRef.current.remove();
-    mapRef.current = null;
-  }
-  if (!mapDivRef.current) return;
-
-  const map = L.map(mapDivRef.current, {
-    minZoom: 7.2,
-    maxBounds: BD_BOUNDS,
-    inertia: false,
-  }).fitBounds(BD_BOUNDS);
-  mapRef.current = map;
-
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap contributors",
-  }).addTo(map);
-
-  const lg = L.layerGroup().addTo(map);
-  markersLayerRef.current = lg;
-
-  // Force map to resize after a short delay to ensure container is rendered
-  setTimeout(() => {
-    map.invalidateSize();
-  }, 100);
-
-  const handleResize = () => {
-    setTimeout(() => {
-      if (mapRef.current) {
-        mapRef.current.invalidateSize();
-      }
-    }, 100);
-  };
-
-  window.addEventListener('resize', handleResize);
-  return () => {
-    window.removeEventListener('resize', handleResize);
+  useEffect(() => {
     if (mapRef.current) {
       mapRef.current.remove();
       mapRef.current = null;
     }
-    markersLayerRef.current = null;
-  };
-}, []);
+    if (!mapDivRef.current) return;
+
+    const map = L.map(mapDivRef.current, {
+      minZoom: 7.2,
+      maxBounds: BD_BOUNDS,
+      inertia: false,
+    }).fitBounds(BD_BOUNDS);
+    mapRef.current = map;
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
+
+    const lg = L.layerGroup().addTo(map);
+    markersLayerRef.current = lg;
+
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+
+    const handleResize = () => {
+      setTimeout(() => {
+        if (mapRef.current) {
+          mapRef.current.invalidateSize();
+        }
+      }, 100);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+      markersLayerRef.current = null;
+    };
+  }, []);
 
   // Fetch events from backend
   useEffect(() => {
@@ -96,61 +98,133 @@ useEffect(() => {
         });
 
         setEvents(allEvents);
-
-        // Default: show only Active events
         const activeEvents = allEvents.filter(ev => ev.status === "Active");
         setFiltered(activeEvents);
-
       })
       .catch(err => console.error(err));
   }, []);
 
   useEffect(() => {
-  if (mapRef.current && filtered.length) {
-    renderMarkers(filtered);
-  }
-}, [filtered]);
+    if (mapRef.current && filtered.length) {
+      renderMarkers(filtered);
+    }
+  }, [filtered]);
 
-  // Read counts from localStorage on mount and subscribe to updates
+  // Fetch volunteer counts directly from API
   useEffect(() => {
-    const readStored = () => {
+    const fetchVolunteerCounts = async () => {
+      try {
+        setIsLoadingVolunteers(true);
+        const response = await axios.get("http://localhost:5000/api/volunteers/all");
+        const volunteers = response.data || [];
+        
+        const total = volunteers.length;
+        const active = volunteers.filter(v => v.Status === "Active").length;
+        const inactive = volunteers.filter(v => v.Status !== "Active").length;
+        
+        setVolCounts({ total, active, inactive });
+        
+        // Also store in localStorage for consistency
+        localStorage.setItem("volunteerCounts", JSON.stringify({
+          total,
+          activeCount: active,
+          inactiveCount: inactive
+        }));
+        
+      } catch (error) {
+        console.error("Error fetching volunteer counts:", error);
+        // Fallback to localStorage if API fails
+        readFromLocalStorage();
+      } finally {
+        setIsLoadingVolunteers(false);
+      }
+    };
+
+    const readFromLocalStorage = () => {
       try {
         const raw = localStorage.getItem("volunteerCounts");
         if (raw) {
           const parsed = JSON.parse(raw);
           setVolCounts({
-            total: parsed.total ?? null,
-            active: parsed.activeCount ?? null,
-            inactive: parsed.inactiveCount ?? null,
+            total: parsed.total ?? 0,
+            active: parsed.activeCount ?? parsed.active ?? 0,
+            inactive: parsed.inactiveCount ?? parsed.inactive ?? 0,
           });
-        } else {
-          setVolCounts({ total: null, active: null, inactive: null });
         }
       } catch (err) {
         console.error("Error reading volunteerCounts from localStorage", err);
       }
     };
 
-    // initial read
-    readStored();
-
-    // listener for updates from VolunteerPage
-    const handler = (e) => {
-      const d = e && e.detail ? e.detail : null;
-      if (d) {
-        setVolCounts({ total: d.total, active: d.activeCount, inactive: d.inactiveCount });
+    // Listen for updates from VolunteerPage
+    const handleVolunteerUpdate = (e) => {
+      if (e.detail) {
+        setVolCounts({
+          total: e.detail.total ?? 0,
+          active: e.detail.activeCount ?? e.detail.active ?? 0,
+          inactive: e.detail.inactiveCount ?? e.detail.inactive ?? 0,
+        });
       } else {
-        // fallback: re-read localStorage
-        readStored();
+        // If no detail, refetch from API
+        fetchVolunteerCounts();
       }
     };
 
-    window.addEventListener("volunteerCountsUpdated", handler);
+    // Initial fetch
+    fetchVolunteerCounts();
+
+    window.addEventListener("volunteerCountsUpdated", handleVolunteerUpdate);
     return () => {
-      window.removeEventListener("volunteerCountsUpdated", handler);
+      window.removeEventListener("volunteerCountsUpdated", handleVolunteerUpdate);
     };
   }, []);
-  
+
+  // Fetch donation statistics
+  useEffect(() => {
+    const fetchDonationStats = async () => {
+      try {
+        setIsLoadingDonations(true);
+        const response = await axios.get("http://localhost:5000/api/donations/list");
+        const data = response.data;
+        
+        // Use the summary data from your donations API
+        if (data.summary) {
+          setDonationStats({
+            totalMoney: data.summary.totalMoney || 0,
+            totalItems: data.summary.totalItems || 0
+          });
+        } else {
+          // Fallback: calculate manually if summary not available
+          const donations = Array.isArray(data) ? data : (data.donations || []);
+          const totalMoney = donations
+            .filter(d => d.donation_type === "Money")
+            .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+          const totalItems = donations
+            .filter(d => d.donation_type !== "Money")
+            .reduce((sum, d) => sum + (Number(d.quantity) || 0), 0);
+          
+          setDonationStats({ totalMoney, totalItems });
+        }
+      } catch (error) {
+        console.error("Error fetching donation stats:", error);
+        setDonationStats({ totalMoney: 0, totalItems: 0 });
+      } finally {
+        setIsLoadingDonations(false);
+      }
+    };
+
+    fetchDonationStats();
+
+    // Listen for donation updates
+    const handleDonationUpdate = () => {
+      fetchDonationStats();
+    };
+
+    window.addEventListener("donationAdded", handleDonationUpdate);
+    return () => {
+      window.removeEventListener("donationAdded", handleDonationUpdate);
+    };
+  }, []);
 
   // Render markers function
   const renderMarkers = (eventsToRender) => {
@@ -164,21 +238,17 @@ useEffect(() => {
       iconAnchor: [8, 8],
     });
 
-    eventsToRender.forEach(e =>
-    {
+    eventsToRender.forEach(e => {
       L.marker([e.lat, e.lon], { icon: dotIcon }).addTo(markersLayerRef.current)
-      .bindTooltip(`${e.title} - ${e.area} - ${formatDisplayDate(e.date)}`);
+        .bindTooltip(`${e.title} - ${e.area} - ${formatDisplayDate(e.date)}`);
     });
-
   };
 
-  function applyFilter()
-  {
+  function applyFilter() {
     const from = fromDate ? new Date(fromDate) : null;
     const to = toDate ? new Date(toDate) : null;
 
-    const next = events.filter(e =>
-    {
+    const next = events.filter(e => {
       const d = new Date(e.date);
       if (from && d < from) return false;
       if (to && d > to) return false;
@@ -187,22 +257,16 @@ useEffect(() => {
 
     setFiltered(next);
 
-    if (from || to)
-    {
+    if (from || to) {
       setFilterTitle(`${formatDisplayDate(fromDate)} — ${formatDisplayDate(toDate)}`);
-    }
-    
-    else
-    {
+    } else {
       setFilterTitle("Active Events");
     }
 
     setshowFilterModal(false);
-  };
+  }
 
-  // Clear filter
-  function clearFilter()
-  {
+  function clearFilter() {
     setFromDate("");
     setToDate("");
     const activeEvents = events.filter(e => e.status === "Active");
@@ -211,13 +275,10 @@ useEffect(() => {
     setshowFilterModal(false);
   }
 
-  function formatDisplayDate(dateStr)
-  {
-    if (!dateStr)
-      return "";
+  function formatDisplayDate(dateStr) {
+    if (!dateStr) return "";
     const d = new Date(dateStr);
-    if (isNaN(d))
-      return ""; 
+    if (isNaN(d)) return ""; 
     const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
     const day = d.getDate().toString().padStart(2, "0");
     const month = months[d.getMonth()];
@@ -226,18 +287,17 @@ useEffect(() => {
     return `${day}-${month}-${year}`;
   }
   
-  function handleModalClose()
-  {
+  function handleModalClose() {
     setshowFilterModal(false);
   }
 
   return (
     <>
-      <Sidebar></Sidebar>
-      <Header title={"Activities At-A-Glance"}></Header>
+      <Sidebar />
+      <Header title={"Activities At-A-Glance"} />
       <main className="main">
         <div className="modal-btn-position">
-        <ButtonRed btnText={"Filter By Occurrence"} onClick={() => setshowFilterModal(true)}></ButtonRed>
+          <ButtonRed btnText={"Filter By Occurrence"} onClick={() => setshowFilterModal(true)} />
         </div>
 
         <div className="canvas-row">
@@ -254,63 +314,59 @@ useEffect(() => {
                   {e.title} - {e.area} - {formatDisplayDate(e.date)}
                 </li>
               ))}
-
               {filtered.length === 0 && <li>No events in this range.</li>}
             </ul>
 
-             <h3>Volunteers</h3>
-              {volCounts.total === null ? (
-                <p>Loading volunteers...</p>
-              ) : (
+            <h3>Volunteers</h3>
+            {isLoadingVolunteers ? (
+              <p>Loading volunteers...</p>
+            ) : (
               <>
-                <p>Total Volunteers : <b>{volCounts.total}</b></p>
-                <p>Active Volunteers : <b>{volCounts.active}</b></p>
+                <p>Total Volunteers: <b>{volCounts.total.toLocaleString()}</b></p>
+                <p>Active Volunteers: <b>{volCounts.active.toLocaleString()}</b></p>
+                <p>Inactive Volunteers: <b>{volCounts.inactive.toLocaleString()}</b></p>
               </>
             )}
 
             <h3>Donations</h3>
-            <p>
-              Total Received : <b>Tk.26,503</b>
-            </p>
-            <p>
-              Received in the Current Month : <b>Tk.3,600</b>
-            </p>
+            {isLoadingDonations ? (
+              <p>Loading donations...</p>
+            ) : (
+              <>
+                <p>Total Amount Donated: <b>Tk. {donationStats.totalMoney.toLocaleString()}</b></p>
+                <p>Total Items Donated: <b>{donationStats.totalItems.toLocaleString()}</b></p>
+              </>
+            )}
           </div>
         </div>
       </main>
 
       {showFilterModal && (
-        <>
-          <div className="modal-backdrop">
-            <div className="modal">
-              <ModalHeader header={"Filter by Occurrence"} handleState={handleModalClose}></ModalHeader>
-              <div className="inputs-in-modal">
-                <InputWithLabel
-                  labelFor={"from-date"}
-                  label="From"
-                  fieldType={"date"}
-                  value={fromDate}
-                  onChange={(e)=> setFromDate(e.target.value)}
-                ></InputWithLabel>
-
-                <InputWithLabel
-                  labelFor={"to-date"}
-                  label="To"
-                  fieldType={"date"}
-                  value={toDate}
-                  onChange={(e)=> setToDate(e.target.value)}
-                ></InputWithLabel>
-              </div>
-              
-              <div className="modal-btn-position">
-                <ButtonWhite btnText={"Clear"} onClick={clearFilter}>
-                </ButtonWhite>
-                <ButtonRed btnText={"Add Filter"} onClick={applyFilter}>
-                </ButtonRed>
+        <div className="modal-backdrop">
+          <div className="modal">
+            <ModalHeader header={"Filter by Occurrence"} handleState={handleModalClose} />
+            <div className="inputs-in-modal">
+              <InputWithLabel
+                labelFor={"from-date"}
+                label="From"
+                fieldType={"date"}
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+              />
+              <InputWithLabel
+                labelFor={"to-date"}
+                label="To"
+                fieldType={"date"}
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+              />
             </div>
-              </div>
+            <div className="modal-btn-position">
+              <ButtonWhite btnText={"Clear"} onClick={clearFilter} />
+              <ButtonRed btnText={"Apply Filter"} onClick={applyFilter} />
             </div>
-        </>
+          </div>
+        </div>
       )}
     </>
   );
