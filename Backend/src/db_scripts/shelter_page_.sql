@@ -22,8 +22,9 @@ BEGIN
     WHERE sia.shelter_id = OLD.Shelter_id
     LIMIT 1;
 
-    INSERT INTO Deleted_Shelters (Shelter_id, Shelter_name, Area_id, Area_name)
-    VALUES (OLD.Shelter_id, OLD.Shelter_name,   sia.areaId, a.areaName);
+INSERT INTO Deleted_Shelters (Shelter_id, Shelter_name, Area_id, Area_name)
+VALUES (OLD.Shelter_id, OLD.Shelter_name, areaId, areaName);
+
 END$$
 
 DELIMITER ;

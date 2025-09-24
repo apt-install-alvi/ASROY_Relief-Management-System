@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ModalHeader } from "../base_components/ModalHeader";
 import { ButtonRed } from "../base_components/ButtonRed";
 import { ButtonWhite } from "../base_components/ButtonWhite";
+import { InputWithLabel } from "../base_components/InputWithLabel";
 
 export function VolunteerFilterModal({ 
   handleState, 
@@ -34,49 +35,50 @@ export function VolunteerFilterModal({
     handleState(false);
   };
 
-  const handleReset = () => {
-    setSelectedMission("");
-    setSelectedStatus("");
-    onReset();
-    handleState(false);
-  };
+  // const handleReset = () => {
+  //   setSelectedMission("");
+  //   setSelectedStatus("");
+  //   onReset();
+  //   handleState(false);
+  // };
 
   return (
     <div className="modal">
       <ModalHeader header={"Filter Volunteers"} handleState={handleState} />
 
       <div className="inputs-in-modal">
-        <div className="filter-field">
-          <label htmlFor="mission-filter">Mission/Work Assigned</label>
-          <select 
-            id="mission-filter"
-            value={selectedMission} 
-            onChange={(e) => setSelectedMission(e.target.value)}
-          >
-            <option value="">All Missions</option>
-            {safeMissions.map(mission => (
+        <InputWithLabel
+          labelFor={"mission-filter"}
+          label={"Work Assigned"}
+          value={selectedMission}
+          onChange={(e) => setSelectedMission(e.target.value)}
+          listName={"mission-select"}
+        >
+        </InputWithLabel>
+        <datalist id="mission-select">
+          <option value="">All Missions</option>
+          {safeMissions.map(mission => (
               <option key={mission} value={mission}>{mission}</option>
-            ))}
-          </select>
-        </div>
+           ))}
+        </datalist>
 
-        <div className="filter-field">
-          <label htmlFor="status-filter">Status</label>
-          <select 
-            id="status-filter"
-            value={selectedStatus} 
-            onChange={(e) => setSelectedStatus(e.target.value)}
-          >
-            <option value="">All Status</option>
-            {safeStatusOptions.map(status => (
-              <option key={status} value={status}>{status}</option>
-            ))}
-          </select>
-        </div>
+        <InputWithLabel
+          label={"Status"}
+          labelFor={"status-filter"}
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+          listName={"status-select"}
+        >
+        </InputWithLabel>
+        <datalist id="status-select">
+          <option value="">All Status</option>
+          {safeStatusOptions.map(status => (
+            <option key={status} value={status}>{status}</option>
+          ))}
+        </datalist>
       </div>
 
       <div className="modal-btn-position">
-        <ButtonWhite btnText={"Reset"} onClick={handleReset} />
         <ButtonRed btnText={"Apply Filter"} onClick={handleApplyFilter} />
       </div>
     </div>

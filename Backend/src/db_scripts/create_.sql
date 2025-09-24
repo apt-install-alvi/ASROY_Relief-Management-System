@@ -11,7 +11,6 @@ CREATE TABLE Event (
   Time_of_occurrence TIME,
   Status ENUM('Active','Not Active') DEFAULT 'Active',
   Event_Image VARCHAR(255),
-  Event_Image VARCHAR(255),
   FOREIGN KEY (Event_area_id) REFERENCES Area(Area_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
@@ -37,20 +36,20 @@ FOREIGN KEY(area_id)
 REFERENCES Area(Area_id) on delete cascade on update cascade
 );
 
-create table Donor(
-Donor_id varchar(4) primary key,
-Donor_name varchar(20) not null,
-Contact_number Numeric not null
-);
-
-create table Donation(
-Donation_id varchar(5) primary key,
-Donor_donation_id varchar(4),
-Donation_item ENUM('Food' , 'Medicine' , 'Clothes'  , 'Others'),
-Amount Numeric,
-CONSTRAINT dd_id_f_k
-FOREIGN KEY(Donor_donation_id)
-REFERENCES Donor(Donor_id) on delete cascade on update cascade
+CREATE TABLE Donation (
+    Donation_id VARCHAR(5) PRIMARY KEY,
+    Event_id VARCHAR(4),
+    Donor_name VARCHAR(20) NOT NULL,
+    Donor_contact VARCHAR(11) NOT NULL,
+    Donation_type ENUM('Money', 'Food', 'Medicine', 'Clothes', 'Others') NOT NULL,
+    Amount DECIMAL(10,2) NULL, -- For monetary donations
+    Item_name VARCHAR(100) NULL, -- For non-monetary donations
+    Quantity INT NULL, -- For non-monetary donations
+    Date_received DATE NOT NULL,
+ 
+    CONSTRAINT donation_event_fk
+        FOREIGN KEY (Event_id)
+        REFERENCES Event(Event_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 create table Goods(

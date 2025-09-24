@@ -16,7 +16,7 @@ const MISSIONS = [
   "Rescue",
   "Reconstruction",
 ];
-const STATUS_OPTIONS = ["Active", "Inactive"]; // ✅ Keep this one
+const STATUS_OPTIONS = ["Active", "Inactive"];
 const DEFAULT_WORK_ASSIGNED = "Relief Distribution";
 
 export function VolunteerPage() {
@@ -46,7 +46,6 @@ export function VolunteerPage() {
     Gender: v.Gender || "Not specified",
     Status: v.Status || "Active"
   });
-  // Add this useEffect to VolunteerPage.jsx
 useEffect(() => {
   // Emit volunteer counts whenever volunteers change
   const total = volunteers.length;
@@ -185,7 +184,7 @@ useEffect(() => {
             <SubHeader title={`Active Volunteers (${activeVolunteers.length})`} />
             <div className="card-grid">
               {activeVolunteers.length === 0 ? (
-                <p className="no-volunteers">No active volunteers found</p>
+                <p className="no-volunteer">No active volunteers found</p>
               ) : (
                 activeVolunteers.map((v, idx) => (
                   <VolunteerCard key={v.Volunteer_id} volunteer={v} index={idx} />
@@ -198,7 +197,7 @@ useEffect(() => {
             <SubHeader title={`Inactive Volunteers (${pastVolunteers.length})`} />
             <div className="card-grid">
               {pastVolunteers.length === 0 ? (
-                <p className="no-volunteers">No inactive volunteers found</p>
+                <p className="no-volunteer">No inactive volunteers found</p>
               ) : (
                 pastVolunteers.map((v, idx) => (
                   <VolunteerCard key={v.Volunteer_id} volunteer={v} index={idx} />
@@ -213,7 +212,7 @@ useEffect(() => {
                 <SubHeader title={`${grp.mission} (${grp.count} Active Volunteers)`} />
                 <div className="card-grid">
                   {grp.volunteers.length === 0 ? (
-                    <p className="no-volunteers">No active volunteers assigned to {grp.mission}</p>
+                    <p className="no-volunteer">No active volunteers assigned to {grp.mission}</p>
                   ) : (
                     grp.volunteers.map((v, idx) => (
                       <VolunteerCard key={v.Volunteer_id} volunteer={v} index={idx} />
@@ -242,7 +241,7 @@ useEffect(() => {
           <SubHeader title={`${title} (${filteredVolunteers.length})`} />
           <div className="card-grid">
             {filteredVolunteers.length === 0 ? (
-              <p className="no-volunteers">No volunteers match the current filters</p>
+              <p className="no-volunteer">No volunteers match the current filters</p>
             ) : (
               filteredVolunteers.map((v, idx) => (
                 <VolunteerCard key={v.Volunteer_id} volunteer={v} index={idx} />
@@ -285,10 +284,10 @@ useEffect(() => {
         )}
 
         {/* Controls Section */}
-        <section className="volunteer-controls" style={{ marginBottom: '2rem' }}>
+        <section className="volunteer-controls">
           <div className="events-subheader">
             <SubHeader title={"Volunteer Management"} />
-            <div className="add-filter-div" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <div className="add-filter-div">
               <ButtonRed 
                 btnText={"Add Volunteer"} 
                 onClick={() => setShowAddModal(true)} 
