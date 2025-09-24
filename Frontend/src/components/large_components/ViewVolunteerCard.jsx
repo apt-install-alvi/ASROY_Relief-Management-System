@@ -80,7 +80,7 @@ export function ViewVolunteerCard({
     formData.append("age", localAge);
     formData.append("gender", localGender);
     formData.append("status", localStatus);
-    formData.append("workAssigned", localWorkAssigned); // This matches backend
+    formData.append("workAssigned", localWorkAssigned);
     
     if (file) {
       formData.append("photo", file);
@@ -97,7 +97,7 @@ export function ViewVolunteerCard({
 
     const res = await fetch(`${BASE_URL}/api/volunteers/edit/${volunteerId}`, {
       method: "PUT",
-      body: formData, // Keep as FormData for file upload
+      body: formData, 
     });
 
     // ... rest of your code
@@ -124,13 +124,11 @@ export function ViewVolunteerCard({
         }
       }
 
-      // Show success message
       setSuccessMessage("Volunteer updated successfully!");
       
       // Call the parent component's update handler
       onUpdate?.(updated);
       
-      // Wait a moment to show success message before exiting edit mode
       setTimeout(() => {
         setIsEditing(false);
         setFile(null);
@@ -229,45 +227,41 @@ export function ViewVolunteerCard({
           <InputWithLabel
             labelFor="gender"
             label="Gender"
-            list="gender-list"
+            listName="gender-list"
             value={localGender}
             onChange={(e) => setLocalGender(e.target.value)}
           />
           <datalist id="gender-list">
-            <option value="Male" />
-            <option value="Female" />
-            <option value="Better not to mention" />
+            <option >Male</option>
+            <option >Female</option>
+            <option >Better not to mention</option>
+          </datalist>
+
+          <InputWithLabel
+            labelFor="status"
+            label="Status"
+            listName="status-list"
+            value={localStatus}
+            onChange={(e) => setLocalStatus(e.target.value)}
+          />
+          <datalist id="status-list">
+            <option value="Active" />
+            <option value="Inactive" />
+          </datalist>
+
+          <InputWithLabel
+            labelFor="work-assigned"
+            label="Work Assigned"
+            listName="work-list"
+            value={localWorkAssigned}
+            onChange={(e) => setLocalWorkAssigned(e.target.value)}
+          />
+          <datalist id="work-list">
+            <option value="Relief Distribution" />
+            <option value="Rescue" />
+            <option value="Reconstruction" />
           </datalist>
       
-          {/* Status Dropdown */}
-          <div className="form-field">
-            <label htmlFor="status">Status</label>
-            <select 
-              id="status"
-              value={localStatus} 
-              onChange={(e) => setLocalStatus(e.target.value)}
-              className="form-select"
-            >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-
-          {/* Work Assigned Dropdown */}
-          <div className="form-field">
-            <label htmlFor="work-assigned">Work Assigned</label>
-            <select 
-              id="work-assigned"
-              value={localWorkAssigned} 
-              onChange={(e) => setLocalWorkAssigned(e.target.value)}
-              className="form-select"
-            >
-              <option value="Relief Distribution">Relief Distribution</option>
-              <option value="Rescue">Rescue</option>
-              <option value="Reconstruction">Reconstruction</option>
-            </select>
-          </div>
-
           <InputWithLabel
             labelFor="volunteer-img"
             label="Change photo"

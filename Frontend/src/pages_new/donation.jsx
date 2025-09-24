@@ -162,6 +162,7 @@ export function DonationPage() {
                 <tr>
                   <th>Donor Name</th>
                   <th>Contact</th>
+                  {/* <th>Event Name</th> */}
                   <th>Donation Type</th>
                   <th>Item / Amount</th>
                   <th>Quantity</th>
@@ -171,7 +172,7 @@ export function DonationPage() {
               <tbody>
                 {donations.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ textAlign: 'center', padding: '20px' }}>
+                    <td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>
                       No donations found
                     </td>
                   </tr>

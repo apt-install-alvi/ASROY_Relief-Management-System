@@ -24,8 +24,10 @@ app.use(express.urlencoded({ extended: true }));
 export const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "satadafannum",
-  database: "relief_distribution",
+  // password: "satadafannum",
+  password: "Jelaushekodu!1",
+  // database: "relief_distribution",
+  database: "asroy",
 });
 
 

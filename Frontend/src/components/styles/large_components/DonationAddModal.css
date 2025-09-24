@@ -26,11 +26,10 @@
 
 .inputs-in-modal-donation {
   display: flex;
-  gap: 40px; /* Add space between left and right containers */
-  width: 100%;
+  gap: 40px; 
 }
 
-.left-container, .right-container {
-  flex: 1; /* Make both containers take equal space */
-  min-width: 300px; /* Ensure minimum width */
+ .left-container, .right-container {
+  display: flex;
+  flex-direction: column; 
 }

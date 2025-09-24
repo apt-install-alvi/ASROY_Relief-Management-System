@@ -90,7 +90,8 @@ const fetchOverCapacityAlerts = async () => {
     try {
       if (action === "delete") {
         console.log("Deleting shelter:", selectedShelter.Shelter_id);
-        await axios.delete(`${BASE_URL}/api/shelternew/${selectedShelter.Shelter_id}`);
+        await axios.delete(`${BASE_URL}/api/shelternew/delete/${selectedShelter.Shelter_id}`);
+
       } else {
         console.log("Updating shelter:", selectedShelter.Shelter_id, updatedData);
         await axios.put(`${BASE_URL}/api/shelternew/${selectedShelter.Shelter_id}`, updatedData);
